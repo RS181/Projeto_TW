@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <title> Dara Game</title>
+    <meta charset="UTF-8">
+    <style>
+        #Logotipo {
+            font-family: sans-serif;
+            text-align: left;
+            border: 2px;
+            border-style: solid;
+            padding-left: 10px;
+        }
+
+        .container {
+            display: flex;
+            margin-top: 10px;
+            border-style: solid;
+            border-color: rgb(206, 56, 56);
+            padding: 5px;
+        }
+
+        .item {
+            padding: 5px;
+            margin: 5px;
+            border-color: chartreuse;
+            border-style: solid;
+            text-align: center;
+        }
+
+        .standard_button {
+            padding: 8px;
+            background-color: aqua;
+            font-family: sans-serif;
+            font-weight: bold;
+            border-radius: 100px;
+            cursor: pointer;
+        }
+
+        /*css das Regras*/
+        details>summary {
+            padding: 4px;
+            width: 200px;
+            background-color: #eeeeee;
+            border: none;
+            box-shadow: 1px 1px 2px #bbbbbb;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        details>p {
+            background-color: #eeeeee;
+            padding: 4px;
+            margin: 0;
+            box-shadow: 1px 1px 2px #bbbbbb;
+            text-align: justify;
+        }
+
+        
+
+        /*Animações de butões*/
+        .standard_button:hover {
+            background-color: wheat;
+        }
+
+        .standard_button:active {
+            opacity: 0.5;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!--Área do logotipo-->
+    <header id="Logotipo">
+        <h1>Dara Game Project</h1>
+    </header>
+
+    <!--Área de configuração (navegação)-->
+    <nav id="Configuracao">
+        <div class="container">
+
+            <!--Tamanho do tabuleiro-->
+            <div class="item">
+                Tamanho do tabuleiro:
+                <br>
+                <select name="Tamanho do tabuleiro">
+                    <option> 6*5 </option>
+                    <option> 6*6 </option>
+                    <!--Adicionar mais tamanhos,caso seja precisso-->
+                </select>
+            </div>
+
+            <!--Indicação do Oponente-->
+            <div class="item">
+                Indique o seu oponente:
+                <br>
+                <button class="standard_button" style="margin-top: 20px;">Computador</button>
+
+                <button class="standard_button" style="margin-left: 30px;">Jogador</button>
+                <br>
+            </div>
+
+            <!--Indicação do primeiro a jogar-->
+            <div class="item">
+                Indique primeiro a jogar, contra:
+                <p style="text-align: left;">
+                    Computador
+                    <select>
+                        <option>Computador</option>
+                        <option>Jogador</option>
+                    </select>
+                </p>
+                <p>
+                    Jogador
+                    <select>
+                        <option>Jogador</option>
+                        <option>Oponente</option>
+
+                    </select>
+                </p>
+
+            </div>
+
+            <!--Escolha da dificuldade da IA-->
+            <div class="item">
+                Escolha a dificuldade(Computador):
+                <p style="word-spacing: 10px; font-weight: bold; font-family: sans-serif;">
+                    1<input type=checkbox id="dificuldade_1">
+                    2<input type=checkbox id="dificuldade_2">
+                    3<input type=checkbox id="dificuldade_3">
+                    4<input type=checkbox id="dificuldade_4">
+                    5<input type=checkbox id="dificuldade_5">
+                </p>
+            </div>
+        </div>
+
+    </nav>
+
+    <!--Área de Comandos (navegação)-->
+    <nav id="Comandos">
+        <div class="container">
+
+            <!--Visualizar instruções, TODO ->perguntar ao professor se posso mostrar as regras desta forma -->
+            <div class="item">
+                <details>
+                    <summary>Regras</summary>
+                    <p style="font-weight: bold;">Tabuleiro</p>
+                    <p style="line-height: 30px;">
+                        &#9830; O Dara joga-se num tabuleiro varias dimensões (Ver dimensões disponniveis); <br>
+                        &#9830; Cada um dos 2 jogadores tem 12 peças<br>
+                        &#9830;Um jogador joga com preças pretas, outro com as brancas<br>
+
+                        &#9830;Todas as peças 22 estão sempre visíveis, no tabuleiro ou fora<br>
+
+                        &#9830; Peças fora do tabuleiro são agrupadas por cor, de cada lado <br>
+                    </p>
+                </details>
+            </div>
+            <div class="item">2</div>
+            <div class="item">3</div>
+            <div class="item">4</div>
+
+        </div>
+    </nav>
+
+
+</body>
+
+</html>
