@@ -7,9 +7,17 @@ h1 {
 }
 h2{
     font-size: x-large;
-    
 }
-
+h3{
+    font-size: large;
+    font-weight: bold;
+}
+form{
+    padding: 20px;
+    color: grey;
+    border-color: chartreuse;
+    border-style: solid;
+}
 /*Formatação da tabela de classificações*/
 table,th,td{
     border: 1px;

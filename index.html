@@ -24,12 +24,74 @@
             padding: 5px;
         }
 
+        /*Formatação referente ao tabuleiro 6*5*/
+        .tabuleiro_6por5{
+            float: left;
+            display: grid;
+            margin-top: 10px;
+            border-style: solid;
+            border-color: blue;
+            background-color: wheat;
+            padding: 5px;
+            grid-template-columns: 
+            100px 100px 100px 100px 100px;
+            grid-template-rows: 
+            100px 100px 100px 100px 100px 100px;
+
+        }
+
         .item {
             padding: 5px;
             margin: 5px;
             border-color: chartreuse;
             border-style: solid;
             text-align: center;
+        }
+
+        .item_tabuleiro{
+            margin: 5px;
+            border-color: rgb(255, 38, 110);
+            border-style: solid;
+            text-align: center;
+            /*para poder centrar peças */
+            position: relative;
+        }
+
+        .peca_tabuleiro_preta{
+            border-style: solid;
+            border-color: grey;
+            background-color: black;
+            margin: auto;
+            height: 50px;
+            width: 50px;
+            border-radius: 100px;
+            /*css para posição da peça no proprio tabuleiro (para centra-las)*/
+            position: absolute;
+            top: 18%;
+            left: 18%;
+        }
+        .peca_tabuleiro_branca{
+            border-style: solid;
+            border-color: grey;
+            background-color: white;
+            margin: auto;
+            height: 50px;
+            width: 50px;
+            border-radius: 100px;
+            /*css para posição da peça no proprio tabuleiro (para centra-las)*/
+            position: absolute;
+            top: 18%;
+            left: 18%;
+        }
+
+        /*Css para as mensagens UI*/
+        .mensagens_ui{
+            border-style: solid;
+            border-color: purple;
+            margin-left: 100px;
+            float: left;
+            margin-top: 300px;
+            text-align: left;
         }
 
         .standard_button {
@@ -184,6 +246,12 @@
                             e <strong>Move fase;</strong><br>
                         </p>
 
+                        <p class="destacar">Jogo contra Computador</p>
+                        <p class="regras">
+                            &#9830; O computador <strong> escolhe  automaticamente as peças brancas</strong>;<br>
+                        </p>
+
+
                         <p class="destacar">Em linha</p>
                         <p class="regras">
                             &#9830;São consideradas em linha: sequências de 3 ou
@@ -287,24 +355,72 @@
             </div>
         </nav>
 
-    <!--Contem o que há de mais "relevante" na pagina -->
-    <main id = "Area_principal">
-        <h2>Identificação</h2>
+        <!--Contem o que há de mais "relevante" na pagina -->
+        <main id="Area_principal">
+            <h2>MAIN</h2>
 
-        <!--Área de Identificação -->
-        <div class="container" id="Identificacao">
-            <form action=registar method=post>
-                Username <input name="User_name"><br>
-                Password <input type="" name="Password"> <br>
-                <input type=reset>
-                <input type=submit value=Registar>
-              </form>
+            <!--Área de Identificação -->
+            <div class="container" id="Identificacao">
 
-        </div>
+                <!--Formulário Login-->
+
+                <!--Depois da autenticação,
+                esta mesma área deve ser usada para apresentar o identificador, 
+                permitindo terminar a sessão autenticada.-->
+                <form action="registar" method=post>
+                    Username <input name="User_name"
+                        style="margin-bottom: 10px;"><br>
+                    Password <input type="password" name="Password"
+                        style="margin-bottom: 10px;"> <br>
+                    <input type=reset>
+                    <input type=submit value=Registar>
+                </form>
+
+            </div>
+
+            <h3>Tabuleiro</h3>
+            <!--Primeira fase (Tabuleiro criado em html)-->
+            <div class="tabuleiro_6por5">
+                <div class="item_tabuleiro" id="i1"><div class="peca_tabuleiro_preta"></div></div>
+                <div class="item_tabuleiro" id="i2">2</div>
+                <div class="item_tabuleiro" id="i3">3</div>
+                <div class="item_tabuleiro" id="i4"><div class="peca_tabuleiro_branca" ></div></div>
+                <div class="item_tabuleiro" id="i5">5</div>
+                <div class="item_tabuleiro" id="i6">6</div>
+                <div class="item_tabuleiro" id="i7">7</div>
+                <div class="item_tabuleiro" id="i8">8</div>
+                <div class="item_tabuleiro" id="i9">9</div>
+                <div class="item_tabuleiro" id="i10">10</div>
+                <div class="item_tabuleiro" id="i11">11</div>
+                <div class="item_tabuleiro" id="i12">12</div>
+                <div class="item_tabuleiro" id="i13">13</div>
+                <div class="item_tabuleiro" id="i14">14</div>
+                <div class="item_tabuleiro" id="i15">15</div>
+                <div class="item_tabuleiro" id="i16"><div class="peca_tabuleiro_branca" ></div></div>
+                <div class="item_tabuleiro" id="i17">17</div>
+                <div class="item_tabuleiro" id="i18">18</div>
+                <div class="item_tabuleiro" id="i19">19</div>
+                <div class="item_tabuleiro" id="i20">20</div>
+                <div class="item_tabuleiro" id="i21">21</div>
+                <div class="item_tabuleiro" id="i22">22</div>
+                <div class="item_tabuleiro" id="i23">23</div>
+                <div class="item_tabuleiro" id="i24">24</div>
+                <div class="item_tabuleiro" id="i25">25</div>
+                <div class="item_tabuleiro" id="i26">26</div>
+                <div class="item_tabuleiro" id="i27">27</div>
+                <div class="item_tabuleiro" id="i28">28</div>
+                <div class="item_tabuleiro" id="i29">29</div>
+                <div class="item_tabuleiro" id="i30">30</div>
+            </div>
 
 
-    </main>
+            <!--Área de Mensagens-->
+            <div class="mensagens_ui" id ="mensagens_ui">
+                <strong>Mensagens</strong><br>
+                O jogo terminou com vitória de um dos jogadores
+            </div>
 
+        </main>
 
     </body>
 
