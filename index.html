@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt">
 
-<head>
-    <title> Dara Game</title>
-    <meta charset="UTF-8">
-    <style>
+    <head>
+        <title> Dara Game</title>
+
+        <meta charset="UTF-8">
+
+        <link rel="stylesheet" href="style.css" type="text/css">
+        <style>
         #Logotipo {
             font-family: sans-serif;
             text-align: left;
@@ -38,7 +41,7 @@
             cursor: pointer;
         }
 
-        /*css das Regras*/
+        /*css das Regras (inclui alguns elementos extras de formatação)*/
         details>summary {
             padding: 4px;
             width: 200px;
@@ -57,7 +60,16 @@
             text-align: justify;
         }
 
-        
+        /*Formatação das regras*/
+        p.regras{
+            line-height: 40px;
+            padding-left: 20px;
+        }
+
+        p.destacar{
+            font-weight: bold;
+            padding-top: 30px;
+        }
 
         /*Animações de butões*/
         .standard_button:hover {
@@ -68,104 +80,232 @@
             opacity: 0.5;
         }
     </style>
-</head>
+    </head>
 
-<body>
+    <body>
 
-    <!--Área do logotipo-->
-    <header id="Logotipo">
-        <h1>Dara Game Project</h1>
-    </header>
+        <!--Área do logotipo-->
+        <header id="Logotipo">
+            <h1>Dara Game Project</h1>
+        </header>
 
-    <!--Área de configuração (navegação)-->
-    <nav id="Configuracao">
-        <div class="container">
+        <!--Área de configuração (navegação)-->
+        <nav id="Configuracao">
+            <div class="container">
 
-            <!--Tamanho do tabuleiro-->
-            <div class="item">
-                Tamanho do tabuleiro:
-                <br>
-                <select name="Tamanho do tabuleiro">
-                    <option> 6*5 </option>
-                    <option> 6*6 </option>
-                    <!--Adicionar mais tamanhos,caso seja precisso-->
-                </select>
-            </div>
-
-            <!--Indicação do Oponente-->
-            <div class="item">
-                Indique o seu oponente:
-                <br>
-                <button class="standard_button" style="margin-top: 20px;">Computador</button>
-
-                <button class="standard_button" style="margin-left: 30px;">Jogador</button>
-                <br>
-            </div>
-
-            <!--Indicação do primeiro a jogar-->
-            <div class="item">
-                Indique primeiro a jogar, contra:
-                <p style="text-align: left;">
-                    Computador
-                    <select>
-                        <option>Computador</option>
-                        <option>Jogador</option>
+                <!--Tamanho do tabuleiro-->
+                <div class="item">
+                    Tamanho do tabuleiro:
+                    <br>
+                    <select name="Tamanho do tabuleiro">
+                        <option> 6*5 </option>
+                        <option> 6*6 </option>
+                        <!--Adicionar mais tamanhos,caso seja precisso-->
                     </select>
-                </p>
-                <p>
-                    Jogador
-                    <select>
-                        <option>Jogador</option>
-                        <option>Oponente</option>
+                </div>
 
-                    </select>
-                </p>
+                <!--Indicação do Oponente-->
+                <div class="item">
+                    Indique o seu oponente:
+                    <br>
+                    <button class="standard_button" style="margin-top: 20px;">Computador</button>
 
-            </div>
+                    <button class="standard_button" style="margin-left: 30px;">Jogador</button>
+                    <br>
+                </div>
 
-            <!--Escolha da dificuldade da IA-->
-            <div class="item">
-                Escolha a dificuldade(Computador):
-                <p style="word-spacing: 10px; font-weight: bold; font-family: sans-serif;">
-                    1<input type=checkbox id="dificuldade_1">
-                    2<input type=checkbox id="dificuldade_2">
-                    3<input type=checkbox id="dificuldade_3">
-                    4<input type=checkbox id="dificuldade_4">
-                    5<input type=checkbox id="dificuldade_5">
-                </p>
-            </div>
-        </div>
-
-    </nav>
-
-    <!--Área de Comandos (navegação)-->
-    <nav id="Comandos">
-        <div class="container">
-
-            <!--Visualizar instruções, TODO ->perguntar ao professor se posso mostrar as regras desta forma -->
-            <div class="item">
-                <details>
-                    <summary>Regras</summary>
-                    <p style="font-weight: bold;">Tabuleiro</p>
-                    <p style="line-height: 30px;">
-                        &#9830; O Dara joga-se num tabuleiro varias dimensões (Ver dimensões disponniveis); <br>
-                        &#9830; Cada um dos 2 jogadores tem 12 peças<br>
-                        &#9830;Um jogador joga com preças pretas, outro com as brancas<br>
-
-                        &#9830;Todas as peças 22 estão sempre visíveis, no tabuleiro ou fora<br>
-
-                        &#9830; Peças fora do tabuleiro são agrupadas por cor, de cada lado <br>
+                <!--Indicação do primeiro a jogar-->
+                <div class="item">
+                    Indique primeiro a jogar, contra:
+                    <p style="text-align: left;">
+                        Computador
+                        <select>
+                            <option>Computador</option>
+                            <option>Jogador</option>
+                        </select>
                     </p>
-                </details>
+                    <p>
+                        Jogador
+                        <select>
+                            <option>Jogador</option>
+                            <option>Oponente</option>
+
+                        </select>
+                    </p>
+
+                </div>
+
+                <!--Escolha da dificuldade da IA-->
+                <div class="item">
+                    Escolha uma dificuldade(Computador):
+                    <p class="regras"
+                        style="word-spacing: 10px; font-weight: bold; font-family: sans-serif;">
+                        1<input type=checkbox id="dificuldade_1">
+                        2<input type=checkbox id="dificuldade_2">
+                        3<input type=checkbox id="dificuldade_3">
+                        4<input type=checkbox id="dificuldade_4">
+                        5<input type=checkbox id="dificuldade_5">
+                    </p>
+                </div>
             </div>
-            <div class="item">2</div>
-            <div class="item">3</div>
-            <div class="item">4</div>
+
+        </nav>
+
+        <!--Área de Comandos (navegação)-->
+        <nav id="Comandos">
+            <div class="container">
+
+                <!--Visualizar instruções, TODO ->perguntar ao professor se posso mostrar as regras desta forma -->
+                <div class="item">
+                    <details>
+                        <summary>Regras</summary>
+
+                        <p class="destacar">Tabuleiro</p>
+                        <p class="regras">
+                            &#9830; O Dara joga-se num tabuleiro varias
+                            dimensões (Ver dimensões disponniveis); <br>
+                            &#9830; Cada um dos 2 jogadores tem 12 peças;<br>
+                            &#9830;Um jogador joga com preças pretas, outro com
+                            as brancas;<br>
+
+                            &#9830;Todas as peças 22 estão sempre visíveis, no
+                            tabuleiro ou fora;<br>
+
+                            &#9830; Peças fora do tabuleiro são agrupadas por
+                            cor, de cada lado;<br>
+                        </p>
+
+                        <p class="destacar">Regras básicas</p>
+                        <p class="regras">
+                            &#9830; Jogadores escolhem uma cor e decidem quem
+                            joga primeiro;<br>
+                            &#9830; Inicialmente o tabuleiro está vazio;<br>
+                            &#9830;O jogo tem 2 fases: <strong>Drop fase</strong>
+                            e <strong>Move fase;</strong><br>
+                        </p>
+
+                        <p class="destacar">Em linha</p>
+                        <p class="regras">
+                            &#9830;São consideradas em linha: sequências de 3 ou
+                            mais peças contíguas na horizontal ou vertical(com
+                            uma só cor);<br>
+                        </p>
+
+                        <p class="destacar">Pôr as peças</p>
+                        <p class="regras">
+                            &#9830;Jogadores põem alternadamente uma peça sua
+                            numa casa livre;<br>
+
+                            &#9830;Não podem podem ser postas <strong> mais de 3
+                                peças</strong> em linha;<br>
+                            &#9830;Podem existir 3 peças em linha;<br>
+                        </p>
+
+                        <p class="destacar">Mover as peças</p>
+                        <p class="regras">
+                            &#9830;Cada jogador move alternadamente uma peça da
+                            sua cor;<br>
+
+                            &#9830;Uma peça só pode ser movida para uma casa
+                            contígua;<br>
+                            &#9830;Peças movidas apenas na horizontal ou
+                            vertical;<br>
+                            &#9830;Uma linha de tamanho 3 permite capturar peça
+                            do adversário;<br>
+                            &#9830;Neste caso, remove uma peça do adversário à
+                            sua escolha;<br>
+                            &#9830;Só uma peça é removida por jogada (mesmo
+                            sendo formadas várias linhas);<br>
+                            &#9830;Uma peça não pode retornar à posição da
+                            jogada anterior;<br>
+                            &#9830;Só poderá retornar a essa casa nas jogadas
+                            seguintes;<br>
+                        </p>
+
+                        <p class="destacar">Fim do jogo</p>
+                        <p class="regras">
+                            &#9830;O jogo termina quando um jogador não puder
+                            ganhar;<br>
+
+                            &#9830;Por exemplo, se tiver apenas 2 peças no
+                            tabuleiro;<br>
+                            &#9830;Ou se não puder realizar uma jogada válida;<br>
+                            &#9830;O jogador que não pode ganhar perde o jogo;<br>
+                        </p>
+
+                    </details>
+                </div>
+
+                <!--Inicializar o jogo com as configurações correntes-->
+                <div class="item">
+                    <button class="standard_button">Commeçar o jogo</button>
+                </div>
+
+                <!--Desistir do jogo-->
+                <div class="item"><button class="standard_button">Desistir</button></div>
+
+                <!--Tabela de classificações (TODO mais tarde adicionar com jogador , penso que seja precisso so na próxima entrega)-->
+                <div class="item">
+                    <details>
+                        <summary>Classificações</summary>
+                        <table>
+                            <tr>
+                                <th>Nº de Vitórias</th>
+                                <th>Nº de Derrotas</th>
+                                <th>Nivel de dificuldade IA</th>
+                            </tr>
+                            <tr>
+                                <td id="numero_vitorias_1">0</td>
+                                <td id="numero_derrotas_1">0</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td id="numero_vitorias_2">0</td>
+                                <td id="numero_derrotas_2">0</td>
+                                <td>2</td>
+                            </tr>
+                            <tr>
+                                <td id="numero_vitorias_3">0</td>
+                                <td id="numero_derrotas_3">0</td>
+                                <td>3</td>
+                            </tr>
+                            <tr>
+                                <td id="numero_vitorias_4">0</td>
+                                <td id="numero_derrotas_4">0</td>
+                                <td>4</td>
+                            </tr>
+
+                            <tr>
+                                <td id="numero_vitorias_5">0</td>
+                                <td id="numero_derrotas_5">0</td>
+                                <td>5</td>
+                            </tr>
+                        </table>
+                    </details>
+                </div>
+
+            </div>
+        </nav>
+
+    <!--Contem o que há de mais "relevante" na pagina -->
+    <main id = "Area_principal">
+        <h2>Identificação</h2>
+
+        <!--Área de Identificação -->
+        <div class="container" id="Identificacao">
+            <form action=registar method=post>
+                Username <input name="User_name"><br>
+                Password <input type="" name="Password"> <br>
+                <input type=reset>
+                <input type=submit value=Registar>
+              </form>
 
         </div>
-    </nav>
 
 
-</body>
+    </main>
+
+
+    </body>
 
 </html>
