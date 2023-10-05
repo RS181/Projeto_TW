@@ -27,3 +27,8 @@ table,th,td{
     padding: 10px;
     font-weight: bold;
 }
+
+fieldset{
+    color: black;
+    text-align: center;
+}

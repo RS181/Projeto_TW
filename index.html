@@ -167,14 +167,13 @@
                 </div>
 
                 <!--Indicação do Oponente-->
-                <div class="item">
-                    Indique o seu oponente:
-                    <br>
-                    <button class="standard_button" style="margin-top: 20px;">Computador</button>
-
-                    <button class="standard_button" style="margin-left: 30px;">Jogador</button>
-                    <br>
-                </div>
+                    <form id="Indique_o_oponente">
+                        <fieldset id="Checkgroup_escolha_jogador" >
+                            <legend>Indique o oponente</legend>
+                          Jogador<input type="radio" value="escolha_jogador" name="Checkgroup_escolha_jogador">
+                          Computador<input type="radio" value="escolha_computador" name="Checkgroup_escolha_jogador">
+                        </fieldset>
+                    </form>
 
                 <!--Indicação do primeiro a jogar-->
                 <div class="item">
@@ -198,17 +197,16 @@
                 </div>
 
                 <!--Escolha da dificuldade da IA-->
-                <div class="item">
-                    Escolha uma dificuldade(Computador):
-                    <p class="regras"
-                        style="word-spacing: 10px; font-weight: bold; font-family: sans-serif;">
-                        1<input type=checkbox id="dificuldade_1">
-                        2<input type=checkbox id="dificuldade_2">
-                        3<input type=checkbox id="dificuldade_3">
-                        4<input type=checkbox id="dificuldade_4">
-                        5<input type=checkbox id="dificuldade_5">
-                    </p>
-                </div>
+                    <form id="Escolhe_da_dificuldade_IA">
+                        <fieldset >
+                            <legend>Indique a dificuldade da IA</legend>
+                          1<input type="radio" value="dificuldade_1" name="Checkgroup_dificuldade">
+                          2<input type="radio" value="dificuldade_2" name="Checkgroup_dificuldade">
+                          3<input type="radio" value="dificuldade_3" name="Checkgroup_dificuldade">
+                          4<input type="radio" value="dificuldade_4" name="Checkgroup_dificuldade">
+                          5<input type="radio" value="dificuldade_5" name="Checkgroup_dificuldade">
+                        </fieldset>
+                    </form>
             </div>
 
         </nav>
