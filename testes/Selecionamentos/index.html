@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>testes</title>
+    <style>
+        .container {
+            display: flex;
+            margin-top: 10px;
+            border-style: solid;
+            border-color: rgb(206, 56, 56);
+            padding: 5px;
+        }
+
+        .item {
+            padding: 5px;
+            margin: 5px;
+            border-color: chartreuse;
+            border-style: solid;
+            text-align: center;
+        }
+
+
+    </style>
+
+    <script src="select.js"></script>
+</head>
+
+<body>
+    <div class="container">
+
+        <!--Indicação do Oponente-->
+        <div class="item">
+            <form id="Indique_o_oponente">
+                <fieldset id="Checkgroup_escolha_jogador">
+                    <legend>Indique o oponente</legend>
+                    Jogador<input type="radio" value="escolha_jogador" name="Checkgroup_escolha_jogador"
+                        checked="checked" onchange="displayRadioValue()">
+                    Computador<input type="radio" value="escolha_computador" name="Checkgroup_escolha_jogador"
+                        onchange="displayRadioValue()">
+                    
+                </fieldset>
+            </form>
+        </div>
+
+
+        <div id="Mostrar">
+
+        </div>
+
+  
+
+    </div>
+
+
+</body>
+
+</html>
