@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt">
 
-    <head>
-        <title> Dara Game</title>
+<head>
+    <title> Dara Game</title>
 
-        <meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-        <link rel="stylesheet" href="style.css" type="text/css">
-        <style>
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <style>
         #Logotipo {
             font-family: sans-serif;
             text-align: left;
@@ -15,6 +15,19 @@
             border-style: solid;
             padding-left: 10px;
         }
+
+        /*Caixa de texto com as regras com scr*/
+        .caixa_texto {
+            width: 600px;
+            height: 150px;
+            overflow: scroll;
+            margin: 0;
+            background-color: #eeeeee;
+            text-align: left;
+            padding: 0;
+            margin: 0;
+        }
+
 
         .container {
             display: flex;
@@ -25,7 +38,7 @@
         }
 
         /*Formatação referente ao tabuleiro 6*5*/
-        .tabuleiro_6por5{
+        .tabuleiro_6por5 {
             float: left;
             display: grid;
             margin-top: 10px;
@@ -33,13 +46,15 @@
             border-color: blue;
             background-color: wheat;
             padding: 5px;
-            grid-template-columns: 
-            100px 100px 100px 100px 100px;
-            grid-template-rows: 
-            100px 100px 100px 100px 100px 100px;
+            grid-template-columns:
+                100px 100px 100px 100px 100px;
+            grid-template-rows:
+                100px 100px 100px 100px 100px 100px;
 
         }
 
+
+        
         .item {
             padding: 5px;
             margin: 5px;
@@ -48,7 +63,7 @@
             text-align: center;
         }
 
-        .item_tabuleiro{
+        .item_tabuleiro {
             margin: 5px;
             border-color: rgb(255, 38, 110);
             border-style: solid;
@@ -57,7 +72,7 @@
             position: relative;
         }
 
-        .peca_tabuleiro_preta{
+        .peca_tabuleiro_preta {
             border-style: solid;
             border-color: grey;
             background-color: black;
@@ -70,7 +85,8 @@
             top: 18%;
             left: 18%;
         }
-        .peca_tabuleiro_branca{
+
+        .peca_tabuleiro_branca {
             border-style: solid;
             border-color: grey;
             background-color: white;
@@ -85,7 +101,7 @@
         }
 
         /*Css para as mensagens UI*/
-        .mensagens_ui{
+        .mensagens_ui {
             border-style: solid;
             border-color: purple;
             margin-left: 100px;
@@ -119,18 +135,20 @@
             padding: 4px;
             margin: 0;
             box-shadow: 1px 1px 2px #bbbbbb;
-            text-align: justify;
         }
 
         /*Formatação das regras*/
-        p.regras{
+        p.regras {
             line-height: 40px;
             padding-left: 20px;
+            font-size: large;
         }
 
-        p.destacar{
+        p.destacar {
             font-weight: bold;
-            padding-top: 30px;
+            font-size: x-large;
+            padding-top: 10px;
+            margin: 0;
         }
 
         /*Animações de butões*/
@@ -142,84 +160,85 @@
             opacity: 0.5;
         }
     </style>
-    </head>
+</head>
 
-    <body>
+<body>
 
-        <!--Área do logotipo-->
-        <header id="Logotipo">
-            <h1>Dara Game Project</h1>
-        </header>
+    <!--Área do logotipo-->
+    <header id="Logotipo">
+        <h1>Dara Game Project</h1>
+    </header>
 
-        <!--Área de configuração (navegação)-->
-        <nav id="Configuracao">
-            <div class="container">
+    <!--Área de configuração (navegação)-->
+    <nav id="Configuracao">
+        <div class="container">
 
-                <!--Tamanho do tabuleiro-->
-                <div class="item">
-                    Tamanho do tabuleiro:
-                    <br>
-                    <select name="Tamanho do tabuleiro">
-                        <option> 6*5 </option>
-                        <option> 6*6 </option>
-                        <!--Adicionar mais tamanhos,caso seja precisso-->
-                    </select>
-                </div>
-
-                <!--Indicação do Oponente-->
-                    <form id="Indique_o_oponente">
-                        <fieldset id="Checkgroup_escolha_jogador" >
-                            <legend>Indique o oponente</legend>
-                          Jogador<input type="radio" value="escolha_jogador" name="Checkgroup_escolha_jogador">
-                          Computador<input type="radio" value="escolha_computador" name="Checkgroup_escolha_jogador">
-                        </fieldset>
-                    </form>
-
-                <!--Indicação do primeiro a jogar-->
-                <div class="item">
-                    Indique primeiro a jogar, contra:
-                    <p style="text-align: left;">
-                        Computador
-                        <select>
-                            <option>Computador</option>
-                            <option>Jogador</option>
-                        </select>
-                    </p>
-                    <p>
-                        Jogador
-                        <select>
-                            <option>Jogador</option>
-                            <option>Oponente</option>
-
-                        </select>
-                    </p>
-
-                </div>
-
-                <!--Escolha da dificuldade da IA-->
-                    <form id="Escolhe_da_dificuldade_IA">
-                        <fieldset >
-                            <legend>Indique a dificuldade da IA</legend>
-                          1<input type="radio" value="dificuldade_1" name="Checkgroup_dificuldade">
-                          2<input type="radio" value="dificuldade_2" name="Checkgroup_dificuldade">
-                          3<input type="radio" value="dificuldade_3" name="Checkgroup_dificuldade">
-                          4<input type="radio" value="dificuldade_4" name="Checkgroup_dificuldade">
-                          5<input type="radio" value="dificuldade_5" name="Checkgroup_dificuldade">
-                        </fieldset>
-                    </form>
+            <!--Tamanho do tabuleiro-->
+            <div class="item">
+                Tamanho do tabuleiro:
+                <br>
+                <select name="Tamanho do tabuleiro">
+                    <option> 6*5 </option>
+                    <option> 6*6 </option>
+                    <!--Adicionar mais tamanhos,caso seja precisso-->
+                </select>
             </div>
 
-        </nav>
+            <!--Indicação do Oponente-->
+            <form id="Indique_o_oponente">
+                <fieldset id="Checkgroup_escolha_jogador">
+                    <legend>Indique o oponente</legend>
+                    Jogador<input type="radio" value="escolha_jogador" name="Checkgroup_escolha_jogador">
+                    Computador<input type="radio" value="escolha_computador" name="Checkgroup_escolha_jogador">
+                </fieldset>
+            </form>
 
-        <!--Área de Comandos (navegação)-->
-        <nav id="Comandos">
-            <div class="container">
+            <!--Indicação do primeiro a jogar-->
+            <div class="item">
+                Indique primeiro a jogar, contra:
+                <p style="text-align: left;">
+                    Computador
+                    <select>
+                        <option>Computador</option>
+                        <option>Jogador</option>
+                    </select>
+                </p>
+                <p>
+                    Jogador
+                    <select>
+                        <option>Jogador</option>
+                        <option>Oponente</option>
 
-                <!--Visualizar instruções, TODO ->perguntar ao professor se posso mostrar as regras desta forma -->
-                <div class="item">
-                    <details>
-                        <summary>Regras</summary>
+                    </select>
+                </p>
 
+            </div>
+
+            <!--Escolha da dificuldade da IA-->
+            <form id="Escolhe_da_dificuldade_IA">
+                <fieldset>
+                    <legend>Indique a dificuldade da IA</legend>
+                    1<input type="radio" value="dificuldade_1" name="Checkgroup_dificuldade">
+                    2<input type="radio" value="dificuldade_2" name="Checkgroup_dificuldade">
+                    3<input type="radio" value="dificuldade_3" name="Checkgroup_dificuldade">
+                    4<input type="radio" value="dificuldade_4" name="Checkgroup_dificuldade">
+                    5<input type="radio" value="dificuldade_5" name="Checkgroup_dificuldade">
+                </fieldset>
+            </form>
+        </div>
+
+    </nav>
+
+    <!--Área de Comandos (navegação)-->
+    <nav id="Comandos">
+        <div class="container">
+
+            <!--Visualizar instruções, TODO ->perguntar ao professor se posso mostrar as regras desta forma -->
+            <div class="item">
+                <details>
+
+                    <summary>Regras</summary>
+                    <div class="caixa_texto">
                         <p class="destacar">Tabuleiro</p>
                         <p class="regras">
                             &#9830; O Dara joga-se num tabuleiro varias
@@ -246,7 +265,9 @@
 
                         <p class="destacar">Jogo contra Computador</p>
                         <p class="regras">
-                            &#9830; O computador <strong> escolhe  automaticamente as peças brancas</strong>;<br>
+                            &#9830; O computador <strong> escolhe automaticamente as peças brancas</strong>;<br>
+                            &#9830; O <strong>Jogador joga sempre primeiro que o computador</strong>;<br>
+
                         </p>
 
 
@@ -298,128 +319,132 @@
                             &#9830;Ou se não puder realizar uma jogada válida;<br>
                             &#9830;O jogador que não pode ganhar perde o jogo;<br>
                         </p>
-
-                    </details>
-                </div>
-
-                <!--Inicializar o jogo com as configurações correntes-->
-                <div class="item">
-                    <button class="standard_button">Commeçar o jogo</button>
-                </div>
-
-                <!--Desistir do jogo-->
-                <div class="item"><button class="standard_button">Desistir</button></div>
-
-                <!--Tabela de classificações (TODO mais tarde adicionar com jogador , penso que seja precisso so na próxima entrega)-->
-                <div class="item">
-                    <details>
-                        <summary>Classificações</summary>
-                        <table>
-                            <tr>
-                                <th>Nº de Vitórias</th>
-                                <th>Nº de Derrotas</th>
-                                <th>Nivel de dificuldade IA</th>
-                            </tr>
-                            <tr>
-                                <td id="numero_vitorias_1">0</td>
-                                <td id="numero_derrotas_1">0</td>
-                                <td>1</td>
-                            </tr>
-                            <tr>
-                                <td id="numero_vitorias_2">0</td>
-                                <td id="numero_derrotas_2">0</td>
-                                <td>2</td>
-                            </tr>
-                            <tr>
-                                <td id="numero_vitorias_3">0</td>
-                                <td id="numero_derrotas_3">0</td>
-                                <td>3</td>
-                            </tr>
-                            <tr>
-                                <td id="numero_vitorias_4">0</td>
-                                <td id="numero_derrotas_4">0</td>
-                                <td>4</td>
-                            </tr>
-
-                            <tr>
-                                <td id="numero_vitorias_5">0</td>
-                                <td id="numero_derrotas_5">0</td>
-                                <td>5</td>
-                            </tr>
-                        </table>
-                    </details>
-                </div>
-
+                    </div>
+                </details>
             </div>
-        </nav>
 
-        <!--Contem o que há de mais "relevante" na pagina -->
-        <main id="Area_principal">
-            <h2>MAIN</h2>
+            <!--Inicializar o jogo com as configurações correntes-->
+            <div class="item">
+                <button class="standard_button">Commeçar o jogo</button>
+            </div>
 
-            <!--Área de Identificação -->
-            <div class="container" id="Identificacao">
+            <!--Desistir do jogo-->
+            <div class="item"><button class="standard_button">Desistir</button></div>
 
-                <!--Formulário Login-->
+            <!--Tabela de classificações (TODO mais tarde adicionar com jogador , penso que seja precisso so na próxima entrega)-->
+            <div class="item">
+                <details>
+                    <summary>Classificações</summary>
+                    <table>
+                        <tr>
+                            <th>Nº de Vitórias</th>
+                            <th>Nº de Derrotas</th>
+                            <th>Nivel de dificuldade IA</th>
+                        </tr>
+                        <tr>
+                            <td id="numero_vitorias_1">0</td>
+                            <td id="numero_derrotas_1">0</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td id="numero_vitorias_2">0</td>
+                            <td id="numero_derrotas_2">0</td>
+                            <td>2</td>
+                        </tr>
+                        <tr>
+                            <td id="numero_vitorias_3">0</td>
+                            <td id="numero_derrotas_3">0</td>
+                            <td>3</td>
+                        </tr>
+                        <tr>
+                            <td id="numero_vitorias_4">0</td>
+                            <td id="numero_derrotas_4">0</td>
+                            <td>4</td>
+                        </tr>
 
-                <!--Depois da autenticação,
+                        <tr>
+                            <td id="numero_vitorias_5">0</td>
+                            <td id="numero_derrotas_5">0</td>
+                            <td>5</td>
+                        </tr>
+                    </table>
+                </details>
+            </div>
+
+        </div>
+    </nav>
+
+    <!--Contem o que há de mais "relevante" na pagina -->
+    <main id="Area_principal">
+        <h2>MAIN</h2>
+
+        <!--Área de Identificação -->
+        <div class="container" id="Identificacao">
+
+            <!--Formulário Login-->
+
+            <!--Depois da autenticação,
                 esta mesma área deve ser usada para apresentar o identificador, 
                 permitindo terminar a sessão autenticada.-->
-                <form action="registar" method=post>
-                    Username <input name="User_name"
-                        style="margin-bottom: 10px;"><br>
-                    Password <input type="password" name="Password"
-                        style="margin-bottom: 10px;"> <br>
-                    <input type=reset>
-                    <input type=submit value=Registar>
-                </form>
+            <form action="registar" method=post>
+                Username <input name="User_name" style="margin-bottom: 10px;"><br>
+                Password <input type="password" name="Password" style="margin-bottom: 10px;"> <br>
+                <input type=reset>
+                <input type=submit value=Registar>
+            </form>
 
+        </div>
+
+        <h3>Tabuleiro</h3>
+        <!--Primeira fase (Tabuleiro criado em html)-->
+        <div class="tabuleiro_6por5">
+            <div class="item_tabuleiro" id="i1">
+                <div class="peca_tabuleiro_preta"></div>
             </div>
-
-            <h3>Tabuleiro</h3>
-            <!--Primeira fase (Tabuleiro criado em html)-->
-            <div class="tabuleiro_6por5">
-                <div class="item_tabuleiro" id="i1"><div class="peca_tabuleiro_preta"></div></div>
-                <div class="item_tabuleiro" id="i2">2</div>
-                <div class="item_tabuleiro" id="i3">3</div>
-                <div class="item_tabuleiro" id="i4"><div class="peca_tabuleiro_branca" ></div></div>
-                <div class="item_tabuleiro" id="i5">5</div>
-                <div class="item_tabuleiro" id="i6">6</div>
-                <div class="item_tabuleiro" id="i7">7</div>
-                <div class="item_tabuleiro" id="i8">8</div>
-                <div class="item_tabuleiro" id="i9">9</div>
-                <div class="item_tabuleiro" id="i10">10</div>
-                <div class="item_tabuleiro" id="i11">11</div>
-                <div class="item_tabuleiro" id="i12">12</div>
-                <div class="item_tabuleiro" id="i13">13</div>
-                <div class="item_tabuleiro" id="i14">14</div>
-                <div class="item_tabuleiro" id="i15">15</div>
-                <div class="item_tabuleiro" id="i16"><div class="peca_tabuleiro_branca" ></div></div>
-                <div class="item_tabuleiro" id="i17">17</div>
-                <div class="item_tabuleiro" id="i18">18</div>
-                <div class="item_tabuleiro" id="i19">19</div>
-                <div class="item_tabuleiro" id="i20">20</div>
-                <div class="item_tabuleiro" id="i21">21</div>
-                <div class="item_tabuleiro" id="i22">22</div>
-                <div class="item_tabuleiro" id="i23">23</div>
-                <div class="item_tabuleiro" id="i24">24</div>
-                <div class="item_tabuleiro" id="i25">25</div>
-                <div class="item_tabuleiro" id="i26">26</div>
-                <div class="item_tabuleiro" id="i27">27</div>
-                <div class="item_tabuleiro" id="i28">28</div>
-                <div class="item_tabuleiro" id="i29">29</div>
-                <div class="item_tabuleiro" id="i30">30</div>
+            <div class="item_tabuleiro" id="i2">2</div>
+            <div class="item_tabuleiro" id="i3">3</div>
+            <div class="item_tabuleiro" id="i4">
+                <div class="peca_tabuleiro_branca"></div>
             </div>
-
-
-            <!--Área de Mensagens-->
-            <div class="mensagens_ui" id ="mensagens_ui">
-                <strong>Mensagens</strong><br>
-                O jogo terminou com vitória de um dos jogadores
+            <div class="item_tabuleiro" id="i5">5</div>
+            <div class="item_tabuleiro" id="i6">6</div>
+            <div class="item_tabuleiro" id="i7">7</div>
+            <div class="item_tabuleiro" id="i8">8</div>
+            <div class="item_tabuleiro" id="i9">9</div>
+            <div class="item_tabuleiro" id="i10">10</div>
+            <div class="item_tabuleiro" id="i11">11</div>
+            <div class="item_tabuleiro" id="i12">12</div>
+            <div class="item_tabuleiro" id="i13">13</div>
+            <div class="item_tabuleiro" id="i14">14</div>
+            <div class="item_tabuleiro" id="i15">15</div>
+            <div class="item_tabuleiro" id="i16">
+                <div class="peca_tabuleiro_branca"></div>
             </div>
+            <div class="item_tabuleiro" id="i17">17</div>
+            <div class="item_tabuleiro" id="i18">18</div>
+            <div class="item_tabuleiro" id="i19">19</div>
+            <div class="item_tabuleiro" id="i20">20</div>
+            <div class="item_tabuleiro" id="i21">21</div>
+            <div class="item_tabuleiro" id="i22">22</div>
+            <div class="item_tabuleiro" id="i23">23</div>
+            <div class="item_tabuleiro" id="i24">24</div>
+            <div class="item_tabuleiro" id="i25">25</div>
+            <div class="item_tabuleiro" id="i26">26</div>
+            <div class="item_tabuleiro" id="i27">27</div>
+            <div class="item_tabuleiro" id="i28">28</div>
+            <div class="item_tabuleiro" id="i29">29</div>
+            <div class="item_tabuleiro" id="i30">30</div>
+        </div>
 
-        </main>
 
-    </body>
+        <!--Área de Mensagens-->
+        <div class="mensagens_ui" id="mensagens_ui">
+            <strong>Mensagens</strong><br>
+            O jogo terminou com vitória de um dos jogadores
+        </div>
+
+    </main>
+
+</body>
 
 </html>
