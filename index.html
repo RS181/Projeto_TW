@@ -7,6 +7,8 @@
     <meta charset="UTF-8">
 
     <link rel="stylesheet" href="style.css" type="text/css">
+    <script src="conf.js"></script>
+
     <style>
         #Logotipo {
             font-family: sans-serif;
@@ -37,8 +39,10 @@
             padding: 5px;
         }
 
-        /*Formatação referente ao tabuleiro 6*5*/
-        .tabuleiro_6por5 {
+        .tabuleiro_6_por_5,
+        .tabuleiro_6_por_6,
+        .tabuleiro_5_por_5,
+        .tabuleiro_5_por_6 {
             float: left;
             display: grid;
             margin-top: 10px;
@@ -46,15 +50,39 @@
             border-color: blue;
             background-color: wheat;
             padding: 5px;
+        }
+
+        /*Espicificamos os tamanhos de cada grid e quantas queremos*/
+        .tabuleiro_6_por_5 {
             grid-template-columns:
                 100px 100px 100px 100px 100px;
             grid-template-rows:
                 100px 100px 100px 100px 100px 100px;
+        }
 
+        .tabuleiro_6_por_6 {
+            grid-template-columns:
+                100px 100px 100px 100px 100px 100px;
+            grid-template-rows:
+                100px 100px 100px 100px 100px 100px;
+        }
+
+        .tabuleiro_5_por_5 {
+            grid-template-columns:
+                100px 100px 100px 100px 100px;
+            grid-template-rows:
+                100px 100px 100px 100px 100px;
+        }
+
+        .tabuleiro_5_por_6 {
+            grid-template-columns:
+                100px 100px 100px 100px 100px 100px;
+            grid-template-rows:
+                100px 100px 100px 100px 100px;
         }
 
 
-        
+
         .item {
             padding: 5px;
             margin: 5px;
@@ -151,6 +179,13 @@
             margin: 0;
         }
 
+        .form_l {
+            padding: 20px;
+            color: grey;
+            border-color: chartreuse;
+            border-style: solid;
+        }
+
         /*Animações de butões*/
         .standard_button:hover {
             background-color: wheat;
@@ -175,56 +210,48 @@
 
             <!--Tamanho do tabuleiro-->
             <div class="item">
-                Tamanho do tabuleiro:
-                <br>
-                <select name="Tamanho do tabuleiro">
-                    <option> 6*5 </option>
-                    <option> 6*6 </option>
+                Nr Linhas
+                <select id="input_linhas_tabuleiro">
+                    <option value="6"> 6</option>
+                    <option value="5"> 5 </option>
                     <!--Adicionar mais tamanhos,caso seja precisso-->
                 </select>
+                <br>
+
+                Nr Colunas
+                <select id="input_colunas_tabuleiro">
+                    <option>6</option>
+                    <option>5</option>
+
+                </select>
+                <br><br>
+                <button class="standard_button" onclick="get_nr_linhas_colunas()">Confirmar </button>
+                <br>
             </div>
 
             <!--Indicação do Oponente-->
-            <form id="Indique_o_oponente">
-                <fieldset id="Checkgroup_escolha_jogador">
-                    <legend>Indique o oponente</legend>
-                    Jogador<input type="radio" value="escolha_jogador" name="Checkgroup_escolha_jogador">
-                    Computador<input type="radio" value="escolha_computador" name="Checkgroup_escolha_jogador">
-                </fieldset>
-            </form>
-
-            <!--Indicação do primeiro a jogar-->
             <div class="item">
-                Indique primeiro a jogar, contra:
-                <p style="text-align: left;">
-                    Computador
-                    <select>
-                        <option>Computador</option>
-                        <option>Jogador</option>
-                    </select>
-                </p>
-                <p>
-                    Jogador
-                    <select>
-                        <option>Jogador</option>
-                        <option>Oponente</option>
+                <form id="Indique_o_oponente">
+                    <fieldset id="Checkgroup_escolha_jogador">
+                        <legend>Indique o oponente</legend>
+                        Jogador<input type="radio" value="escolha_jogador" name="Checkgroup_escolha_jogador"
+                            checked="checked" onchange="displayRadioValue()">
+                        Computador<input type="radio" value="escolha_computador" name="Checkgroup_escolha_jogador"
+                            onchange="displayRadioValue()">
+                    </fieldset>
+                </form>
+            </div>
 
-                    </select>
-                </p>
+
+
+            <!--Indicação do primeiro a jogar e Escolha
+            da dificuldade (Gerado pelo javascript ver definições no  div acima)-->
+            <div id="Mostrar">
 
             </div>
 
-            <!--Escolha da dificuldade da IA-->
-            <form id="Escolhe_da_dificuldade_IA">
-                <fieldset>
-                    <legend>Indique a dificuldade da IA</legend>
-                    1<input type="radio" value="dificuldade_1" name="Checkgroup_dificuldade">
-                    2<input type="radio" value="dificuldade_2" name="Checkgroup_dificuldade">
-                    3<input type="radio" value="dificuldade_3" name="Checkgroup_dificuldade">
-                    4<input type="radio" value="dificuldade_4" name="Checkgroup_dificuldade">
-                    5<input type="radio" value="dificuldade_5" name="Checkgroup_dificuldade">
-                </fieldset>
-            </form>
+            <!--Escolha da dificuldade da IA(Gerado pelo javascript ver definições no div acima)-->
+           
         </div>
 
     </nav>
@@ -386,7 +413,7 @@
             <!--Depois da autenticação,
                 esta mesma área deve ser usada para apresentar o identificador, 
                 permitindo terminar a sessão autenticada.-->
-            <form action="registar" method=post>
+            <form action="registar" method=post class="form_l">
                 Username <input name="User_name" style="margin-bottom: 10px;"><br>
                 Password <input type="password" name="Password" style="margin-bottom: 10px;"> <br>
                 <input type=reset>
@@ -395,46 +422,8 @@
 
         </div>
 
-        <h3>Tabuleiro</h3>
-        <!--Primeira fase (Tabuleiro criado em html)-->
-        <div class="tabuleiro_6por5">
-            <div class="item_tabuleiro" id="i1">
-                <div class="peca_tabuleiro_preta"></div>
-            </div>
-            <div class="item_tabuleiro" id="i2">2</div>
-            <div class="item_tabuleiro" id="i3">3</div>
-            <div class="item_tabuleiro" id="i4">
-                <div class="peca_tabuleiro_branca"></div>
-            </div>
-            <div class="item_tabuleiro" id="i5">5</div>
-            <div class="item_tabuleiro" id="i6">6</div>
-            <div class="item_tabuleiro" id="i7">7</div>
-            <div class="item_tabuleiro" id="i8">8</div>
-            <div class="item_tabuleiro" id="i9">9</div>
-            <div class="item_tabuleiro" id="i10">10</div>
-            <div class="item_tabuleiro" id="i11">11</div>
-            <div class="item_tabuleiro" id="i12">12</div>
-            <div class="item_tabuleiro" id="i13">13</div>
-            <div class="item_tabuleiro" id="i14">14</div>
-            <div class="item_tabuleiro" id="i15">15</div>
-            <div class="item_tabuleiro" id="i16">
-                <div class="peca_tabuleiro_branca"></div>
-            </div>
-            <div class="item_tabuleiro" id="i17">17</div>
-            <div class="item_tabuleiro" id="i18">18</div>
-            <div class="item_tabuleiro" id="i19">19</div>
-            <div class="item_tabuleiro" id="i20">20</div>
-            <div class="item_tabuleiro" id="i21">21</div>
-            <div class="item_tabuleiro" id="i22">22</div>
-            <div class="item_tabuleiro" id="i23">23</div>
-            <div class="item_tabuleiro" id="i24">24</div>
-            <div class="item_tabuleiro" id="i25">25</div>
-            <div class="item_tabuleiro" id="i26">26</div>
-            <div class="item_tabuleiro" id="i27">27</div>
-            <div class="item_tabuleiro" id="i28">28</div>
-            <div class="item_tabuleiro" id="i29">29</div>
-            <div class="item_tabuleiro" id="i30">30</div>
-        </div>
+        <div id="tabuleiro"></div>
+
 
 
         <!--Área de Mensagens-->
