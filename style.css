@@ -1,6 +1,6 @@
 body{
     font-family: sans-serif;
-    font-size: la;
+    font-size: larger;
 }
 h1 {
    font-size: xx-large;   
@@ -19,7 +19,6 @@ table,th,td{
     border-style: solid;
     background-color:#eeeeee;
     border-collapse: collapse;
-    padding: 10px;
     font-weight: bold;
 }
 

@@ -3,7 +3,7 @@
 
 <head>
     <title> Dara Game</title>
-
+    
     <meta charset="UTF-8">
 
     <link rel="stylesheet" href="style.css" type="text/css">
@@ -14,13 +14,15 @@
             font-family: sans-serif;
             text-align: left;
             border: 2px;
+            width: 300px;
+            margin-bottom: 10px;
             border-style: solid;
             padding-left: 10px;
         }
 
         /*Caixa de texto com as regras com scr*/
         .caixa_texto {
-            width: 600px;
+            width: 500px;
             height: 150px;
             overflow: scroll;
             margin: 0;
@@ -31,21 +33,39 @@
         }
 
 
-        .container {
-            display: flex;
-            margin-top: 10px;
+        .container_v1 {
+            display: inline-block;
             border-style: solid;
+            width: 250px;
+            float: left;
             border-color: rgb(206, 56, 56);
             padding: 5px;
+        }
+        .container_v2{
+            border-style: solid;
+            float: left;
+            border-color: royalblue;
+            padding: 5px;
+        }
+
+        .container_login{
+            margin-top: 390px;
+            border-style: solid;
+            border-color: chocolate;
+            padding: 5px;
+            width: 250px;
+
         }
 
         .tabuleiro_6_por_5,
         .tabuleiro_6_por_6,
         .tabuleiro_5_por_5,
         .tabuleiro_5_por_6 {
-            float: left;
+            float: right;
+            position: relative;
+            top: -580px;
+            right: 30px;
             display: grid;
-            margin-top: 10px;
             border-style: solid;
             border-color: blue;
             background-color: wheat;
@@ -130,12 +150,16 @@
 
         /*Css para as mensagens UI*/
         .mensagens_ui {
+            width: 611px;
+            height: 70px;
             border-style: solid;
             border-color: purple;
-            margin-left: 100px;
-            float: left;
-            margin-top: 300px;
+            float: right;
             text-align: left;
+            
+            position: relative;
+            top: -80px;
+            right: 30px;
         }
 
         .standard_button {
@@ -167,8 +191,8 @@
 
         /*Formatação das regras*/
         p.regras {
-            line-height: 40px;
-            padding-left: 20px;
+            line-height: 30px;
+            padding-left: 10px;
             font-size: large;
         }
 
@@ -203,10 +227,15 @@
     <header id="Logotipo">
         <h1>Dara Game Project</h1>
     </header>
+      <!--Área de Mensagens-->
+      <div class="mensagens_ui" id="mensagens_ui">
+        <strong>Mensagens</strong><br>
+        O jogo terminou com vitória de um dos jogadores
+    </div>
 
     <!--Área de configuração (navegação)-->
     <nav id="Configuracao">
-        <div class="container">
+        <div class="container_v1">
 
             <!--Tamanho do tabuleiro-->
             <div class="item">
@@ -258,8 +287,8 @@
 
     <!--Área de Comandos (navegação)-->
     <nav id="Comandos">
-        <div class="container">
-
+        <div class="container_v2">
+            
             <!--Visualizar instruções, TODO ->perguntar ao professor se posso mostrar as regras desta forma -->
             <div class="item">
                 <details>
@@ -403,17 +432,16 @@
 
     <!--Contem o que há de mais "relevante" na pagina -->
     <main id="Area_principal">
-        <h2>MAIN</h2>
 
         <!--Área de Identificação -->
-        <div class="container" id="Identificacao">
+        <div class="container_login" id="Identificacao">
 
             <!--Formulário Login-->
 
             <!--Depois da autenticação,
                 esta mesma área deve ser usada para apresentar o identificador, 
                 permitindo terminar a sessão autenticada.-->
-            <form action="registar" method=post class="form_l">
+            <form action="registar" method=post class="form_l" >
                 Username <input name="User_name" style="margin-bottom: 10px;"><br>
                 Password <input type="password" name="Password" style="margin-bottom: 10px;"> <br>
                 <input type=reset>
@@ -426,11 +454,7 @@
 
 
 
-        <!--Área de Mensagens-->
-        <div class="mensagens_ui" id="mensagens_ui">
-            <strong>Mensagens</strong><br>
-            O jogo terminou com vitória de um dos jogadores
-        </div>
+      
 
     </main>
 
