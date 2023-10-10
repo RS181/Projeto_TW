@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Colocamento de peças num tabuleiro</title>
+
+    <style>
+        .board {
+            width: 295px;
+            height: 295px;
+            display: grid;
+            grid-template-columns: auto auto auto;
+            grid-template-rows: auto auto auto;
+            gap: 5px;
+            background: #228;
+        }
+
+        .cell {
+            width: 95px;
+            height: 95px;
+            background: #FAFAFA;
+            font-family: sans-serif;
+            font-size: 95px;
+            line-height: 95px;
+            text-align: center;
+            color: orange;
+            cursor: pointer;
+        }
+
+        .space{
+            border-color: red;
+            background-color: red;
+            border-style: solid;
+            height: 100px;
+        }
+        .display {
+            border-color: blue;
+            border-style: solid;
+            width: 30px;
+            height: 30px;
+        }
+
+        .tabuleiro_6_por_5,
+        .tabuleiro_6_por_6,
+        .tabuleiro_5_por_5,
+        .tabuleiro_5_por_6 {
+            float: left;
+            display: grid;
+            margin-top: 10px;
+            border-style: solid;
+            border-color: blue;
+            background-color: wheat;
+            padding: 5px;
+
+        }
+
+        /*Espicificamos os tamanhos de cada grid e quantas queremos*/
+        .tabuleiro_6_por_5 {
+            grid-template-columns:
+                100px 100px 100px 100px 100px;
+            grid-template-rows:
+                100px 100px 100px 100px 100px 100px;
+        }
+
+        .tabuleiro_6_por_6 {
+            grid-template-columns:
+                100px 100px 100px 100px 100px 100px;
+            grid-template-rows:
+                100px 100px 100px 100px 100px 100px;
+        }
+
+        .tabuleiro_5_por_5 {
+            grid-template-columns:
+                100px 100px 100px 100px 100px;
+            grid-template-rows:
+                100px 100px 100px 100px 100px;
+        }
+
+        .tabuleiro_5_por_6 {
+            grid-template-columns:
+                100px 100px 100px 100px 100px 100px;
+            grid-template-rows:
+                100px 100px 100px 100px 100px;
+        }
+
+        .item_tabuleiro {
+            margin: 5px;
+            border-color: rgb(255, 38, 110);
+            border-style: solid;
+            text-align: center;
+            /*para poder centrar peças */
+            position: relative;
+        }
+
+        .peca_tabuleiro_preta{
+            border-style: solid;
+            border-color: grey;
+            background-color: black;
+            margin: auto;
+            height: 50px;
+            width: 50px;
+            border-radius: 100px;
+            /*css para posição da peça no proprio tabuleiro (para centra-las)*/
+            position: absolute;
+            top: 18%;
+            left: 18%;
+        }
+        .peca_tabuleiro_branca{
+            border-style: solid;
+            border-color: grey;
+            background-color: white;
+            margin: auto;
+            height: 50px;
+            width: 50px;
+            border-radius: 100px;
+            /*css para posição da peça no proprio tabuleiro (para centra-las)*/
+            position: absolute;
+            top: 18%;
+            left: 18%;
+        }
+    </style>
+
+    <script src="peca.js"></script>
+</head>
+
+<body>
+
+    <!--Parte do jogo do galo-->
+    <div id="base"></div>
+
+    <div class="space"></div>
+
+    Nr Linhas
+    <select id="input_linhas_tabuleiro">
+        <option value="6"> 6</option>
+        <option value="5"> 5 </option>
+        <!--Adicionar mais tamanhos,caso seja precisso-->
+    </select>
+    <br>
+
+    Nr colunas
+    <select id="input_colunas_tabuleiro">
+        <option>6</option>
+        <option>5</option>
+
+    </select>
+    <br>
+    <button onclick="getOption()"> Check option </button>
+    <br>
+    <div id="tabuleiro"></div>
+
+
+</body>
+
+</html>
