@@ -168,8 +168,58 @@ class Tabuleiro {
         let linha = this.linha_aux(Posicao,cor_peca);
         //[Max_nr_peças_linha,Max_nr_peças_coluna]
         let aux = Max_Pecas_continguas(linha,coluna,cor_peca,Posicao);
-        console.log(aux);
 
+        if (aux[0] ==3 || aux[1] == 3){
+            let peca_a_remover = "";
+            switch (cor_peca){
+                case "preta":
+                    peca_a_remover = "peca_tabuleiro_branca";
+                    break;
+                case "branca":
+                    peca_a_remover = "peca_tabuleiro_preta";
+                    break;
+                default: 
+                    console.log("ERRO: em Eliminar_peca");
+            }
+            
+
+            console.log("Podemos remover uma peça da cor " + peca_a_remover);
+            //todo Implementar o metodo de remover uma peça
+
+            //Guardamos todas as divs que correspondem as peças
+            let divs = document.querySelectorAll('div.item_tabuleiro > div');
+
+            console.log(divs);
+            //Percorre todas as peças e adiciona um evento de click
+            //a cada peça que é possivel remover
+            for (let peca of divs){
+                if (peca.className == peca_a_remover){
+                    peca.addEventListener('click', function() {
+                        // Adicionamos um evento a cada filho
+                        peca.parentNode.removeChild(peca);
+                    });
+                }
+            }
+            let changed = document.querySelectorAll('div.item_tabuleiro > div');
+
+            //fica a espera que seja removido algum elemento
+
+            //TODO Implementar forma de esprar que o utilizador remova a peça e depois
+            //todo mal remova a peça , impedir que remova mais 
+            //todo (NÃO ESQUECER) fazer outro for each para remover event handler
+
+            // while (divs.length == changed.length){
+            //     console.log("VERIFICA");
+            //     setTimeout();
+            // }
+            setTimeout(() => console.log("Second"), 2000)
+        
+
+            console.log("teste")
+            
+            
+
+        }
     }
 
 
