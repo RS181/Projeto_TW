@@ -107,10 +107,13 @@ class Tabuleiro {
                         //adicionamos como filho 
                         celula.appendChild(peca);
 
+                        //Parte de eliminar (caso seja possivel)
+                        this.Eliminar_peca(celula.id, "preta");
+
                     }
                     //Se for inválida manda um alert 
                     else {
-                        
+
                         alert("POSIÇÃO INVALIDA: não é possivel ter mais de 3 peças contiguas na mesma linha ou coluna");
 
                     }
@@ -133,6 +136,10 @@ class Tabuleiro {
                         //adicionamos como filho 
                         celula.appendChild(peca);
 
+                        //Parte de eliminar (caso seja possivel)
+                        this.Eliminar_peca(celula.id, "branca");
+
+
                     }
                     //Se for inválida manda um alert
                     else {
@@ -152,6 +159,23 @@ class Tabuleiro {
         }
 
     }
+
+
+
+    //Verifica se estamos em condições de elimar uma peça inimiga 
+    Eliminar_peca(Posicao, cor_peca) {
+        let coluna = this.coluna_aux(Posicao,cor_peca);
+        let linha = this.linha_aux(Posicao,cor_peca);
+        //[Max_nr_peças_linha,Max_nr_peças_coluna]
+        let aux = Max_Pecas_continguas(linha,coluna,cor_peca,Posicao);
+        console.log(aux);
+
+    }
+
+
+
+
+
 
     //todo TER CUIDADO COM ESTAS DEFINIÇÕES de
     //todo Outofbounds (TESTAR MAIS PARA VER SE ESTÃO CERTAS)
@@ -212,16 +236,8 @@ class Tabuleiro {
         return false;
     }
 
-
-    Posicao_valida(Posicao, cor_peca) {
-        //console.log(this.rows);
-        //console.log("Pos (" + Posicao + ") com cor = " + this.tab[Posicao]);
-        let cur_pos = Posicao;
-        // console.log("LeftOutofbounds: " + this.LeftOutofbounds(cur_pos));
-        // console.log("RightOutofbounds: " + this.RightOutofbounds(cur_pos));
-        // console.log("UpOutofbounds: " + this.UpOutofbounds(cur_pos));
-        // console.log("DownOutofbounds: " + this.DownOutofbounds(cur_pos));
-
+    //Cria um array que representa a linha a que pertence a peça 
+    linha_aux(Posicao, cor_peca) {
         //Array que guarda a linha em que peça que queremos metar está (contém as cores)
         let cur_linha = new Array(this.cols + 1); //indice começa em 1
 
@@ -239,17 +255,22 @@ class Tabuleiro {
             k++;
         }
 
+        return cur_linha;
+    }
+
+    //Cria um array que representa a coluna a que pertence a peça 
+    coluna_aux(Posicao, cor_peca) {
         //Array que guarda a coluna em que peça que queremos meter está (contém as cores)
         let cur_coluna = new Array(this.rows + 1);//indice começa em 1
 
-        indice_inicial = parseInt(Posicao);
-        console.log(this.cols);
+        let indice_inicial = parseInt(Posicao);
+
         while (indice_inicial > this.cols) {
             indice_inicial -= this.cols;
 
         }
 
-        indice_final = indice_inicial;
+        let indice_final = indice_inicial;
         while (indice_final < this.rows * this.cols) {
             if (indice_final + parseInt(this.cols) > this.rows * this.cols)
                 break;
@@ -259,29 +280,53 @@ class Tabuleiro {
         // console.log("Indices que pertencem a coluna: [" + indice_inicial + "," + indice_final + "]");
 
         //coloco as cores correspondentes do array tab no cur_coluna
-        k = 1;
+        let k = 1;
         for (let i = indice_inicial; i <= indice_final; i += parseInt(this.cols)) {
             // console.log("=>"+i);
             cur_coluna[k] = this.tab[i];
             k++;
         }
+        return cur_coluna;
 
+    }
+
+    //Verifica se a posição em que queremos inserir uma peça valida (verifica se não há mais do que 3 peças
+    //contiguas da mesma cor na horizontal ou vertical)
+    Posicao_valida(Posicao, cor_peca) {
+        //Array que guarda a linha em que peça que queremos metar está (contém as cores)
+        let cur_linha = this.linha_aux(Posicao, cor_peca); //indice começa em 1
+
+        //Array que guarda a coluna em que peça que queremos meter está (contém as cores)
+        let cur_coluna = this.coluna_aux(Posicao, cor_peca);//indice começa em 1
+
+        /* Debug
         console.log("-------------------------------");
         console.log("-----Linha da Posição (" + Posicao + ") -------")
         console.log(cur_linha);
         console.log("-----Coluna da Posição(" + Posicao + ") -------")
         console.log(cur_coluna);
         console.log("-------------------------------");
+        */
 
-        return Check_if_placing_is_valid(cur_linha, cur_coluna, cor_peca, Posicao);
+        let peca_contiguas = Max_Pecas_continguas(cur_linha, cur_coluna, cor_peca, Posicao);
+
+
+        if (peca_contiguas[0] <= 3 && peca_contiguas[1] <= 3)
+            return true;
+        else {
+            return false;
+        }
     }
+
+
 
 
 }
 
 
-//Verifica se ao inserir a peça nesta posição não quebra regras
-function Check_if_placing_is_valid(linha, coluna, cor_peca, Posicao) {
+//Verifica o numero de peças contiguas da mesma cor ao inserir a peça nesta posição
+//e retorna um array [Max_pecas_contíguas_linha,Max_pecas_contíguas_coluna] 
+function Max_Pecas_continguas(linha, coluna, cor_peca, Posicao) {
     let cols = linha.length - 1;
     // console.log("cur cols = " + cols);
 
@@ -302,8 +347,6 @@ function Check_if_placing_is_valid(linha, coluna, cor_peca, Posicao) {
         pos_row_on_array++;
     }
 
-
-
     // ?console.log("pos_col_on_array = "+ pos_col_on_array);
     // ?console.log("pos_row_on_array = "+ pos_row_on_array);
 
@@ -312,15 +355,15 @@ function Check_if_placing_is_valid(linha, coluna, cor_peca, Posicao) {
     //tem em conta a peça que queremos por, ela faz parte deste nr) 
     let nr_pecas_linha = Biggest_sequence(linha, cor_peca, pos_col_on_array);
     let nr_pecas_coluna = Biggest_sequence(coluna, cor_peca, pos_row_on_array);
-    console.log("maior numero de peças (" + cor_peca + "s) contiguas nesta LINHA = " + nr_pecas_linha);
-    console.log("maior numero de peças (" + cor_peca + "s) contiguas nesta COLUNA = " + nr_pecas_coluna);
+    //? console.log("maior numero de peças (" + cor_peca + "s) contiguas nesta LINHA = " + nr_pecas_linha);
+    //? console.log("maior numero de peças (" + cor_peca + "s) contiguas nesta COLUNA = " + nr_pecas_coluna);
 
     //Jogada valida (nao tem mais de 3 peças da mesma cor contiguas)
     if (nr_pecas_linha <= 3 && nr_pecas_coluna <= 3)
-        return true;
+        return [nr_pecas_linha, nr_pecas_coluna];
     else {
         console.log("JOGADA INVALIDA: não podemos ter mais de 3 peças contiguas da mesma cor (vertical ou horizontal)");
-        return false;
+        return [nr_pecas_linha, nr_pecas_coluna];
     }
 }
 
