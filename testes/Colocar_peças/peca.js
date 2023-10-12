@@ -12,10 +12,20 @@ class Tabuleiro {
     //"variaveis estaticas" que permitem guardar o numero de peças brancas e pretas
     nr_pecas_brancas = 12;
     nr_pecas_pretas = 12;
+    //Numero de linhas e colunas
+    rows = 0;
+    cols = 0;
 
     constructor(parentid, rows, cols) {
         let parent = document.getElementById(parentid);
 
+        //Inicializamos as variaveis da classe
+        this.rows = rows;
+        this.cols = cols;
+
+        //Representamos o tabuleiro como matriz (com indice que começa em 1)
+        this.tab = new Array(rows * cols + 1);
+        this.tab[0] = "NULL";
 
         if (rows == 6 && cols == 5) {
             console.log("Tabuleiro 6 por 5");
@@ -51,50 +61,310 @@ class Tabuleiro {
             }
         }
 
-        //this.play(parentid, 12, 12);
     }
 
     play(id_celula) {
         // Executa a função play com o id da div clicada
-        console.log("entrei no play");
-   
-        if (this.nr_pecas_brancas != 0 && this.nr_pecas_pretas!=0)
+        // console.log("Jogo começou");
+        // console.log(this.tab);
+
+        if (this.nr_pecas_brancas != 0 || this.nr_pecas_pretas != 0)
             this.por_peca(id_celula);
-        else{
+        else {
             console.log("TODO: Implementar a move phase")
         }
     }
-
     //Serve como Drop_phase
     por_peca(id_celula) {
         //Query que contem cada celula da tabela
         const posicoes = document.querySelectorAll(".item_tabuleiro");
         //Debug de consola
-       
+
 
         //todo Falta fazer verificação a ver se posição e valida para colocar 
         for (let celula of posicoes) {
             let peca = document.createElement('div');
-            //Jogam primeiro quem escolheu as peças pretas 
-            if (id_celula == celula.id) {
+
+            //Entramos no if se a celula não tem peça dentro dela e tem
+            //o respetivo id
+            if (id_celula == celula.id && celula.childElementCount == 0) {
+
+                //Jogam primeiro quem escolheu as peças pretas 
                 if (this.nr_pecas_pretas >= this.nr_pecas_brancas) {
-                    this.nr_pecas_pretas--;
-                    peca.className = "peca_tabuleiro_preta";
+
+                    //Verifica se a posição é válida
+                    if (this.Posicao_valida(celula.id, "preta") == true) {
+                        // ?console.log("TESTE =>" + this.Posicao_valida(celula.id, "preta"));
+                        //Diminuimos o nr de peças pretas
+                        this.nr_pecas_pretas--;
+                        //Atribuimos uma classe a div peça (tornando-a visivel no ecra)
+                        peca.className = "peca_tabuleiro_preta";
+                        //Colocamos no Array que representa o tab qual a cor 
+                        //da peça que esta ness posição
+                        this.tab[celula.id] = "preta";
+
+
+                        //adicionamos como filho 
+                        celula.appendChild(peca);
+
+                    }
+                    //Se for inválida manda um alert 
+                    else {
+                        
+                        alert("POSIÇÃO INVALIDA: não é possivel ter mais de 3 peças contiguas na mesma linha ou coluna");
+
+                    }
                 }
                 else {
-                    this.nr_pecas_brancas--;
-                    peca.className = "peca_tabuleiro_branca";
+
+                    //Verifica se a posição é válida
+                    if (this.Posicao_valida(celula.id, "branca") == true) {
+                        //?console.log("TESTE =>" + this.Posicao_valida(celula.id, "branca"));
+
+                        //Diminuimos o nr de peças brancas
+                        this.nr_pecas_brancas--;
+                        //Atribuimos uma classe a div peça (tornando-a visivel no ecra)
+                        peca.className = "peca_tabuleiro_branca";
+                        //Colocamos no Array que representa o tab qual a cor 
+                        //da peça que esta ness posição
+                        this.tab[celula.id] = "branca";
+
+
+                        //adicionamos como filho 
+                        celula.appendChild(peca);
+
+                    }
+                    //Se for inválida manda um alert
+                    else {
+                        alert("POSIÇÃO INVALIDA: não é possivel ter mais de 3 peças contiguas na mesma linha ou coluna");
+                    }
+
                 }
-                celula.appendChild(peca);
+
+                // console.log("Número atual de peças brancas:" + this.nr_pecas_brancas);
+                // console.log("Número atual de peças pretas:" + this.nr_pecas_pretas);
             }
-            
+            else if (id_celula == celula.id && celula.childElementCount != 0) {
+                console.log("Celula está ocupada");
+                alert("Posição ocupada,por favor selecione uma posição vazia");
+            }
+
         }
-        console.log("Número atual de peças brancas:" + this.nr_pecas_brancas);
-        console.log("Número atual de peças pretas:" + this.nr_pecas_pretas);
 
     }
 
+    //todo TER CUIDADO COM ESTAS DEFINIÇÕES de
+    //todo Outofbounds (TESTAR MAIS PARA VER SE ESTÃO CERTAS)
+
+    //mover a peça para célula direita
+    RightOutofbounds(cur_pos) {
+        //verificar se a deslocação atual sai do Tabuleiro 
+        cur_pos = parseInt(cur_pos);
+        let desl = 1;
+
+        //Deslocamentos "positivos" nas colunas
+        let aux = cur_pos;
+
+        while (aux > this.cols) {
+            aux -= this.cols;
+        }
+        if (aux + desl > this.cols) {
+            console.log("deslocação de " + cur_pos + " para " + (cur_pos + desl) + " sai fora do tabuleiro");
+            return true;
+        }
+
+        return false;
+    }
+
+    //mover a peça para célula esquerda
+
+    LeftOutofbounds(cur_pos) {
+        cur_pos = parseInt(cur_pos);
+        let desl = 1;
+        //Deslocamentos "negativos" nas colunas
+        if (cur_pos - desl == 0 || (cur_pos - desl) % this.cols == 0) {
+            console.log("deslocação de " + cur_pos + " para " + (cur_pos - desl) + " sai fora do tabuleiro");
+            return true;
+        }
+        return false;
+
+    }
+
+    //mover a peça para célula acima
+    UpOutofbounds(cur_pos) {
+        cur_pos = parseInt(cur_pos);
+        console.log(cur_pos - this.cols);
+        if (cur_pos - this.cols <= 0) {
+            console.log("deslocação de " + cur_pos + " para " + (cur_pos - this.cols) + " sai fora do tabuleiro");
+            return true;
+        }
+        return false;
+    }
+
+    //mover a peça para célula abaixo
+    DownOutofbounds(cur_pos) {
+        cur_pos = parseInt(cur_pos);
+        console.log(cur_pos + parseInt(this.cols));
+        if (cur_pos + parseInt(this.cols) > this.rows * this.cols) {
+            console.log("deslocação de " + cur_pos + " para " + (cur_pos + parseInt(this.cols)) + " sai fora do tabuleiro");
+            return true;
+        }
+        return false;
+    }
+
+
+    Posicao_valida(Posicao, cor_peca) {
+        //console.log(this.rows);
+        //console.log("Pos (" + Posicao + ") com cor = " + this.tab[Posicao]);
+        let cur_pos = Posicao;
+        // console.log("LeftOutofbounds: " + this.LeftOutofbounds(cur_pos));
+        // console.log("RightOutofbounds: " + this.RightOutofbounds(cur_pos));
+        // console.log("UpOutofbounds: " + this.UpOutofbounds(cur_pos));
+        // console.log("DownOutofbounds: " + this.DownOutofbounds(cur_pos));
+
+        //Array que guarda a linha em que peça que queremos metar está (contém as cores)
+        let cur_linha = new Array(this.cols + 1); //indice começa em 1
+
+        let indice_final = Posicao;
+        while (indice_final % this.cols != 0) {
+            indice_final++;
+        }
+        let indice_inicial = indice_final - this.cols + 1;
+        // console.log("Indices que pertencem a linha: [" + indice_inicial + "," + indice_final + "]");
+
+        //coloco as cores correspondentes do array tab no cur_linha
+        let k = 1;
+        for (let i = indice_inicial; i <= indice_final; i++) {
+            cur_linha[k] = this.tab[i];
+            k++;
+        }
+
+        //Array que guarda a coluna em que peça que queremos meter está (contém as cores)
+        let cur_coluna = new Array(this.rows + 1);//indice começa em 1
+
+        indice_inicial = parseInt(Posicao);
+        console.log(this.cols);
+        while (indice_inicial > this.cols) {
+            indice_inicial -= this.cols;
+
+        }
+
+        indice_final = indice_inicial;
+        while (indice_final < this.rows * this.cols) {
+            if (indice_final + parseInt(this.cols) > this.rows * this.cols)
+                break;
+            indice_final += parseInt(this.cols);
+        }
+
+        // console.log("Indices que pertencem a coluna: [" + indice_inicial + "," + indice_final + "]");
+
+        //coloco as cores correspondentes do array tab no cur_coluna
+        k = 1;
+        for (let i = indice_inicial; i <= indice_final; i += parseInt(this.cols)) {
+            // console.log("=>"+i);
+            cur_coluna[k] = this.tab[i];
+            k++;
+        }
+
+        console.log("-------------------------------");
+        console.log("-----Linha da Posição (" + Posicao + ") -------")
+        console.log(cur_linha);
+        console.log("-----Coluna da Posição(" + Posicao + ") -------")
+        console.log(cur_coluna);
+        console.log("-------------------------------");
+
+        return Check_if_placing_is_valid(cur_linha, cur_coluna, cor_peca, Posicao);
+    }
+
+
 }
+
+
+//Verifica se ao inserir a peça nesta posição não quebra regras
+function Check_if_placing_is_valid(linha, coluna, cor_peca, Posicao) {
+    let cols = linha.length - 1;
+    // console.log("cur cols = " + cols);
+
+    //indice original ajustada para indice no array linha
+    let pos_col_on_array = parseInt(Posicao);
+
+    while (pos_col_on_array > cols) {
+        pos_col_on_array -= cols;
+    }
+
+    //indice original ajustada para indice no array coluna 
+    let pos_row_on_array = 1;
+    let aux = parseInt(Posicao);
+    while (aux > 0) {
+        aux -= cols;
+        if (aux <= 0)
+            break;
+        pos_row_on_array++;
+    }
+
+
+
+    // ?console.log("pos_col_on_array = "+ pos_col_on_array);
+    // ?console.log("pos_row_on_array = "+ pos_row_on_array);
+
+    //Maior numero de pecas contíguas,da mesma cor , na linha e coluna 
+    //onde queremos inserir a nossa peça (esta contagem
+    //tem em conta a peça que queremos por, ela faz parte deste nr) 
+    let nr_pecas_linha = Biggest_sequence(linha, cor_peca, pos_col_on_array);
+    let nr_pecas_coluna = Biggest_sequence(coluna, cor_peca, pos_row_on_array);
+    console.log("maior numero de peças (" + cor_peca + "s) contiguas nesta LINHA = " + nr_pecas_linha);
+    console.log("maior numero de peças (" + cor_peca + "s) contiguas nesta COLUNA = " + nr_pecas_coluna);
+
+    //Jogada valida (nao tem mais de 3 peças da mesma cor contiguas)
+    if (nr_pecas_linha <= 3 && nr_pecas_coluna <= 3)
+        return true;
+    else {
+        console.log("JOGADA INVALIDA: não podemos ter mais de 3 peças contiguas da mesma cor (vertical ou horizontal)");
+        return false;
+    }
+}
+
+//retorna qual e a maior sequencia simultânea de pecas com a mesma 
+//cor
+function Biggest_sequence(seq, cor_peca, pos) {
+    let ans = 0;
+    let cur_max = 0
+
+    // console.log("Dentro Biggest");
+
+    //!colocamos la a peça
+    // console.log("=>"+pos);
+    seq[pos] = cor_peca;
+
+    //ciclo que procura a maior sequencia de peças com a cor == cor_peca
+    for (let i = 1; i < seq.length; i++) {
+        //?console.log("seq["+i+ "]="+seq[i]);
+        if (seq[i] == cor_peca) {
+            cur_max++;
+        }
+        else {
+            if (cur_max > ans)
+                ans = cur_max;
+            cur_max = 0;
+        }
+    }
+    if (cur_max > ans) {
+        ans = cur_max;
+    }
+
+    // console.log("Maior sequencia contígua ,na linha atual , de peças da cor " + cor_peca + " = " + ans);
+
+
+    //!retiramos a peça colocada 
+    seq[pos] = undefined;
+
+    return ans;
+
+}
+
+
+
+
 
 class TicTacToe {
     constructor(id) { //...      
