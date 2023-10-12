@@ -15,7 +15,7 @@ class Tabuleiro {
 
     constructor(parentid, rows, cols) {
         let parent = document.getElementById(parentid);
-
+        this.fase = "colocacao_de_pecas";
 
         if (rows == 6 && cols == 5) {
             console.log("Tabuleiro 6 por 5");
@@ -51,47 +51,61 @@ class Tabuleiro {
             }
         }
 
+
         //this.play(parentid, 12, 12);
     }
 
     play(id_celula) {
-        // Executa a função play com o id da div clicada
-        console.log("entrei no play");
-   
-        if (this.nr_pecas_brancas != 0 && this.nr_pecas_pretas!=0)
-            this.por_peca(id_celula);
-        else{
-            console.log("TODO: Implementar a move phase")
+        if (this.fase === "colocacao_de_pecas") {
+            // Fase de colocação de peças
+            if (this.nr_pecas_brancas !== 0) {
+                this.por_peca(id_celula);
+            } else {
+                this.fase = "movimento_de_pecas";
+                console.log("Iniciando a fase de movimento de peças");
+            }
+        } else if (this.fase === "movimento_de_pecas") {
+            // Fase de movimento de peças
+            if (this.nr_pecas_brancas > 0 || this.nr_pecas_pretas > 0) {
+                console.log("Você ainda tem peças para colocar na fase de movimento de peças.");
+            } else {
+                this.movePiece(id_celula);
+            }
         }
     }
 
+    //Função movePiece por completar
+    movePiece() {
+        return;
+    }
+    
     //Serve como Drop_phase
     por_peca(id_celula) {
-        //Query que contem cada celula da tabela
+        // Query que contém cada célula da tabela
         const posicoes = document.querySelectorAll(".item_tabuleiro");
-        //Debug de consola
-       
-
-        //todo Falta fazer verificação a ver se posição e valida para colocar 
+    
         for (let celula of posicoes) {
-            let peca = document.createElement('div');
-            //Jogam primeiro quem escolheu as peças pretas 
             if (id_celula == celula.id) {
-                if (this.nr_pecas_pretas >= this.nr_pecas_brancas) {
-                    this.nr_pecas_pretas--;
-                    peca.className = "peca_tabuleiro_preta";
+                const existingPiece = celula.querySelector('.peca_tabuleiro_preta, .peca_tabuleiro_branca');
+                if (!existingPiece) {
+                    // A célula está vazia, então podemos colocar uma peça nela
+                    let peca = document.createElement('div');
+                    // Jogam primeiro quem escolheu as peças pretas
+                    if (this.nr_pecas_pretas >= this.nr_pecas_brancas) {
+                        this.nr_pecas_pretas--;
+                        peca.className = "peca_tabuleiro_preta";
+                    } else {
+                        this.nr_pecas_brancas--;
+                        peca.className = "peca_tabuleiro_branca";
+                    }
+                    celula.appendChild(peca);
+                    console.log("Número atual de peças brancas: " + this.nr_pecas_brancas);
+                    console.log("Número atual de peças pretas: " + this.nr_pecas_pretas);
+                } else {
+                    console.log("Esta célula já possui uma peça. Escolha outra célula vazia.");
                 }
-                else {
-                    this.nr_pecas_brancas--;
-                    peca.className = "peca_tabuleiro_branca";
-                }
-                celula.appendChild(peca);
             }
-            
         }
-        console.log("Número atual de peças brancas:" + this.nr_pecas_brancas);
-        console.log("Número atual de peças pretas:" + this.nr_pecas_pretas);
-
     }
 
 }
