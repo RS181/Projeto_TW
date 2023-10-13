@@ -68,14 +68,24 @@ class Tabuleiro {
         // console.log("Jogo começou");
         // console.log(this.tab);
 
-        if (this.nr_pecas_brancas != 0 || this.nr_pecas_pretas != 0)
-            this.por_peca(id_celula);
+        if (this.nr_pecas_brancas != 0 || this.nr_pecas_pretas != 0){
+            // console.log("Debug " + this.Eliminar_peca_resolvido);
+
+            //! TER CUIDADO COM ESTA DEFINIÇÃO
+            // Se existir um caso em que é possivel remover uma peça
+            // então está condição obriga a que se remova primeiro a peça
+            // e só depois de remover-la é que this.Eliminar_peca_resolvido 
+            // fica a true (nos casos em que não e possivle remover a peça
+            //this.Eliminar_peca_resolvido já é verdadeiro)
+            if (this.Eliminar_peca_resolvido == true || this.Eliminar_peca_resolvido == undefined)
+                this.por_peca(id_celula);
+        }
         else {
             console.log("TODO: Implementar a move phase")
         }
     }
     //Serve como Drop_phase
-    por_peca(id_celula) {
+    async por_peca(id_celula) {
         //Query que contem cada celula da tabela
         const posicoes = document.querySelectorAll(".item_tabuleiro");
         //Debug de consola
@@ -108,7 +118,15 @@ class Tabuleiro {
                         celula.appendChild(peca);
 
                         //Parte de eliminar (caso seja possivel)
+
+                        this.Eliminar_peca_resolvido = false;
                         this.Eliminar_peca(celula.id, "preta");
+
+                        /* Ciclo para fazer debug */
+                        while (this.Eliminar_peca_resolvido == false){
+                            console.log("A ESPERA QUE REMOVAM PEÇA")
+                            await sleep(3000);
+                        }
 
                     }
                     //Se for inválida manda um alert 
@@ -137,9 +155,15 @@ class Tabuleiro {
                         celula.appendChild(peca);
 
                         //Parte de eliminar (caso seja possivel)
+
+                        this.Eliminar_peca_resolvido = false;
                         this.Eliminar_peca(celula.id, "branca");
 
-
+                        /* Ciclo para fazer debug */
+                        while (this.Eliminar_peca_resolvido == false){
+                            console.log("A ESPERA QUE REMOVAM PEÇA")
+                            await sleep(1000);
+                        }
                     }
                     //Se for inválida manda um alert
                     else {
@@ -163,7 +187,9 @@ class Tabuleiro {
 
 
     //Verifica se estamos em condições de elimar uma peça inimiga 
-    Eliminar_peca(Posicao, cor_peca) {
+    //async (apenas permite implementar um sleep , que é utilizado
+    // no ciclo while )
+    async Eliminar_peca(Posicao, cor_peca) {
         let coluna = this.coluna_aux(Posicao,cor_peca);
         let linha = this.linha_aux(Posicao,cor_peca);
         //[Max_nr_peças_linha,Max_nr_peças_coluna]
@@ -197,29 +223,44 @@ class Tabuleiro {
                     peca.addEventListener('click', function() {
                         // Adicionamos um evento a cada filho
                         peca.parentNode.removeChild(peca);
+
                     });
+                    peca.style["border-color"] = "#60e550";
                 }
             }
             let changed = document.querySelectorAll('div.item_tabuleiro > div');
 
-            //fica a espera que seja removido algum elemento
+            //fica a espera (neste caso 1 segundo) 
+            //que seja removido algum elemento
 
-            //TODO Implementar forma de esprar que o utilizador remova a peça e depois
-            //todo mal remova a peça , impedir que remova mais 
-            //todo (NÃO ESQUECER) fazer outro for each para remover event handler
-
-            // while (divs.length == changed.length){
-            //     console.log("VERIFICA");
-            //     setTimeout();
-            // }
-            setTimeout(() => console.log("Second"), 2000)
+            while (divs.length == changed.length){
+                // console.log("VERIFICA");
+                await sleep(1000);
+                changed = document.querySelectorAll('div.item_tabuleiro > div');     
+            }
+            
+            //Percorre todas as peças e remove o enventListner
+            //para impedir que seja possivel remover mais peças
         
+            for (let peca of divs){
+                if (peca.className == peca_a_remover){
+                    peca.style["border-color"] = "grey";
+                    peca.replaceWith(peca.cloneNode(true));
+                }
+            }
 
-            console.log("teste")
-            
-            
-
+            console.log("Removeu a peça");    
         }
+
+        //Para indicar em por_peça que a execução pode continuar
+        this.Eliminar_peca_resolvido = true;
+        //Parte de retornar um Promise 
+        /*
+        return new Promise((resolve,reject) => {
+            //Código retorna o valor da promise
+            resolve(true);
+        });
+        */
     }
 
 
@@ -372,6 +413,14 @@ class Tabuleiro {
 
 
 }
+
+
+
+
+function sleep(time) { 
+    return new Promise((resolve) => setTimeout(resolve, time)); 
+} 
+    
 
 
 //Verifica o numero de peças contiguas da mesma cor ao inserir a peça nesta posição
