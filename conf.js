@@ -110,6 +110,9 @@ class Tabuleiro {
 
                     //Verifica se a posição é válida
                     if (this.Posicao_valida(celula.id, "preta") == true) {
+                        //!Supondo que o jogador joga com as peças pretas
+                        DisplayMessage("É a vez do oponente  de pôr uma peça");
+
                         //Diminuimos o nr de peças pretas
                         this.nr_pecas_pretas--;
                         //Atribuimos uma classe a div peça (tornando-a visivel no ecra)                        
@@ -137,13 +140,16 @@ class Tabuleiro {
                     }
                     //Se for inválida manda um alert 
                     else {
-                        alert("POSIÇÃO INVALIDA: não é possivel ter mais de 3 peças contiguas na mesma linha ou coluna");
+                        DisplayMessage("POSIÇÃO INVALIDA: não é possivel ter mais de 3 peças contiguas na mesma linha ou coluna.Jogue novamente numa posição válida.");
+                        // alert("POSIÇÃO INVALIDA: não é possivel ter mais de 3 peças contiguas na mesma linha ou coluna");
                     }
                 }
                 else {
                     //Verifica se a posição é válida
                     if (this.Posicao_valida(celula.id, "branca") == true) {
                         //?console.log("TESTE =>" + this.Posicao_valida(celula.id, "branca"));
+                        //!Supondo que o oponente joga com as peças brancas
+                        DisplayMessage("É a vez do jogador de pôr uma peça");
 
                         //Diminuimos o nr de peças brancas
                         this.nr_pecas_brancas--;
@@ -173,7 +179,9 @@ class Tabuleiro {
                     }
                     //Se for inválida manda um alert
                     else {
-                        alert("POSIÇÃO INVALIDA: não é possivel ter mais de 3 peças contiguas na mesma linha ou coluna");
+                        // alert("POSIÇÃO INVALIDA: não é possivel ter mais de 3 peças contiguas na mesma linha ou coluna");
+                        DisplayMessage("POSIÇÃO INVALIDA: não é possivel ter mais de 3 peças contiguas na mesma linha ou coluna.Jogue novamente numa posição válida.");
+                    
                     }                   
 
                 }
@@ -182,7 +190,9 @@ class Tabuleiro {
             }
             else if(id_celula == celula.id && celula.childElementCount != 0) {
                 console.log("Celula está ocupada");
-                alert("Posição ocupada,por favor selecione uma posição vazia");
+                // alert("Posição ocupada,por favor selecione uma posição vazia");
+                DisplayMessage("POSIÇÃO INVALIDA: Posição ocupada,por favor selecione uma posição vazia.");
+
             }
 
         }
@@ -235,6 +245,7 @@ class Tabuleiro {
 
         if ((aux[0] ==3 && this.used_linha[aux[2]] == false) ||
          (aux[1] == 3 && this.used_coluna[aux[3]] == false)){
+            DisplayMessage("Foi feita uma linha e deve capturar uma peça do adversário");           
             let peca_a_remover = "";
             switch (cor_peca){
                 case "preta":
@@ -367,6 +378,12 @@ class Tabuleiro {
             console.log("Estado da linha used = " + this.used_linha);
             console.log("Estado da coluna used = " + this.used_coluna);
 
+            /*parte das mensagens*/
+            if (cor_peca == "preta")
+                DisplayMessage("É a vez do oponente de pôr uma peça");
+            else if (cor_peca == "branca")
+                DisplayMessage("É a vez do jogador de pôr uma peça");
+
         }
         //
         else {
@@ -374,13 +391,7 @@ class Tabuleiro {
 
         //Para indicar em por_peça que a execução pode continuar
         this.Eliminar_peca_resolvido = true;
-        //Parte de retornar um Promise 
-        /*
-        return new Promise((resolve,reject) => {
-            //Código retorna o valor da promise
-            resolve(true);
-        });
-        */
+
     }
 
 
@@ -513,6 +524,17 @@ function getColuna(Posicao,cols){
 }
 
 
+/* FUNCÃO DE DISPLAY DE MENSAGENS*/
+
+function DisplayMessage (message){
+    const message_div = document.getElementById("mensagens_ui");
+    console.log(message_div);
+    const first_child = message_div.firstChild;
+    first_child.textContent = message;
+}
+
+
+
 
 //Verifica o numero de peças contiguas da mesma cor ao inserir a peça nesta posição
 //e retorna um array 
@@ -641,6 +663,11 @@ function get_nr_linhas_colunas() {
     removeAllChildNodes(tabuleiro);
     //criamos um novo Tabuleiro com as linhas e colunas selecionadas
     tabuleiro = new Tabuleiro("tabuleiro", selector_linhas.value, selector_colunas.value);
+
+
+    //mensagem de inicio de jogo
+    DisplayMessage("É a vez do jogador de pôr uma peça");
+
 }
 
 
@@ -775,10 +802,10 @@ function create_div_Player(parentid) {
 window.onload = function () {
     console.log("Carregou a Dom");
 
-    let selector_linhas = document.querySelector('#input_linhas_tabuleiro');
-    let selector_colunas = document.querySelector('#input_colunas_tabuleiro');
+    // let selector_linhas = document.querySelector('#input_linhas_tabuleiro');
+    // let selector_colunas = document.querySelector('#input_colunas_tabuleiro');
 
-    tabuleiro = new Tabuleiro("tabuleiro", selector_linhas.value, selector_colunas.value);
+    // tabuleiro = new Tabuleiro("tabuleiro", selector_linhas.value, selector_colunas.value);
 
     displayRadioValue()
 }

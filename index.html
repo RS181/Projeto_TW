@@ -21,8 +21,7 @@
     </header>
     <!--Área de Mensagens-->
     <div class="mensagens_ui" id="mensagens_ui">
-        <strong>Mensagens</strong><br>
-        O jogo terminou com vitória de um dos jogadores
+        <p></p>
     </div>
 
     <!--Área de configuração (navegação)-->
@@ -46,7 +45,6 @@
 
                 </select>
                 <br><br>
-                <button class="standard_button" onclick="get_nr_linhas_colunas()">Confirmar </button>
                 <br>
             </div>
 
@@ -56,9 +54,9 @@
                     <fieldset id="Checkgroup_escolha_jogador">
                         <legend>Indique o oponente</legend>
                         Jogador<input type="radio" value="escolha_jogador" name="Checkgroup_escolha_jogador"
-                            checked="checked" onchange="displayRadioValue()">
-                        Computador<input type="radio" value="escolha_computador" name="Checkgroup_escolha_jogador"
                             onchange="displayRadioValue()">
+                        Computador<input type="radio" value="escolha_computador" name="Checkgroup_escolha_jogador"
+                        checked="checked" onchange="displayRadioValue()">
                     </fieldset>
                 </form>
             </div>
@@ -173,7 +171,7 @@
 
             <!--Inicializar o jogo com as configurações correntes-->
             <div class="item">
-                <button class="standard_button">Commeçar o jogo</button>
+                <button class="standard_button" onclick="get_nr_linhas_colunas()">Commeçar o jogo</button>
             </div>
 
             <!--Desistir do jogo-->
