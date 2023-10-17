@@ -75,13 +75,12 @@ class Tabuleiro {
                     if (this.GamePhase == "DropPhase")
                         this.play(event.target.id);
                     else if (this.GamePhase == "MovePhase") {
-                        //todo implementar
                         let selected_div = document.querySelector('div.selected');
                         console.log("=>Implementar EventListener move phase");
                         // console.log(selected_div);
                         if (selected_div != null && selected_div.id != event.target.id) {
                             //! Cuidado com estas condições
-                            let from = selected_div.id;
+                            let from = selected_div.parentElement.id;
                             let to = event.target.id;
                             let UP = this.is_Above(from, to);
                             let DOWN = this.is_Down(from, to);
@@ -93,22 +92,28 @@ class Tabuleiro {
                             // é uma jogada válida
                             let valida =
                                 (UP || DOWN || RIGHT || LEFT) && test;
-
+                            /*Debug
                             console.log("Valid moves:");
                             console.log("Move UP : " + (UP && test));
                             console.log("Move DOWN : " + (DOWN && test));
                             console.log("Move RIGHT : " + (RIGHT && test));
                             console.log("Move LEFT : " + (LEFT && test));
                             console.log("Can i move : " + valida);
-
+                            */
                             //só faz o movimento se for valido
                             if (valida){
                                 let src = selected_div.parentElement;
                                 let dest = document.getElementById(event.target.id);
                                 
-                                console.log(dest);
-                                console.log(src);
+                                //? console.log(dest);
+                                //? console.log(src);
+                                //Não é necessário remover filho de src 
+                                //desta forma ja remove
                                 dest.appendChild(src.firstChild);
+                                //para quebrar o ciclo na funçao move_peca
+                                this.peca_selecionada_moveu = true;
+
+                                
 
                             }
                         }
@@ -266,7 +271,8 @@ class Tabuleiro {
         //todo acabar o jogo 
 
         console.log("Started Move Phase");
-        if (this.selected_a_piece == true || this.selected_a_piece == undefined) {
+        if ((this.selected_a_piece == true || this.selected_a_piece == undefined)&&
+            (this.peca_selecionada_moveu ==true || this.peca_selecionada_moveu == undefined)) {
             console.log("Próximo a mover : " + this.cur_playing);
             let cor_peca = this.cur_playing;
             if (this.cur_playing == "preta")
@@ -306,7 +312,7 @@ class Tabuleiro {
                 //! o id da peça serve para depois 
                 //! colocar em this.tab o movimento de peças
                 //! que ocorreu
-                peca.id = peca.parentElement.id;
+                // todo peca.id = peca.parentElement.id;
                 //Adicionamos um evente as peças que podem 
                 // se mover neste turno(caso seja clicada 
                 //uma peca colocamos true na selected_a_piece
@@ -321,7 +327,7 @@ class Tabuleiro {
         }
         else if (cor_peca == "preta") {
             for (let peca of pecas_pretas) {
-                peca.id = peca.parentElement.id;
+                //todo peca.id =  peca.parentElement.id;
                 //(...)
                 if (cor_peca == "preta") {
                     peca.addEventListener('click', function () {
@@ -348,17 +354,22 @@ class Tabuleiro {
         // console.log(this.tabuleiro);
 
 
-
+        this.peca_selecionada_moveu = false;
+        while (this.peca_selecionada_moveu == false){
+            console.log("A ESPERA MOVAM A PEÇA");
+            await sleep(1000);
+        }
+        console.log("PEÇA MOVEU");
         /* 
         !Depois de mover a peça
         */
-
-
-        //só faz isto quando o movimento ocorre
+        
         await sleep(3000);
-        //UnAssoc_id();
+        // restore();
 
+        //todo autualizar o tabuleiro para ter em conta o movimento
 
+        this.peca_selecionada_moveu = true;
         this.selected_a_piece = true;
         //Chamamos o MOVE() outra vez no fim
         // this.Move();
@@ -637,13 +648,14 @@ class Tabuleiro {
 //dessacocia a div que representa a peca , a id da
 // "quadradinho" onde ela esta e remove
 //o respetivo EventListener (para o selecionamento)
-function UnAssoc_id() {
+function restore() {
     let all_pecas = document.querySelectorAll('div.item_tabuleiro >div');
     console.log("UnAssoc_id");
     console.log(all_pecas);
     for (peca of all_pecas) {
         peca.classList.remove("selected")
         peca.style["border-color"] = "grey";
+        peca.id = "p" + peca.parentElement.id;
         peca.replaceWith(peca.cloneNode(true));
     }
     //todo Associar a o id da celula novo (APÓS o movimento)
