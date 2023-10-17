@@ -88,8 +88,9 @@ class Tabuleiro {
                             let RIGHT = this.is_Right(from,to);
                             let LEFT = this.is_Left(from,to);
                             
-                            //  
                             let test = this.is_valid(from, to)
+                            //Verifica se o celula escolhida
+                            // é uma jogada válida
                             let valida =
                                 (UP || DOWN || RIGHT || LEFT) && test;
 
@@ -99,6 +100,17 @@ class Tabuleiro {
                             console.log("Move RIGHT : " + (RIGHT && test));
                             console.log("Move LEFT : " + (LEFT && test));
                             console.log("Can i move : " + valida);
+
+                            //só faz o movimento se for valido
+                            if (valida){
+                                let src = selected_div.parentElement;
+                                let dest = document.getElementById(event.target.id);
+                                
+                                console.log(dest);
+                                console.log(src);
+                                dest.appendChild(src.firstChild);
+
+                            }
                         }
                     }
                 });
