@@ -288,9 +288,10 @@ class Tabuleiro {
         //todo aqui temos de verificar se existem condições para 
         //todo acabar o jogo 
 
-        console.log("Started Move Phase");
         if ((this.selected_a_piece == true || this.selected_a_piece == undefined) &&
-            (this.peca_selecionada_moveu == true || this.peca_selecionada_moveu == undefined)) {
+            (this.peca_selecionada_moveu == true || this.peca_selecionada_moveu == undefined) && 
+            (this.Eliminar_peca_resolvido == true || this.Eliminar_peca_resolvido == undefined)) {
+            console.log("Move Phase");
             console.log("Próximo a mover : " + this.cur_playing);
             let cor_peca = this.cur_playing;
             if (this.cur_playing == "preta")
@@ -388,7 +389,6 @@ class Tabuleiro {
         // para impedir que selecionemos mais do que uma peça
         restore(false);
 
-        // let selected_piece = document.querySelector('.selected');
         // console.log(selected_piece);
 
         // console.log(this.tabuleiro);
@@ -404,10 +404,18 @@ class Tabuleiro {
         /* 
         !Depois de mover a peça
         */
+        let selected_piece = document.querySelector('.selected');
 
-        await sleep(1000);
+        //verifica se Após o movimento é possivel eliminar uma peça
+        this.Eliminar_peca_resolvido = false;
+        this.Eliminar_peca(selected_piece.parentElement.id,cor_peca);
 
-        //retira a possibilidade de selelicionar de todas as peças
+        while (this.Eliminar_peca_resolvido == false){
+            console.log("A ESPERA QUE REMOVAM PEÇA(MOVE PHASE)");
+            await sleep(200);
+        }
+
+        //retira a possibilidade de selecionar de todas as peças
         restore(true);
 
 
@@ -572,7 +580,7 @@ class Tabuleiro {
                         peca.parentNode.removeChild(peca);
                     }
                     // peca.addEventListener("click",remove(peca.parentElement.id));
-                    peca.style["border-color"] = "#60e550";
+                    peca.style["border-color"] = "red";
                 }
             }
             let changed = document.querySelectorAll('div.item_tabuleiro > div');
@@ -599,6 +607,9 @@ class Tabuleiro {
             }
 
             console.log("Removeu a peça");
+        }
+        else {
+            console.log("Nao existe condições para remover");
         }
 
         //Para indicar em por_peça que a execução pode continuar
