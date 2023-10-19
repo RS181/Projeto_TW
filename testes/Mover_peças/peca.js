@@ -76,17 +76,24 @@ class Tabuleiro {
                         this.play(event.target.id);
                     else if (this.GamePhase == "MovePhase") {
                         let selected_div = document.querySelector('div.selected');
-                        console.log("=>Implementar EventListener move phase");
+                        let selected_move = document.getElementById(event.target.id);
+                        // console.log("=>Implementar EventListener move phase");
                         // console.log(selected_div);
-                        if (selected_div != null && selected_div.id != event.target.id) {
+                    
+                        if (selected_div != null &&
+                            selected_div.id != event.target.id
+                            && this.peca_selecionada_moveu == false
+                            && selected_move.classList.contains('peca_tabuleiro_preta') == false       //evita que selecionemos a peça
+                            && selected_move.classList.contains('peca_tabuleiro_branca') == false) {
+                            console.log("Pronto para mover uma peça")
                             //! Cuidado com estas condições
                             let from = selected_div.parentElement.id;
                             let to = event.target.id;
                             let UP = this.is_Above(from, to);
                             let DOWN = this.is_Down(from, to);
-                            let RIGHT = this.is_Right(from,to);
-                            let LEFT = this.is_Left(from,to);
-                            
+                            let RIGHT = this.is_Right(from, to);
+                            let LEFT = this.is_Left(from, to);
+
                             let test = this.is_valid(from, to)
                             //Verifica se o celula escolhida
                             // é uma jogada válida
@@ -101,21 +108,32 @@ class Tabuleiro {
                             console.log("Can i move : " + valida);
                             */
                             //só faz o movimento se for valido
-                            if (valida){
+                            if (valida) {
+                                console.log("Movimento escolhido [válido]");
                                 let src = selected_div.parentElement;
                                 let dest = document.getElementById(event.target.id);
-                                
+
                                 //? console.log(dest);
                                 //? console.log(src);
                                 //Não é necessário remover filho de src 
                                 //desta forma ja remove
                                 dest.appendChild(src.firstChild);
+
                                 //para quebrar o ciclo na funçao move_peca
                                 this.peca_selecionada_moveu = true;
 
-                                
+                                //fazer com que o movimento tenha efeito no 
+                                //this.tab (array que representa o tabuleiro)
 
+                                this.tab[dest.id] = this.tab[src.id];
+                                this.tab[src.id] = undefined;
                             }
+                            else {
+                                console.log("Movimento escolhido [Inválido]");
+                            }
+                        }
+                        else {
+                            console.log("Movimento escolhido inválido");
                         }
                     }
                 });
@@ -215,25 +233,25 @@ class Tabuleiro {
     }
 
     //(...)
-    is_Right(idorigem,iddestino) {
+    is_Right(idorigem, iddestino) {
         //caso o movimento faça sair do tabuleiro
         if (parseInt(idorigem) % this.cols == 0)
             return false;
         //caso celula de destino esteja a direita da celula de origem
         if (parseInt(iddestino) - 1 == parseInt(idorigem))
             return true;
-        
+
         return false;
     }
 
     //(...)
-    is_Left(idorigem,iddestino){
+    is_Left(idorigem, iddestino) {
         //caso o movimento faça sair do tabuleiro
-        if (parseInt(idorigem)-1 == 0 ||
-        parseInt(idorigem)-1 % this.cols==0)
+        if (parseInt(idorigem) - 1 == 0 ||
+            parseInt(idorigem) - 1 % this.cols == 0)
             return false;
         //caso celula de destino esteja a esquerda da celula de origem
-        if (parseInt(iddestino)+1 == parseInt(idorigem))
+        if (parseInt(iddestino) + 1 == parseInt(idorigem))
             return true;
 
         return false;
@@ -271,14 +289,15 @@ class Tabuleiro {
         //todo acabar o jogo 
 
         console.log("Started Move Phase");
-        if ((this.selected_a_piece == true || this.selected_a_piece == undefined)&&
-            (this.peca_selecionada_moveu ==true || this.peca_selecionada_moveu == undefined)) {
+        if ((this.selected_a_piece == true || this.selected_a_piece == undefined) &&
+            (this.peca_selecionada_moveu == true || this.peca_selecionada_moveu == undefined)) {
             console.log("Próximo a mover : " + this.cur_playing);
             let cor_peca = this.cur_playing;
             if (this.cur_playing == "preta")
                 this.cur_playing = "branca";
             else
                 this.cur_playing = "preta";
+
             this.move_peca(cor_peca);
         }
     }
@@ -286,6 +305,7 @@ class Tabuleiro {
 
     async move_peca(cor_peca) {
 
+        this.started = true;
         //fazer um ciclo até chegar ao fim ou 
         // até um jogador desistir
         console.log("Dentro de move_peca");
@@ -329,13 +349,11 @@ class Tabuleiro {
             for (let peca of pecas_pretas) {
                 //todo peca.id =  peca.parentElement.id;
                 //(...)
-                if (cor_peca == "preta") {
-                    peca.addEventListener('click', function () {
-                        peca.style["border-color"] = "#60e550";
-                        peca.classList.add("selected");
-                        selected = true;
-                    });
-                }
+                peca.addEventListener('click', function () {
+                    peca.style["border-color"] = "#60e550";
+                    peca.classList.add("selected");
+                    selected = true;
+                });
             }
         }
 
@@ -345,17 +363,21 @@ class Tabuleiro {
             console.log("A ESPERA QUE SELECIONEM A PEÇA PARA MOVER");
             await sleep(100);
         }
-
         console.log("SELECIONOU UMA PEÇA")
+        
+        //retira a possibilidade de selecionar das outras peças
+        // para impedir que selecionemos mais do que uma peça
+        restore(false);
 
-        let selected_piece = document.querySelector('.selected');
-        console.log(selected_piece);
+        // let selected_piece = document.querySelector('.selected');
+        // console.log(selected_piece);
 
         // console.log(this.tabuleiro);
 
 
         this.peca_selecionada_moveu = false;
-        while (this.peca_selecionada_moveu == false){
+        //Ciclo em baixo quebra quando movemos a peça para outra casa
+        while (this.peca_selecionada_moveu == false) {
             console.log("A ESPERA MOVAM A PEÇA");
             await sleep(1000);
         }
@@ -363,18 +385,22 @@ class Tabuleiro {
         /* 
         !Depois de mover a peça
         */
-        
-        await sleep(3000);
-        // restore();
 
-        //todo autualizar o tabuleiro para ter em conta o movimento
+        await sleep(1000);
 
-        this.peca_selecionada_moveu = true;
+        //retira a possibilidade de selelicionar de todas as peças
+        restore(true);
+
+
+        console.log(this.tab);
+        // this.peca_selecionada_moveu = true;
         this.selected_a_piece = true;
+
         //Chamamos o MOVE() outra vez no fim
-        // this.Move();
+        this.Move();
 
     }
+
 
 
 
@@ -648,20 +674,31 @@ class Tabuleiro {
 //dessacocia a div que representa a peca , a id da
 // "quadradinho" onde ela esta e remove
 //o respetivo EventListener (para o selecionamento)
-function restore() {
+// só remove a class selected se o argumento fo true
+function restore(incluir_peca_selecionada) {
     let all_pecas = document.querySelectorAll('div.item_tabuleiro >div');
-    console.log("UnAssoc_id");
-    console.log(all_pecas);
+    let selected_piece = document.querySelector('.selected');
+    // console.log("UnAssoc_id");
+    // console.log(all_pecas);
     for (peca of all_pecas) {
-        peca.classList.remove("selected")
-        peca.style["border-color"] = "grey";
-        peca.id = "p" + peca.parentElement.id;
-        peca.replaceWith(peca.cloneNode(true));
-    }
-    //todo Associar a o id da celula novo (APÓS o movimento)
+        //    console.log(peca);
+        if (peca.classList.contains("selected")) {
+            // console.log("EUREKA");
+            if (incluir_peca_selecionada == true) {
+                peca.classList.remove("selected")
+                peca.style["border-color"] = "grey";
+                peca.id = "p" + peca.parentElement.id;
+                peca.replaceWith(peca.cloneNode(true));
+            }
+        }
+        else {
+            peca.style["border-color"] = "grey";
+            peca.id = "p" + peca.parentElement.id;
+            peca.replaceWith(peca.cloneNode(true));
+        }
 
-    //todo (NÃO ESQUECER DE AUTUALIZAR this.tab 
-    //todo PARA TER EM CONTA O MOVIMENTO)
+    }
+
 }
 
 
