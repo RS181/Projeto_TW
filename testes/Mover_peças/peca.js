@@ -79,7 +79,7 @@ class Tabuleiro {
                         let selected_move = document.getElementById(event.target.id);
                         // console.log("=>Implementar EventListener move phase");
                         // console.log(selected_div);
-                    
+
                         if (selected_div != null &&
                             selected_div.id != event.target.id
                             && this.peca_selecionada_moveu == false
@@ -302,7 +302,6 @@ class Tabuleiro {
         }
     }
 
-
     async move_peca(cor_peca) {
 
         this.started = true;
@@ -311,9 +310,12 @@ class Tabuleiro {
         console.log("Dentro de move_peca");
         console.log("Vez da cor " + cor_peca);
 
-        //Vai buscar tabuleiro
+
+
+
         let pecas_pretas = document.querySelectorAll('div.peca_tabuleiro_preta');
         let pecas_brancas = document.querySelectorAll('div.peca_tabuleiro_branca');
+        // let all_pecas = document.querySelectorAll('div.item_tabuleiro > div')
         // console.log(pecas_brancas);
         // console.log(pecas_pretas);
 
@@ -323,10 +325,12 @@ class Tabuleiro {
         //uma peça qualquer ela fique verdadeira)
         var selected = false;
 
+        await sleep (300);
+
         //Associa a cada peça o id da celula correspondente 
         //Para todas as peças presentes no tabuleiro
         if (cor_peca == "branca") {
-
+            console.log("ESTOU A ADICIONAR O CLICK SELECTED");
             for (let peca of pecas_brancas) {
                 //! IMPORTANTE
                 //! o id da peça serve para depois 
@@ -338,22 +342,37 @@ class Tabuleiro {
                 //uma peca colocamos true na selected_a_piece
                 //para garantir que esperamos que o utilizador
                 //clique na peça)
+                /*
                 peca.addEventListener('click', function () {
                     peca.style["border-color"] = "#60e550";
                     peca.classList.add("selected");
                     selected = true;
                 });
+                */
+                peca.onclick = function(){
+                    peca.style["border-color"] = "#60e550";
+                    peca.classList.add("selected");
+                    selected = true;
+               }
             }
         }
         else if (cor_peca == "preta") {
+            console.log("ESTOU A ADICIONAR O CLICK SELECTED");
             for (let peca of pecas_pretas) {
                 //todo peca.id =  peca.parentElement.id;
                 //(...)
-                peca.addEventListener('click', function () {
+                /*
+                peca.addEventListener('click', function  () {
                     peca.style["border-color"] = "#60e550";
                     peca.classList.add("selected");
                     selected = true;
                 });
+                */
+                peca.onclick = function(){
+                    peca.style["border-color"] = "#60e550";
+                    peca.classList.add("selected");
+                    selected = true;
+               }
             }
         }
 
@@ -364,7 +383,7 @@ class Tabuleiro {
             await sleep(100);
         }
         console.log("SELECIONOU UMA PEÇA")
-        
+
         //retira a possibilidade de selecionar das outras peças
         // para impedir que selecionemos mais do que uma peça
         restore(false);
@@ -445,7 +464,7 @@ class Tabuleiro {
                         /* Ciclo para fazer debug */
                         while (this.Eliminar_peca_resolvido == false) {
                             console.log("A ESPERA QUE REMOVAM PEÇA")
-                            await sleep(3000);
+                            await sleep(200);
                         }
 
                     }
@@ -482,7 +501,7 @@ class Tabuleiro {
                         /* Ciclo para fazer debug */
                         while (this.Eliminar_peca_resolvido == false) {
                             console.log("A ESPERA QUE REMOVAM PEÇA")
-                            await sleep(1000);
+                            await sleep(200);
                         }
                     }
                     //Se for inválida manda um alert
@@ -515,6 +534,8 @@ class Tabuleiro {
         //[Max_nr_peças_linha,Max_nr_peças_coluna]
         let aux = Max_Pecas_continguas(linha, coluna, cor_peca, Posicao);
 
+
+
         if (aux[0] == 3 || aux[1] == 3) {
             let peca_a_remover = "";
             switch (cor_peca) {
@@ -540,11 +561,17 @@ class Tabuleiro {
             //a cada peça que é possivel remover
             for (let peca of divs) {
                 if (peca.className == peca_a_remover) {
+                    /*
                     peca.addEventListener('click', function () {
                         // Adicionamos um evento a cada filho
                         peca.parentNode.removeChild(peca);
 
                     });
+                    */
+                    peca.onclick = function(){
+                        peca.parentNode.removeChild(peca);
+                    }
+                    // peca.addEventListener("click",remove(peca.parentElement.id));
                     peca.style["border-color"] = "#60e550";
                 }
             }
@@ -555,17 +582,19 @@ class Tabuleiro {
 
             while (divs.length == changed.length) {
                 // console.log("VERIFICA");
-                await sleep(1000);
+                await sleep(100);
                 changed = document.querySelectorAll('div.item_tabuleiro > div');
             }
 
             //Percorre todas as peças e remove o enventListner
             //para impedir que seja possivel remover mais peças
 
+
             for (let peca of divs) {
                 if (peca.className == peca_a_remover) {
                     peca.style["border-color"] = "grey";
-                    peca.replaceWith(peca.cloneNode(true));
+                    peca.onclick = function(){}
+                    // peca.removeEventListener('click',remove);
                 }
             }
 
@@ -574,13 +603,6 @@ class Tabuleiro {
 
         //Para indicar em por_peça que a execução pode continuar
         this.Eliminar_peca_resolvido = true;
-        //Parte de retornar um Promise 
-        /*
-        return new Promise((resolve,reject) => {
-            //Código retorna o valor da promise
-            resolve(true);
-        });
-        */
     }
 
     //Cria um array que representa a linha a que pertence a peça 
@@ -667,6 +689,15 @@ class Tabuleiro {
 
 
 
+
+}
+
+
+
+function remove(parent){
+    let aux = document.getElementById(parent);
+    console.log("Remove filho de " + aux.id )
+    aux.removeChild(aux.firstChild);
 
 }
 
