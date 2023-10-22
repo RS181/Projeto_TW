@@ -16,7 +16,6 @@ class Tabuleiro {
     //Quem é que vai mover uma peça(Começa com a peça preta)
     cur_playing = "preta";
 
-
     constructor(parentid, rows, cols) {
         let parent = document.getElementById(parentid);
 
@@ -152,12 +151,11 @@ class Tabuleiro {
                                 this.tab[dest.id] = this.tab[src.id];
                                 this.tab[src.id] = undefined;
                             }
-                            else {
-                                console.log("Movimento escolhido [Inválido]");
-                            }
                         }
                         else {
                             console.log("Movimento escolhido inválido");
+                            // DisplayMessage("Movimento escolhido Inválido")
+
                         }
                     }
                 });
@@ -166,13 +164,14 @@ class Tabuleiro {
         }
     }
 
-
-    //verifica se ao mover a peça para esta posição
-    // não quebra alguma regra (ex: mais de 3 peças contiguas
-    //da mesma cor)
-    //!Nota: não verifica se faz um movimento correto ,ou seja,
-    //! se faz um movimento de uma só peça.Apenas verifica se é valido
-    //! ter nessa posição uma peça
+    /*
+    verifica se ao mover a peça para esta posição
+    não quebra alguma regra (ex: mais de 3 peças contiguas
+    da mesma cor)
+    !Nota: não verifica se faz um movimento correto ,ou seja,
+    ! se faz um movimento de uma só peça.Apenas verifica se é valido
+    ! ter nessa posição uma peça
+    */
     is_valid(id_celula_origem, id_celula_destino) {
         //Alteraçõe necessarias para o Posição valida funcionar
         if (id_celula_origem != id_celula_destino) {
@@ -227,7 +226,6 @@ class Tabuleiro {
     //verifica se a celula e vazia
     is_Empty(id_celula) {
         let aux = document.getElementById(id_celula);
-
         //caso clique na celula
         return aux.childNodes.length == 0;
     }
@@ -263,7 +261,6 @@ class Tabuleiro {
         //caso celula de destino esteja a direita da celula de origem
         if (parseInt(iddestino) - 1 == parseInt(idorigem))
             return true;
-
         return false;
     }
 
@@ -276,7 +273,6 @@ class Tabuleiro {
         //caso celula de destino esteja a esquerda da celula de origem
         if (parseInt(iddestino) + 1 == parseInt(idorigem))
             return true;
-
         return false;
     }
 
@@ -301,30 +297,31 @@ class Tabuleiro {
         else {
             //Dá inicio a Move Phase
             this.GamePhase = "MovePhase";
+            DisplayMessage("Clique no tabuleiro para iniciar a Move Phase");
             this.Move();
         }
     }
 
     Move() {
         //todo aqui temos de verificar se existem condições para acabar o jogo 
-
         if ((this.selected_a_piece == true || this.selected_a_piece == undefined) &&
             (this.peca_selecionada_moveu == true || this.peca_selecionada_moveu == undefined) &&
             (this.Eliminar_peca_resolvido == true || this.Eliminar_peca_resolvido == undefined)) {
             console.log("Move Phase");
             console.log("Próximo a mover : " + this.cur_playing);
+            DisplayMessage("Proxima peça a mover : (" + this.cur_playing + ")");
             let cor_peca = this.cur_playing;
             if (this.cur_playing == "preta")
                 this.cur_playing = "branca";
             else
                 this.cur_playing = "preta";
-
             this.move_peca(cor_peca);
         }
     }
 
     async move_peca(cor_peca) {
 
+        
         this.started = true;
         //fazer um ciclo até chegar ao fim ou 
         // até um jogador desistir
@@ -368,8 +365,6 @@ class Tabuleiro {
                 }
             }
         }
-
-
 
         this.selected_a_piece = false;
         while (selected == false) {
@@ -481,7 +476,6 @@ class Tabuleiro {
                         //da peça que esta ness posição
                         this.tab[celula.id] = "branca";
 
-
                         //adicionamos como filho 
                         celula.appendChild(peca);
 
@@ -530,7 +524,7 @@ class Tabuleiro {
         let nr_pretas = document.querySelectorAll("div.item_tabuleiro > div.peca_tabuleiro_pretas").length;
 
         //Se já não tiver mais peças para jogar 
-        if (this.nr_pecas_brancas == 0 && this.nr_pecas_pretas) {
+        if (this.nr_pecas_brancas == 0 && this.nr_pecas_pretas == 0) {
             //verifico se alguma das cores só tem duas peças (Fim de jogo)
             if (nr_brancas < 3) {
                 console.log("Peças pretas Ganham ");
@@ -547,8 +541,6 @@ class Tabuleiro {
         //todo Implementar o resto 
         // console.log(celulas_ocupadas);
     }
-
-
 
     //Verifica se estamos em condições de elimar uma peça inimiga 
     //async (apenas permite implementar um sleep , que é utilizado
@@ -623,8 +615,6 @@ class Tabuleiro {
                 k++;
             }
             //? console.log(Current);
-
-
 
             //Percorre todas as peças e remove o enventListner
             //para impedir que seja possivel remover mais peças
@@ -756,7 +746,6 @@ class Tabuleiro {
         }
 
         // console.log("Indices que pertencem a coluna: [" + indice_inicial + "," + indice_final + "]");
-
         //coloco as cores correspondentes do array tab no cur_coluna
         let k = 1;
         for (let i = indice_inicial; i <= indice_final; i += parseInt(this.cols)) {
@@ -827,15 +816,12 @@ function restore(incluir_peca_selecionada) {
 
 }
 
-
-
 function remove(parent) {
     let aux = document.getElementById(parent);
     console.log("Remove filho de " + aux.id)
     aux.removeChild(aux.firstChild);
 
 }
-
 
 function sleep(time) {
     return new Promise((resolve) => setTimeout(resolve, time));
@@ -855,9 +841,7 @@ function getLinha(Posicao, cols) {
     return linha;
 }
 
-
-//dado uma posição no tabuleiro indica a coluna a que 
-//essa posição pertence
+//dado uma posição no tabuleiro indica a coluna a que essa posição pertence 
 function getColuna(Posicao, cols) {
     let indice_inicial = 0;
     let indice_final = 0;
@@ -879,18 +863,13 @@ function getColuna(Posicao, cols) {
     alert("ERRO na função getColuna");
 }
 
-
 /* FUNCÃO DE DISPLAY DE MENSAGENS*/
-
 function DisplayMessage(message) {
     const message_div = document.getElementById("mensagens_ui");
     console.log(message_div);
     const first_child = message_div.firstChild;
     first_child.textContent = message;
 }
-
-
-
 
 //Verifica o numero de peças contiguas da mesma cor ao inserir a peça nesta posição
 //e retorna um array 
@@ -939,19 +918,13 @@ function Max_Pecas_continguas(linha, coluna, cor_peca, Posicao) {
     }
 }
 
-
-//retorna qual e a maior sequencia simultânea de pecas com a mesma 
-//cor
+//retorna qual e a maior sequencia simultânea de pecas com a mesma cor
 function Biggest_sequence(seq, cor_peca, pos) {
     let ans = 0;
     let cur_max = 0
-
     // console.log("Dentro Biggest");
-
     //!colocamos la a peça
-    // console.log("=>"+pos);
     seq[pos] = cor_peca;
-
 
     //ciclo que procura a maior sequencia de peças com a cor == cor_peca
     for (let i = 1; i < seq.length; i++) {
@@ -974,7 +947,6 @@ function Biggest_sequence(seq, cor_peca, pos) {
     seq[pos] = undefined;
 
     return ans;
-
 }
 
 //Garantidamente o array 1 é > que o array2
@@ -992,10 +964,6 @@ function findDifferentElement(array1, array2) {
     return array1[array1.length - 1];
 
 }
-
-
-
-
 
 //Função que remove todos os filhos de um pai
 function removeAllChildNodes(parent) {
@@ -1024,8 +992,6 @@ function get_nr_linhas_colunas() {
 
 }
 
-
-
 /* Funcao que vai buscar qual o oponente escolhido */
 function displayRadioValue() {
     let x = document.getElementById("Mostrar");
@@ -1045,7 +1011,6 @@ function displayRadioValue() {
     }
 
 }
-
 
 //Função que decidi qual div criar 
 function create(parentid, oponente) {
@@ -1110,7 +1075,6 @@ function create_div_Player(parentid) {
     let fieldset = document.createElement("fielset")
     let legend = document.createElement("legend");
 
-
     //Colocamos as propriedades
     legend.innerText = "Indique Quem Joga Primeiro";
     fieldset.id = "escolha_quem_joga_primeiro";
@@ -1129,10 +1093,8 @@ function create_div_Player(parentid) {
         radiobutton.name = "teste";
         label.htmlFor = "radio" + 1;
 
-
         fieldset.appendChild(radiobutton);
         fieldset.appendChild(label);
-
 
         //criação do label para o radiobutton
         if (i == 1) {
@@ -1150,16 +1112,8 @@ function create_div_Player(parentid) {
 
 }
 
-
-
 //O que é carregado no inicio
 window.onload = function () {
     console.log("Carregou a Dom");
-
-    // let selector_linhas = document.querySelector('#input_linhas_tabuleiro');
-    // let selector_colunas = document.querySelector('#input_colunas_tabuleiro');
-
-    // tabuleiro = new Tabuleiro("tabuleiro", selector_linhas.value, selector_colunas.value);
-
     displayRadioValue()
 }
