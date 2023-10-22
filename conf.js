@@ -155,16 +155,16 @@ class Tabuleiro {
                                 //todo fazer ajustes a this.used_linha e this.used_coluna
                                 //todo caso o movimento tenha "desfeito" uma sequencia
                                 //todo de 3 peças contiguas
-                                let vez =  "";
+                                let vez = "";
                                 if (this.cur_playing == "branca")
                                     vez = "preta";
-                                else 
+                                else
                                     vez = "branca";
 
                                 let coluna = this.coluna_aux(src.id, vez);
                                 let linha = this.linha_aux(src.id, vez);
                                 let aux = Max_Pecas_continguas(linha, coluna, vez, src.id, this.GamePhase);
-                                console.log("VERIFICAÇÃO APÓS MOVIMENTO("+vez+ "): " + aux);
+                                console.log("VERIFICAÇÃO APÓS MOVIMENTO(" + vez + "): " + aux);
                                 if (aux[0] < 3) {
                                     this.used_linha[aux[2]] = false;
                                     // console.log("LINHA " + aux[2] + " está disponivel para remover");
@@ -321,14 +321,13 @@ class Tabuleiro {
         else {
             //Dá inicio a Move Phase
             this.GamePhase = "MovePhase";
-            DisplayMessage("Clique no tabuleiro para iniciar a Move Phase");
             this.Move();
         }
     }
 
-   async Move() {
-        
-        await sleep (100);
+    async Move() {
+
+        await sleep(100);
 
         //todo aqui temos de verificar se existem condições para acabar o jogo 
         if ((this.selected_a_piece == true || this.selected_a_piece == undefined) &&
@@ -347,7 +346,6 @@ class Tabuleiro {
     }
 
     async move_peca(cor_peca) {
-
 
         this.started = true;
         //fazer um ciclo até chegar ao fim ou 
@@ -432,9 +430,10 @@ class Tabuleiro {
         // this.peca_selecionada_moveu = true;
         this.selected_a_piece = true;
 
-        //Chamamos o MOVE() outra vez no fim
-        // console.log(this.Chegou_ao_fim);
-        this.Move();
+        
+        //Chamamos o MOVE() outra vez no fim (se não chegamos ao fim do jogo)
+        if (Chegou_ao_fim() == false)
+            this.Move();
 
     }
 
@@ -457,7 +456,7 @@ class Tabuleiro {
                     //Verifica se a posição é válida
                     if (this.Posicao_valida(celula.id, "preta") == true) {
                         //!Supondo que o jogador joga com as peças pretas
-                        DisplayMessage("É a vez do oponente  de pôr uma peça");
+                        DisplayMessage("É a vez da peça branca jogar");
 
                         //Diminuimos o nr de peças pretas
                         this.nr_pecas_pretas--;
@@ -494,10 +493,15 @@ class Tabuleiro {
                     if (this.Posicao_valida(celula.id, "branca") == true) {
                         //?console.log("TESTE =>" + this.Posicao_valida(celula.id, "branca"));
                         //!Supondo que o oponente joga com as peças brancas
-                        DisplayMessage("É a vez do jogador de pôr uma peça");
+                        DisplayMessage("É a vez da peça preta jogar");
 
                         //Diminuimos o nr de peças brancas
                         this.nr_pecas_brancas--;
+                        
+                        //Indicação da transição para a move phase
+                        if (this.nr_pecas_brancas == 0 && this.nr_pecas_pretas == 0)
+                            DisplayMessage("Clique no tabuleiro para passar para a Move Phase");
+
                         //Atribuimos uma classe a div peça (tornando-a visivel no ecra)
                         peca.className = "peca_tabuleiro_branca";
                         //Colocamos no Array que representa o tab qual a cor 
@@ -540,37 +544,6 @@ class Tabuleiro {
 
         }
 
-    }
-
-    //Verifica se jogo terminou ,se sim 
-    //retorna [possivel_acabar,quem_ganha]
-    Chegou_ao_fim() {
-        // console.log("Entrei no chegou_ao_fim");
-
-        //Guarda o nr de peças brancas atualmente no tabuleiro
-        let nr_brancas = document.querySelectorAll("div.item_tabuleiro > div.peca_tabuleiro_branca").length;
-        let nr_pretas = document.querySelectorAll("div.item_tabuleiro > div.peca_tabuleiro_pretas").length;
-
-        //Se já não tiver mais peças para jogar 
-        if (this.nr_pecas_brancas == 0 && this.nr_pecas_pretas == 0) {
-            //verifico se alguma das cores só tem duas peças (Fim de jogo)
-            if (nr_brancas < 3) {
-                console.log("Peças pretas Ganham ");
-                DisplayMessage("Jogador Ganhou!!!");
-                return true;
-            }
-            else if (nr_pretas < 3) {
-                console.log("Peças brancas Ganham ");
-                DisplayMessage("Oponente Ganhou!!!");
-                return true;
-            }
-        }
-
-        //Guarda todas as divs que contêm peças
-        let celulas_ocupadas = document.querySelectorAll("div.item_tabuleiro > div");
-
-        //todo Implementar o resto 
-        // console.log(celulas_ocupadas);
     }
 
     //Verifica se estamos em condições de elimar uma peça inimiga 
@@ -822,6 +795,39 @@ class Tabuleiro {
     }
 
 }
+//Verifica se jogo terminou ,se sim 
+//retorna [possivel_acabar,quem_ganha]
+function Chegou_ao_fim() {
+    // console.log("Entrei no chegou_ao_fim");
+
+    //Guarda o nr de peças brancas atualmente no tabuleiro
+    let nr_brancas = document.querySelectorAll("div.item_tabuleiro > div.peca_tabuleiro_branca").length;
+    let nr_pretas = document.querySelectorAll("div.item_tabuleiro > div.peca_tabuleiro_preta").length;
+
+    //Se já não tiver mais peças para jogar 
+    //verifico se alguma das cores só tem duas peças (Fim de jogo)
+    if (nr_brancas < 3) {
+        console.log("Peças pretas Ganham ");
+        DisplayMessage("Peças pretas  Ganharam!!!");
+        return true;
+    }
+    else if (nr_pretas < 3) {
+        console.log("Peças brancas Ganham ");
+        DisplayMessage("Peças brancas Ganharam!!!");
+        return true;
+    }
+
+    //Guarda todas as divs que contêm peças
+    let celulas_ocupadas = document.querySelectorAll("div.item_tabuleiro > div");
+
+    //todo falta implementar a parte de verificar 
+
+    return false;
+    // console.log(celulas_ocupadas);
+}
+
+
+
 //dessacocia a div que representa a peca , a id da
 // "quadradinho" onde ela esta e remove
 //o respetivo EventListener (para o selecionamento)
@@ -1026,7 +1032,7 @@ function get_nr_linhas_colunas() {
 
 
     //mensagem de inicio de jogo
-    DisplayMessage("É a vez do jogador de pôr uma peça");
+    DisplayMessage("É a vez da peça preta jogar");
 
 }
 
