@@ -326,7 +326,10 @@ class Tabuleiro {
         }
     }
 
-    Move() {
+   async Move() {
+        
+        await sleep (100);
+
         //todo aqui temos de verificar se existem condições para acabar o jogo 
         if ((this.selected_a_piece == true || this.selected_a_piece == undefined) &&
             (this.peca_selecionada_moveu == true || this.peca_selecionada_moveu == undefined) &&
@@ -725,14 +728,6 @@ class Tabuleiro {
         else {
             //verifica se alguma linha ou coluna tem menos de 3 peças contiguas
             //se sim atualiza this.used_(...) para false
-            if (aux[0] < 3) {
-                this.used_linha[aux[2]] = false;
-                console.log("LINHA " + aux[2] + " está disponivel para remover");
-            }
-            if (aux[1] < 3) {
-                this.used_coluna[aux[3]] = false;
-                console.log("coluna " + aux[3] + " está disponivel para remover");
-            }
             console.log("Nao existe condições para remover");
             console.log("Estado da linha used = " + this.used_linha);
             console.log("Estado da coluna used = " + this.used_coluna);
