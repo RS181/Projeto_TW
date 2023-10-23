@@ -317,15 +317,22 @@ class Tabuleiro {
         else {
             //Dá inicio a Move Phase
             this.GamePhase = "MovePhase";
+
             this.Move();
 
         }
     }
 
-    Move() {
+    async Move() {
 
         //todo aqui temos de verificar se existem condições para 
         //todo acabar o jogo 
+        console.log("ENTREI NA MOVE PHASE");
+        console.log("this.selected_a_piece : " + this.selected_a_piece);
+        console.log("this.peca_selecionada_moveu : " + this.peca_selecionada_moveu);
+        console.log("this.Eliminar_peca_resolvido : " + this.Eliminar_peca_resolvido);
+
+        await sleep(100);
 
         if ((this.selected_a_piece == true || this.selected_a_piece == undefined) &&
             (this.peca_selecionada_moveu == true || this.peca_selecionada_moveu == undefined) &&
@@ -365,6 +372,8 @@ class Tabuleiro {
         //uma peça qualquer ela fique verdadeira)
         var selected = false;
 
+        var unselected = false;
+
         await sleep(300);
 
         //Associa a cada peça o id da celula correspondente 
@@ -383,20 +392,43 @@ class Tabuleiro {
                 //para garantir que esperamos que o utilizador
                 //clique na peça)
                 peca.onclick = function () {
-                    peca.style["border-color"] = "#60e550";
-                    peca.classList.add("selected");
-                    selected = true;
+                    // unclick 
+                    if (this.classList.contains("selected")) {
+                        console.log("UNCLICK");
+                        console.log("esta peça já foi selecionada");
+                        peca.classList.remove("selected");
+                        peca.style["border-color"] = "grey";
+                        unselected = true;
+                    }
+                    // click 
+                    else {
+                        console.log("CLICK");
+                        peca.style["border-color"] = "#60e550";
+                        peca.classList.add("selected");
+                        selected = true;
+                    }
                 }
             }
         }
         else if (cor_peca == "preta") {
             console.log("ESTOU A ADICIONAR O CLICK SELECTED");
             for (let peca of pecas_pretas) {
-                
+
                 peca.onclick = function () {
-                    peca.style["border-color"] = "#60e550";
-                    peca.classList.add("selected");
-                    selected = true;
+                    // unclick 
+                    if (this.classList.contains("selected")) {
+                        console.log("UNCLICK");
+                        peca.classList.remove("selected");
+                        peca.style["border-color"] = "grey";
+                        unselected = true;
+                    }
+                    // click 
+                    else {
+                        console.log("CLICK");
+                        peca.style["border-color"] = "#60e550";
+                        peca.classList.add("selected");
+                        selected = true;
+                    }
                 }
             }
         }
@@ -414,39 +446,56 @@ class Tabuleiro {
         // para impedir que selecionemos mais do que uma peça
         restore(false);
 
-        // console.log(selected_piece);
-
-        // console.log(this.tabuleiro);
-
+        /*
+        !Após selecionamento da peça 
+        */
 
         this.peca_selecionada_moveu = false;
         //Ciclo em baixo quebra quando movemos a peça para outra casa
         while (this.peca_selecionada_moveu == false) {
+            if (unselected == true) {
+                this.peca_selecionada_moveu = true;
+                break;
+            }
             console.log("A ESPERA MOVAM A PEÇA");
-            await sleep(1000);
+            await sleep(300);
         }
         console.log("PEÇA MOVEU");
         /* 
         !Depois de mover a peça
         */
-        let selected_piece = document.querySelector('.selected');
 
-        //verifica se Após o movimento é possivel eliminar uma peça
-        this.Eliminar_peca_resolvido = false;
-        this.Eliminar_peca(selected_piece.parentElement.id, cor_peca);
+        //Só faz isto caso a peça não tenha sido desselecionada
+        if (unselected == false) {
+            let selected_piece = document.querySelector('.selected');
 
-        while (this.Eliminar_peca_resolvido == false) {
-            console.log("A ESPERA QUE REMOVAM PEÇA(MOVE PHASE)");
-            await sleep(200);
+            //verifica se Após o movimento é possivel eliminar uma peça
+            this.Eliminar_peca_resolvido = false;
+            this.Eliminar_peca(selected_piece.parentElement.id, cor_peca);
+
+            while (this.Eliminar_peca_resolvido == false) {
+                console.log("A ESPERA QUE REMOVAM PEÇA(MOVE PHASE)");
+                await sleep(200);
+            }
+
+            //retira a possibilidade de selecionar de todas as peças
+            restore(true);
+
+
+            console.log(this.tab);
         }
-
-        //retira a possibilidade de selecionar de todas as peças
-        restore(true);
-
-
-        console.log(this.tab);
+        else {
+            //troca a vez do jogador , para depois ao chamar this.move
+            // o mesmo troca novamento o jogador (basicamente permite
+            // que o jogador que desselecionou uma peça jogue outra vez)
+            if (this.cur_playing == "preta")
+                this.cur_playing = "branca";
+            else
+                this.cur_playing = "preta";
+        }
         // this.peca_selecionada_moveu = true;
         this.selected_a_piece = true;
+
 
         //Chamamos o MOVE() outra vez no fim
         this.Move();
