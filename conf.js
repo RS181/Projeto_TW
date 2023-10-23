@@ -2,8 +2,8 @@
 class Tabuleiro {
     //"variaveis estaticas" que permitem guardar o numero de peças brancas e pretas
     //todo Voltar a por com 12 
-    nr_pecas_brancas = 8;
-    nr_pecas_pretas = 8;
+    nr_pecas_brancas = 4;
+    nr_pecas_pretas = 4;
 
     //Numero de linhas e colunas
     rows = 0;
@@ -17,7 +17,7 @@ class Tabuleiro {
     //Quem é que vai mover uma peça(Começa com a peça preta)
     cur_playing = "preta";
 
-    constructor(parentid, rows, cols) {
+    constructor(parentid, rows, cols,dificulty) {
         let parent = document.getElementById(parentid);
 
         //Inicializamos as variaveis da classe
@@ -25,10 +25,11 @@ class Tabuleiro {
         this.cols = cols;
         this.used_linha = new Array(parseInt(rows) + 1).fill(false);  //indice começa em 1
         this.used_coluna = new Array(parseInt(cols) + 1).fill(false);
-
+        this.dificulty = dificulty;
         //?console.log(this.used_linha);
         //?console.log(this.used_coluna);
 
+        console.log("Dificuldade da Ia = "+ this.dificulty);
 
         //Representamos o tabuleiro como array (com indice que começa em 1)
         this.tab = new Array(rows * cols + 1);
@@ -467,7 +468,7 @@ class Tabuleiro {
         this.selected_a_piece = true;
 
         //Chamamos o MOVE() outra vez no fim (se não chegamos ao fim do jogo)
-        if (Chegou_ao_fim() == false)
+        if (Chegou_ao_fim(this.dificulty) == false)
             this.Move();
 
     }
@@ -828,7 +829,7 @@ class Tabuleiro {
 }
 //Verifica se jogo terminou ,se sim 
 //retorna [possivel_acabar,quem_ganha]
-function Chegou_ao_fim() {
+function Chegou_ao_fim(nivel_do_IA) {
     // console.log("Entrei no chegou_ao_fim");
 
     //Guarda o nr de peças brancas atualmente no tabuleiro
@@ -839,11 +840,13 @@ function Chegou_ao_fim() {
     //verifico se alguma das cores só tem duas peças (Fim de jogo)
     if (nr_brancas < 3) {
         console.log("Peças pretas Ganham ");
+        Update_score(nivel_do_IA,"preta");
         DisplayMessage("Peças pretas  Ganharam!!!");
         return true;
     }
     else if (nr_pretas < 3) {
         console.log("Peças brancas Ganham ");
+        Update_score(nivel_do_IA,"branca");
         DisplayMessage("Peças brancas Ganharam!!!");
         return true;
     }
@@ -851,7 +854,8 @@ function Chegou_ao_fim() {
     //Guarda todas as divs que contêm peças
     let celulas_ocupadas = document.querySelectorAll("div.item_tabuleiro > div");
 
-    //todo falta implementar a parte de verificar 
+    //todo falta implementar a parte de verificar se existem movimentos 
+    //todo validos para uma cor (senão ganhou a cor oposta) 
 
     return false;
     // console.log(celulas_ocupadas);
@@ -1056,8 +1060,9 @@ function get_nr_linhas_colunas() {
     let tabuleiro = document.getElementById('tabuleiro');
     //removemos todos os seus filhos (para poder colocar novos 'div' filhos)
     removeAllChildNodes(tabuleiro);
+
     //criamos um novo Tabuleiro com as linhas e colunas selecionadas
-    tabuleiro = new Tabuleiro("tabuleiro", selector_linhas.value, selector_colunas.value);
+    tabuleiro = new Tabuleiro("tabuleiro", selector_linhas.value, selector_colunas.value,get_dificulty());
 
 
     //mensagem de inicio de jogo
@@ -1125,6 +1130,8 @@ function create_div_Computer(parentid) {
         radiobutton.type = "radio";
         radiobutton.name = "teste";
         radiobutton.value = "dificuldade_" + i;
+        if (i == 3)
+            radiobutton.checked = "checked";
         // radiobutton.name = "Checkgroup_escolha_jogador";
         fieldset.appendChild(radiobutton);
 
@@ -1180,9 +1187,41 @@ function create_div_Player(parentid) {
 
         }
     }
+}
 
+//Vai buscar a dificuldade assim que clicamos no botão de começar o jogo
+function get_dificulty(){
+    let fieldset = document.getElementById('escolha_dificuldade');
 
+    let button_selected = fieldset.querySelector('input[type="radio"]:checked');
+    // console.log(fieldset);
+    console.log(button_selected.value[12]);
+    return button_selected.value[12];
 
+}
+
+//Função que atualiza a tabela de scores
+function Update_score(nivel_do_IA,vencedor){
+    //caso preça preta  (jogador) ganhe
+    let v = "numero_vitorias_" + nivel_do_IA;
+    //caso preça branca (computador) ganhe
+    let d = "numero_derrotas_" + nivel_do_IA;
+
+    let score = document.getElementById("classificacao");
+    console.log(score);
+    console.log(v);
+    console.log(d);
+
+    if (vencedor == "preta"){
+        let aux = document.getElementById(v);
+        let cur_value = parseInt(aux.innerHTML) +1;
+        aux.innerHTML = cur_value;
+    }
+    else if (vencedor == "branca"){
+        let aux = document.getElementById(d);
+        let cur_value = parseInt(aux.innerHTML) +1;
+        aux.innerHTML = cur_value;
+    }
 }
 
 //O que é carregado no inicio
