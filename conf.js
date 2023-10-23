@@ -2,8 +2,8 @@
 class Tabuleiro {
     //"variaveis estaticas" que permitem guardar o numero de peças brancas e pretas
     //todo Voltar a por com 12 
-    nr_pecas_brancas = 4;
-    nr_pecas_pretas = 4;
+    nr_pecas_brancas = 8;
+    nr_pecas_pretas = 8;
 
     //Numero de linhas e colunas
     rows = 0;
@@ -152,9 +152,6 @@ class Tabuleiro {
                                 this.tab[dest.id] = this.tab[src.id];
                                 this.tab[src.id] = undefined;
 
-                                //todo fazer ajustes a this.used_linha e this.used_coluna
-                                //todo caso o movimento tenha "desfeito" uma sequencia
-                                //todo de 3 peças contiguas
                                 let vez = "";
                                 if (this.cur_playing == "branca")
                                     vez = "preta";
@@ -178,7 +175,7 @@ class Tabuleiro {
                         }
                         else {
                             console.log("Movimento escolhido inválido");
-                            // DisplayMessage("Movimento escolhido Inválido")
+                            DisplayMessage("Escolhe uma posição válida para mover a peça ")
 
                         }
                     }
@@ -226,14 +223,30 @@ class Tabuleiro {
                 this.tab[from.id] = undefined;
 
                 //Verifica se a posição é valida
-                let pos_valid = this.Posicao_valida(to.id, cor_peca);
-                // ?console.log("Posicao_valida = "+pos_valid);
+                // let pos_valid = this.Posicao_valida(to.id, cor_peca);
 
+                let coluna = this.coluna_aux(to.id, cor_peca);
+                let linha = this.linha_aux(to.id, cor_peca);
+                let t = Max_Pecas_continguas(linha,coluna,cor_peca,to.id,this.GamePhase);
+                /*
+                ! ==========VERIFICAR SE ISTO NÃO CAUSA ERROS=========
+                console.log("===================================");
+                console.log("(DEBUG)Posicao_valida = "+pos_valid);  
+                console.log("Linha : " + linha);
+                console.log("Coluna : " + coluna);
+                console.log(t);
+                console.log("===================================");
+                */
                 //Restauramos o tabuleiro para o estado "original"
                 this.tab[from.id] = cor_peca;
-                // console.log(this.tab);
-
-                return pos_valid;
+                if(t[0] < 3 && t[1] < 3){
+                    console.log("IS_VALID() = TRUE");
+                    return true;
+                }
+                else {
+                    console.log("IS_VALID() = FALSE");
+                    return false;
+                }
                 // ?console.log("===========================================");
             }
             else {
@@ -346,14 +359,6 @@ class Tabuleiro {
     }
 
     async move_peca(cor_peca) {
-
-        this.started = true;
-        //fazer um ciclo até chegar ao fim ou 
-        // até um jogador desistir
-
-        let pecas_pretas = document.querySelectorAll('div.peca_tabuleiro_preta');
-        let pecas_brancas = document.querySelectorAll('div.peca_tabuleiro_branca');
-
         // usamos esta var , para ter uma variavel "global"
         //dentro deste bloco (para permitir que ao clicar
         //uma peça qualquer ela fique verdadeira)
@@ -364,55 +369,37 @@ class Tabuleiro {
 
         await sleep(300);
 
-        //Associa a cada peça o id da celula correspondente 
-        //Para todas as peças presentes no tabuleiro
-        if (cor_peca == "branca") {
-            for (let peca of pecas_brancas) {
-                //! IMPORTANTE
-                //! o id da peça serve para depois 
-                //! colocar em this.tab o movimento de peças
-                //! que ocorreu
-                //Adicionamos um evente as peças que podem 
-                // se mover neste turno(caso seja clicada 
-                //uma peca colocamos true na selected_a_piece
-                //para garantir que esperamos que o utilizador
-                //clique na peça)
-                peca.onclick = function () {
-                    // unclick 
-                    if (this.classList.contains("selected")) {
-                        console.log("UNCLICK");
-                        console.log("esta peça já foi selecionada");
-                        peca.classList.remove("selected");
-                        peca.style["border-color"] = "grey";
-                        unselected = true;
-                    }
-                    // click 
-                    else {
-                        console.log("CLICK");
-                        peca.style["border-color"] = "#60e550";
-                        peca.classList.add("selected");
-                        selected = true;
-                    }
+        let pecas = undefined;
+        if (cor_peca == "branca")
+            pecas = document.querySelectorAll('div.peca_tabuleiro_branca');
+        else
+            pecas = document.querySelectorAll('div.peca_tabuleiro_preta');
+
+        for (let peca of pecas) {
+            //! IMPORTANTE
+            //! o id da peça serve para depois 
+            //! colocar em this.tab o movimento de peças
+            //! que ocorreu
+            //Adicionamos um evente as peças que podem 
+            // se mover neste turno(caso seja clicada 
+            //uma peca colocamos true na selected_a_piece
+            //para garantir que esperamos que o utilizador
+            //clique na peça)
+            peca.onclick = function () {
+                // unclick 
+                if (this.classList.contains("selected")) {
+                    console.log("UNCLICK");
+                    console.log("esta peça já foi selecionada");
+                    peca.classList.remove("selected");
+                    peca.style["border-color"] = "grey";
+                    unselected = true;
                 }
-            }
-        }
-        else if (cor_peca == "preta") {
-            for (let peca of pecas_pretas) {
-                peca.onclick = function () {
-                    // unclick 
-                    if (this.classList.contains("selected")) {
-                        console.log("UNCLICK");
-                        peca.classList.remove("selected");
-                        peca.style["border-color"] = "grey";
-                        unselected = true;
-                    }
-                    // click 
-                    else {
-                        console.log("CLICK");
-                        peca.style["border-color"] = "#60e550";
-                        peca.classList.add("selected");
-                        selected = true;
-                    }
+                // click 
+                else {
+                    console.log("CLICK");
+                    peca.style["border-color"] = "#60e550";
+                    peca.classList.add("selected");
+                    selected = true;
                 }
             }
         }
@@ -466,7 +453,7 @@ class Tabuleiro {
 
             console.log(this.tab);
         }
-        else{
+        else {
             //troca a vez do jogador , para depois ao chamar this.move
             // o mesmo troca novamento o jogador (basicamente permite
             // que o jogador que desselecionou uma peça jogue outra vez)
@@ -580,18 +567,13 @@ class Tabuleiro {
                     }
 
                 }
-                // console.log("Número atual de peças brancas:" + this.nr_pecas_brancas);
-                // console.log("Número atual de peças pretas:" + this.nr_pecas_pretas);
             }
             else if (id_celula == celula.id && celula.childElementCount != 0) {
                 console.log("Celula está ocupada");
                 // alert("Posição ocupada,por favor selecione uma posição vazia");
                 DisplayMessage("POSIÇÃO INVALIDA: Posição ocupada,por favor selecione uma posição vazia.");
-
             }
-
         }
-
     }
 
     //Verifica se estamos em condições de elimar uma peça inimiga 
@@ -610,14 +592,15 @@ class Tabuleiro {
 
         if ((aux[0] == 3 && this.used_linha[aux[2]] == false) ||
             (aux[1] == 3 && this.used_coluna[aux[3]] == false)) {
-            DisplayMessage("Foi feita uma linha e deve capturar uma peça do adversário");
             let peca_a_remover = "";
             switch (cor_peca) {
                 case "preta":
                     peca_a_remover = "peca_tabuleiro_branca";
+                    DisplayMessage("Foi feita uma linha e deve capturar uma peça Branca");
                     break;
                 case "branca":
                     peca_a_remover = "peca_tabuleiro_preta";
+                    DisplayMessage("Foi feita uma linha e deve capturar uma peça Preta");
                     break;
                 default:
                     console.log("ERRO: em Eliminar_peca");
@@ -735,14 +718,14 @@ class Tabuleiro {
                 this.used_coluna[aux[3]] = true;
             }
             console.log("Removeu a peça");
-            console.log("Estado da linha used = " + this.used_linha);
-            console.log("Estado da coluna used = " + this.used_coluna);
+            // console.log("Estado da linha used = " + this.used_linha);
+            // console.log("Estado da coluna used = " + this.used_coluna);
 
             /*parte das mensagens*/
             if (cor_peca == "preta")
-                DisplayMessage("É a vez do oponente de pôr uma peça");
+                DisplayMessage("É a vez da peça branca jogar");
             else if (cor_peca == "branca")
-                DisplayMessage("É a vez do jogador de pôr uma peça");
+                DisplayMessage("É a vez da peça preta jogar");
 
         }
         //
@@ -834,7 +817,7 @@ class Tabuleiro {
 
         let peca_contiguas = Max_Pecas_continguas(cur_linha, cur_coluna, cor_peca, Posicao, this.GamePhase);
 
-
+        //condição que aplicamos na dropphase 
         if (peca_contiguas[0] <= 3 && peca_contiguas[1] <= 3)
             return true;
         else {
