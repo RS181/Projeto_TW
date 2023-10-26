@@ -3,222 +3,14 @@
 
 <head>
     <title> Dara Game</title>
-    
+
     <meta charset="UTF-8">
 
     <link rel="stylesheet" href="style.css" type="text/css">
     <script src="conf.js"></script>
 
-    <style>
-        #Logotipo {
-            font-family: sans-serif;
-            text-align: left;
-            border: 2px;
-            width: 300px;
-            margin-bottom: 10px;
-            border-style: solid;
-            padding-left: 10px;
-        }
-
-        /*Caixa de texto com as regras com scr*/
-        .caixa_texto {
-            width: 500px;
-            height: 150px;
-            overflow: scroll;
-            margin: 0;
-            background-color: #eeeeee;
-            text-align: left;
-            padding: 0;
-            margin: 0;
-        }
 
 
-        .container_v1 {
-            display: inline-block;
-            border-style: solid;
-            width: 250px;
-            float: left;
-            border-color: rgb(206, 56, 56);
-            padding: 5px;
-        }
-        .container_v2{
-            border-style: solid;
-            float: left;
-            border-color: royalblue;
-            padding: 5px;
-        }
-
-        .container_login{
-            margin-top: 390px;
-            border-style: solid;
-            border-color: chocolate;
-            padding: 5px;
-            width: 250px;
-
-        }
-
-        .tabuleiro_6_por_5,
-        .tabuleiro_6_por_6,
-        .tabuleiro_5_por_5,
-        .tabuleiro_5_por_6 {
-            float: right;
-            position: relative;
-            top: -580px;
-            right: 30px;
-            display: grid;
-            border-style: solid;
-            border-color: blue;
-            background-color: wheat;
-            padding: 5px;
-        }
-
-        /*Espicificamos os tamanhos de cada grid e quantas queremos*/
-        .tabuleiro_6_por_5 {
-            grid-template-columns:
-                100px 100px 100px 100px 100px;
-            grid-template-rows:
-                100px 100px 100px 100px 100px 100px;
-        }
-
-        .tabuleiro_6_por_6 {
-            grid-template-columns:
-                100px 100px 100px 100px 100px 100px;
-            grid-template-rows:
-                100px 100px 100px 100px 100px 100px;
-        }
-
-        .tabuleiro_5_por_5 {
-            grid-template-columns:
-                100px 100px 100px 100px 100px;
-            grid-template-rows:
-                100px 100px 100px 100px 100px;
-        }
-
-        .tabuleiro_5_por_6 {
-            grid-template-columns:
-                100px 100px 100px 100px 100px 100px;
-            grid-template-rows:
-                100px 100px 100px 100px 100px;
-        }
-
-
-
-        .item {
-            padding: 5px;
-            margin: 5px;
-            border-color: chartreuse;
-            border-style: solid;
-            text-align: center;
-        }
-
-        .item_tabuleiro {
-            margin: 5px;
-            border-color: rgb(255, 38, 110);
-            border-style: solid;
-            text-align: center;
-            /*para poder centrar peças */
-            position: relative;
-        }
-
-        .peca_tabuleiro_preta {
-            border-style: solid;
-            border-color: grey;
-            background-color: black;
-            margin: auto;
-            height: 50px;
-            width: 50px;
-            border-radius: 100px;
-            /*css para posição da peça no proprio tabuleiro (para centra-las)*/
-            position: absolute;
-            top: 18%;
-            left: 18%;
-        }
-
-        .peca_tabuleiro_branca {
-            border-style: solid;
-            border-color: grey;
-            background-color: white;
-            margin: auto;
-            height: 50px;
-            width: 50px;
-            border-radius: 100px;
-            /*css para posição da peça no proprio tabuleiro (para centra-las)*/
-            position: absolute;
-            top: 18%;
-            left: 18%;
-        }
-
-        /*Css para as mensagens UI*/
-        .mensagens_ui {
-            width: 611px;
-            height: 70px;
-            border-style: solid;
-            border-color: purple;
-            float: right;
-            text-align: left;
-            
-            position: relative;
-            top: -80px;
-            right: 30px;
-        }
-
-        .standard_button {
-            padding: 8px;
-            background-color: aqua;
-            font-family: sans-serif;
-            font-weight: bold;
-            border-radius: 100px;
-            cursor: pointer;
-        }
-
-        /*css das Regras (inclui alguns elementos extras de formatação)*/
-        details>summary {
-            padding: 4px;
-            width: 200px;
-            background-color: #eeeeee;
-            border: none;
-            box-shadow: 1px 1px 2px #bbbbbb;
-            cursor: pointer;
-            text-align: left;
-        }
-
-        details>p {
-            background-color: #eeeeee;
-            padding: 4px;
-            margin: 0;
-            box-shadow: 1px 1px 2px #bbbbbb;
-        }
-
-        /*Formatação das regras*/
-        p.regras {
-            line-height: 30px;
-            padding-left: 10px;
-            font-size: large;
-        }
-
-        p.destacar {
-            font-weight: bold;
-            font-size: x-large;
-            padding-top: 10px;
-            margin: 0;
-        }
-
-        .form_l {
-            padding: 20px;
-            color: grey;
-            border-color: chartreuse;
-            border-style: solid;
-        }
-
-        /*Animações de butões*/
-        .standard_button:hover {
-            background-color: wheat;
-        }
-
-        .standard_button:active {
-            opacity: 0.5;
-        }
-    </style>
 </head>
 
 <body>
@@ -227,166 +19,69 @@
     <header id="Logotipo">
         <h1>Dara Game Project</h1>
     </header>
-      <!--Área de Mensagens-->
-      <div class="mensagens_ui" id="mensagens_ui">
-        <strong>Mensagens</strong><br>
-        O jogo terminou com vitória de um dos jogadores
+    <!--Área de Mensagens-->
+    <div class="mensagens_ui" id="mensagens_ui">
+        <p></p>
     </div>
+    <div class="container_v2">
+        <div class="item">
+            <button class="standard_button" onclick="get_nr_linhas_colunas()">Começar o jogo</button>
+        </div>
+        <!--Área de configuração (navegação)-->
+<nav id="Configuracao">
+    <div class="container_v1">
 
-    <!--Área de configuração (navegação)-->
-    <nav id="Configuracao">
-        <div class="container_v1">
+        <!--Tamanho do tabuleiro-->
+        <div class="item">
+            Nr Linhas
+            <select id="input_linhas_tabuleiro">
+                <option value="6"> 6</option>
+                <option value="5"> 5 </option>
+                <!--Adicionar mais tamanhos,caso seja precisso-->
+            </select>
+            <br>
 
-            <!--Tamanho do tabuleiro-->
-            <div class="item">
-                Nr Linhas
-                <select id="input_linhas_tabuleiro">
-                    <option value="6"> 6</option>
-                    <option value="5"> 5 </option>
-                    <!--Adicionar mais tamanhos,caso seja precisso-->
-                </select>
-                <br>
+            Nr Colunas
+            <select id="input_colunas_tabuleiro">
+                <option>6</option>
+                <option>5</option>
 
-                Nr Colunas
-                <select id="input_colunas_tabuleiro">
-                    <option>6</option>
-                    <option>5</option>
-
-                </select>
-                <br><br>
-                <button class="standard_button" onclick="get_nr_linhas_colunas()">Confirmar </button>
-                <br>
-            </div>
-
-            <!--Indicação do Oponente-->
-            <div class="item">
-                <form id="Indique_o_oponente">
-                    <fieldset id="Checkgroup_escolha_jogador">
-                        <legend>Indique o oponente</legend>
-                        Jogador<input type="radio" value="escolha_jogador" name="Checkgroup_escolha_jogador"
-                            checked="checked" onchange="displayRadioValue()">
-                        Computador<input type="radio" value="escolha_computador" name="Checkgroup_escolha_jogador"
-                            onchange="displayRadioValue()">
-                    </fieldset>
-                </form>
-            </div>
-
-
-
-            <!--Indicação do primeiro a jogar e Escolha
-            da dificuldade (Gerado pelo javascript ver definições no  div acima)-->
-            <div id="Mostrar">
-
-            </div>
-
-            <!--Escolha da dificuldade da IA(Gerado pelo javascript ver definições no div acima)-->
-           
+            </select>
+            <br><br>
+            <br>
         </div>
 
-    </nav>
+        <!--Indicação do Oponente-->
+        <div class="item">
+            <form id="Indique_o_oponente">
+                <fieldset id="Checkgroup_escolha_jogador">
+                    <legend>Indique o oponente</legend>
+                    Jogador<input type="radio" value="escolha_jogador" name="Checkgroup_escolha_jogador"
+                        onchange="displayRadioValue()">
+                    Computador<input type="radio" value="escolha_computador" name="Checkgroup_escolha_jogador"
+                    checked="checked" onchange="displayRadioValue()">
+                </fieldset>
+            </form>
+        </div>
 
+
+
+        <!--Indicação do primeiro a jogar e Escolha
+        da dificuldade (Gerado pelo javascript ver definições no  div acima)-->
+        <div id="Mostrar">
+
+        </div>
+
+        
+        <div class="item"><button class="standard_button">Desistir</button></div>
+    </div>
+        <!--Desistir do jogo-->
+    </div>    
+</nav>
     <!--Área de Comandos (navegação)-->
     <nav id="Comandos">
-        <div class="container_v2">
-            
+        <div class="container_v3">
             <!--Visualizar instruções, TODO ->perguntar ao professor se posso mostrar as regras desta forma -->
-            <div class="item">
-                <details>
-
-                    <summary>Regras</summary>
-                    <div class="caixa_texto">
-                        <p class="destacar">Tabuleiro</p>
-                        <p class="regras">
-                            &#9830; O Dara joga-se num tabuleiro varias
-                            dimensões (Ver dimensões disponniveis); <br>
-                            &#9830; Cada um dos 2 jogadores tem 12 peças;<br>
-                            &#9830;Um jogador joga com preças pretas, outro com
-                            as brancas;<br>
-
-                            &#9830;Todas as peças 22 estão sempre visíveis, no
-                            tabuleiro ou fora;<br>
-
-                            &#9830; Peças fora do tabuleiro são agrupadas por
-                            cor, de cada lado;<br>
-                        </p>
-
-                        <p class="destacar">Regras básicas</p>
-                        <p class="regras">
-                            &#9830; Jogadores escolhem uma cor e decidem quem
-                            joga primeiro;<br>
-                            &#9830; Inicialmente o tabuleiro está vazio;<br>
-                            &#9830;O jogo tem 2 fases: <strong>Drop fase</strong>
-                            e <strong>Move fase;</strong><br>
-                        </p>
-
-                        <p class="destacar">Jogo contra Computador</p>
-                        <p class="regras">
-                            &#9830; O computador <strong> escolhe automaticamente as peças brancas</strong>;<br>
-                            &#9830; O <strong>Jogador joga sempre primeiro que o computador</strong>;<br>
-
-                        </p>
-
-
-                        <p class="destacar">Em linha</p>
-                        <p class="regras">
-                            &#9830;São consideradas em linha: sequências de 3 ou
-                            mais peças contíguas na horizontal ou vertical(com
-                            uma só cor);<br>
-                        </p>
-
-                        <p class="destacar">Pôr as peças</p>
-                        <p class="regras">
-                            &#9830;Jogadores põem alternadamente uma peça sua
-                            numa casa livre;<br>
-
-                            &#9830;Não podem podem ser postas <strong> mais de 3
-                                peças</strong> em linha;<br>
-                            &#9830;Podem existir 3 peças em linha;<br>
-                        </p>
-
-                        <p class="destacar">Mover as peças</p>
-                        <p class="regras">
-                            &#9830;Cada jogador move alternadamente uma peça da
-                            sua cor;<br>
-
-                            &#9830;Uma peça só pode ser movida para uma casa
-                            contígua;<br>
-                            &#9830;Peças movidas apenas na horizontal ou
-                            vertical;<br>
-                            &#9830;Uma linha de tamanho 3 permite capturar peça
-                            do adversário;<br>
-                            &#9830;Neste caso, remove uma peça do adversário à
-                            sua escolha;<br>
-                            &#9830;Só uma peça é removida por jogada (mesmo
-                            sendo formadas várias linhas);<br>
-                            &#9830;Uma peça não pode retornar à posição da
-                            jogada anterior;<br>
-                            &#9830;Só poderá retornar a essa casa nas jogadas
-                            seguintes;<br>
-                        </p>
-
-                        <p class="destacar">Fim do jogo</p>
-                        <p class="regras">
-                            &#9830;O jogo termina quando um jogador não puder
-                            ganhar;<br>
-
-                            &#9830;Por exemplo, se tiver apenas 2 peças no
-                            tabuleiro;<br>
-                            &#9830;Ou se não puder realizar uma jogada válida;<br>
-                            &#9830;O jogador que não pode ganhar perde o jogo;<br>
-                        </p>
-                    </div>
-                </details>
-            </div>
-
-            <!--Inicializar o jogo com as configurações correntes-->
-            <div class="item">
-                <button class="standard_button">Commeçar o jogo</button>
-            </div>
-
-            <!--Desistir do jogo-->
-            <div class="item"><button class="standard_button">Desistir</button></div>
-
             <!--Tabela de classificações (TODO mais tarde adicionar com jogador , penso que seja precisso so na próxima entrega)-->
             <div class="item">
                 <details>
@@ -425,11 +120,98 @@
                         </tr>
                     </table>
                 </details>
+                </div>
+                <div class="item">
+                    <details>  
+                        <summary>Regras</summary>
+                        <div class="caixa_texto">
+                            <p class="destacar">Tabuleiro</p>
+                            <p class="regras">
+                                &#9830; O Dara joga-se num tabuleiro varias
+                                dimensões (Ver dimensões disponniveis); <br>
+                                &#9830; Cada um dos 2 jogadores tem 12 peças;<br>
+                                &#9830;Um jogador joga com preças pretas, outro com
+                                as brancas;<br>
+    
+                                &#9830;Todas as peças 22 estão sempre visíveis, no
+                                tabuleiro ou fora;<br>
+    
+                                &#9830; Peças fora do tabuleiro são agrupadas por
+                                cor, de cada lado;<br>
+                            </p>
+    
+                            <p class="destacar">Regras básicas</p>
+                            <p class="regras">
+                                &#9830; Jogadores escolhem uma cor e decidem quem
+                                joga primeiro;<br>
+                                &#9830; Inicialmente o tabuleiro está vazio;<br>
+                                &#9830;O jogo tem 2 fases: <strong>Drop fase</strong>
+                                e <strong>Move fase;</strong><br>
+                            </p>
+    
+                            <p class="destacar">Jogo contra Computador</p>
+                            <p class="regras">
+                                &#9830; O computador <strong> escolhe automaticamente as peças brancas</strong>;<br>
+                                &#9830; O <strong>Jogador joga sempre primeiro que o computador</strong>;<br>
+    
+                            </p>
+    
+    
+                            <p class="destacar">Em linha</p>
+                            <p class="regras">
+                                &#9830;São consideradas em linha: sequências de 3 ou
+                                mais peças contíguas na horizontal ou vertical(com
+                                uma só cor);<br>
+                            </p>
+    
+                            <p class="destacar">Pôr as peças</p>
+                            <p class="regras">
+                                &#9830;Jogadores põem alternadamente uma peça sua
+                                numa casa livre;<br>
+    
+                                &#9830;Não podem podem ser postas <strong> mais de 3
+                                    peças</strong> em linha;<br>
+                                &#9830;Podem existir 3 peças em linha;<br>
+                            </p>
+    
+                            <p class="destacar">Mover as peças</p>
+                            <p class="regras">
+                                &#9830;Cada jogador move alternadamente uma peça da
+                                sua cor;<br>
+    
+                                &#9830;Uma peça só pode ser movida para uma casa
+                                contígua;<br>
+                                &#9830;Peças movidas apenas na horizontal ou
+                                vertical;<br>
+                                &#9830;Uma linha de tamanho 3 permite capturar peça
+                                do adversário;<br>
+                                &#9830;Neste caso, remove uma peça do adversário à
+                                sua escolha;<br>
+                                &#9830;Só uma peça é removida por jogada (mesmo
+                                sendo formadas várias linhas);<br>
+                                &#9830;Uma peça não pode retornar à posição da
+                                jogada anterior;<br>
+                                &#9830;Só poderá retornar a essa casa nas jogadas
+                                seguintes;<br>
+                            </p>
+    
+                            <p class="destacar">Fim do jogo</p>
+                            <p class="regras">
+                                &#9830;O jogo termina quando um jogador não puder
+                                ganhar;<br>
+    
+                                &#9830;Por exemplo, se tiver apenas 2 peças no
+                                tabuleiro;<br>
+                                &#9830;Ou se não puder realizar uma jogada válida;<br>
+                                &#9830;O jogador que não pode ganhar perde o jogo;<br>
+                            </p>
+                        </div>
+                    </details>
+                
             </div>
 
         </div>
-    </nav>
-
+        </nav>
     <!--Contem o que há de mais "relevante" na pagina -->
     <main id="Area_principal">
 
@@ -441,7 +223,7 @@
             <!--Depois da autenticação,
                 esta mesma área deve ser usada para apresentar o identificador, 
                 permitindo terminar a sessão autenticada.-->
-            <form action="registar" method=post class="form_l" >
+            <form action="registar" method=post class="form_l">
                 Username <input name="User_name" style="margin-bottom: 10px;"><br>
                 Password <input type="password" name="Password" style="margin-bottom: 10px;"> <br>
                 <input type=reset>
@@ -454,7 +236,7 @@
 
 
 
-      
+
 
     </main>
 
