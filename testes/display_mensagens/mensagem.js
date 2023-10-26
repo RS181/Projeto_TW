@@ -171,7 +171,7 @@ class Tabuleiro {
                     if (this.Posicao_valida(celula.id, "branca") == true) {
                         //?console.log("TESTE =>" + this.Posicao_valida(celula.id, "branca"));
 
-                        //!Supondo que o jogador joga com as peças brancas
+                        //!Supondo que o oponente joga com as peças brancas
                         DisplayMessage("É a vez do jogador de pôr uma peça");
 
 

@@ -32,7 +32,7 @@ class Tabuleiro {
         console.log(this.used_linha);
         console.log(this.used_coluna);
 
-        //Representamos o tabuleiro como matriz (com indice que começa em 1)
+        //Representamos o tabuleiro como array (com indice que começa em 1)
         this.tab = new Array(rows * cols + 1);
         this.tab[0] = "NULL";
 
@@ -90,7 +90,7 @@ class Tabuleiro {
                 this.por_peca(id_celula);
         }
         else {
-            console.log("TODO: Implementar a move phase")
+            console.log("TODO: Implementar a move phase");
             //TODO testar a ver se funciona
             this.Chegou_ao_fim();
         }
@@ -102,7 +102,6 @@ class Tabuleiro {
         //Debug de consola
 
 
-        //todo Falta fazer verificação a ver se posição e valida para colocar 
         for (let celula of posicoes) {
             let peca = document.createElement('div');
 
@@ -229,11 +228,6 @@ class Tabuleiro {
 
         //todo Implementar o resto 
         // console.log(celulas_ocupadas);
-
-        
-
-                
-
     }
 
 
@@ -704,7 +698,7 @@ function findDifferentElement(array1, array2) {
     //é o elemento diferente
     return array1[array1.length-1];
     
-  }
+}
 
 
 class TicTacToe {

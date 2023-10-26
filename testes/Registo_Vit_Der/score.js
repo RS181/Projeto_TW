@@ -3,7 +3,7 @@ window.onload = function () {
     get_dificulty();
 }
 
-//Função que atualiza a tabela de scrolls
+//Função que atualiza a tabela de scores
 function Update_score(nivel_do_IA,vencedor){
     //caso preça preta  (jogador) ganhe
     let v = "numero_vitorias_" + nivel_do_IA;
@@ -43,7 +43,7 @@ function get_dificulty(){
         }
     }
 
-    Update_score(dificuldade,"branca");    
+    // Update_score(dificuldade,"branca");    
 
 }
 
