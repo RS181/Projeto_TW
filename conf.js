@@ -538,7 +538,7 @@ class Tabuleiro {
             else if (id_celula == celula.id && celula.childElementCount != 0) {
                 console.log("Celula está ocupada");
                 // alert("Posição ocupada,por favor selecione uma posição vazia");
-                DisplayMessage("POSIÇÃO INVALIDA: Posição ocupada,por favor selecione uma posição vazia.");
+                DisplayMessage("POSIÇÃO INVÁLIDA: Posição ocupada, por favor \nselecione uma posição vazia.");
 
             }
 
@@ -1032,6 +1032,9 @@ function get_nr_linhas_colunas() {
     //A frase que explica o estado do jogo passa a ser vísivel depois da criação do tabuleiro
     let mensagem = document.getElementById("mensagens_ui");
     mensagem.style.visibility = "visible";
+    mensagem.style.justifyContent = "center";
+    let container_v4 = document.getElementById("container_v4");
+    container_v4.style.visibility = "visible";
      //mensagem de inicio de jogo
     DisplayMessage("É a vez da peça preta jogar");
 
