@@ -72,8 +72,16 @@ fieldset{
 .container_v3{
     float: left;
     background-color: #838E83;
-    padding: 5px;
+    padding: 2.5px;
     border-bottom: 20px;
+}
+
+.container_v4{
+    float: right;
+    background-color: #838E83;
+    display: flex;
+    flex-direction: column;
+    visibility: hidden;
 }
 
 .container_login{
@@ -89,9 +97,7 @@ fieldset{
 .tabuleiro_5_por_5,
 .tabuleiro_5_por_6 {
     float: right;
-    position: relative;
-    top: -600px;
-    right: 400px;
+    position: static;
     display: grid;
     border-style: solid;
     border-color: #3A403A;
@@ -178,20 +184,20 @@ fieldset{
 
 /*Css para as mensagens UI*/
 .mensagens_ui {
-    width: 616px;
-    height: 70px;
     background-color: #838E83;
     float: right;
     text-align: center;
     font-size: larger;
     position: relative;
-    top: 9px;
-    right: 400px;
     display: flex;
     justify-content: center; 
     align-items: center; 
     visibility: hidden;
-
+    max-width: 500px;
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
 
 
@@ -292,5 +298,8 @@ p.destacar {
 .regras {
     border-color: #3A403A;
 }
+
+
+
 
 
