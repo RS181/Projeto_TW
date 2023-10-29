@@ -2,8 +2,8 @@
 class Tabuleiro {
     //"variaveis estaticas" que permitem guardar o numero de peças brancas e pretas
     //todo Voltar a por com 12 
-    nr_pecas_brancas = 4;
-    nr_pecas_pretas = 4;
+    nr_pecas_brancas = 6;
+    nr_pecas_pretas = 6;
 
     //Numero de linhas e colunas
     rows = 0;
@@ -222,6 +222,7 @@ class Tabuleiro {
                 // colocar esse movimento em this.tab[from.id]=undefined
                 // (para poder usar a função Posicao_valida) 
                 this.tab[from.id] = undefined;
+                this.tab[to.id] = cor_peca;
 
                 //Verifica se a posição é valida
                 // let pos_valid = this.Posicao_valida(to.id, cor_peca);
@@ -229,18 +230,15 @@ class Tabuleiro {
                 let coluna = this.coluna_aux(to.id, cor_peca);
                 let linha = this.linha_aux(to.id, cor_peca);
                 let t = Max_Pecas_continguas(linha,coluna,cor_peca,to.id,this.GamePhase);
-                /*
-                ! ==========VERIFICAR SE ISTO NÃO CAUSA ERROS=========
-                console.log("===================================");
-                console.log("(DEBUG)Posicao_valida = "+pos_valid);  
-                console.log("Linha : " + linha);
-                console.log("Coluna : " + coluna);
-                console.log(t);
-                console.log("===================================");
-                */
+     
                 //Restauramos o tabuleiro para o estado "original"
                 this.tab[from.id] = cor_peca;
-                if(t[0] < 3 && t[1] < 3){
+                this.tab[to.id] = undefined;
+                if(t[0] <= 3 && t[1] <= 3 ){
+                    console.log("Max linha t[0] = " + t[0]);
+                    console.log("Max coluna t[1] = " + t[1]);
+                    console.log("(Antes movimento ) linha: " + linha);
+                    console.log("(Antes movimento ) coluna: " + coluna);
                     console.log("IS_VALID() = TRUE");
                     return true;
                 }
@@ -989,7 +987,9 @@ function Max_Pecas_continguas(linha, coluna, cor_peca, Posicao, GamePhase) {
         return [nr_pecas_linha, nr_pecas_coluna, getLinha(Posicao, cols), getColuna(Posicao, cols)];
     else {
         console.log("JOGADA INVALIDA: não podemos ter mais de 3 peças contiguas da mesma cor (vertical ou horizontal)");
-        return [nr_pecas_linha, nr_pecas_coluna];
+        //Adicionamos o 3 parametro a false para garantir que 
+        //é explicito que não valido o jogador ganhar
+        return [nr_pecas_linha, nr_pecas_coluna,false];
     }
 }
 
