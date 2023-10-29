@@ -19,10 +19,6 @@
     <header id="Logotipo">
         <h1>Dara Game Project</h1>
     </header>
-    <!--Área de Mensagens-->
-    <div class="mensagens_ui" id="mensagens_ui">
-        <p></p>
-    </div>
     <div class="container_v2">
         <div class="item">
             <button class="standard_button" onclick="get_nr_linhas_colunas()">Começar o jogo</button>
@@ -207,11 +203,18 @@
                             </p>
                         </div>
                     </details>
+                    
                 
             </div>
-
         </div>
-        </nav>
+        <div class="container_v4" id="container_v4">
+            <!--Área de Mensagens-->
+            <div class="mensagens_ui" id="mensagens_ui">
+                <p></p>
+            </div>
+            <div id="tabuleiro"></div>
+        </div>
+    </nav>
     <!--Contem o que há de mais "relevante" na pagina -->
     <main id="Area_principal">
 
@@ -232,7 +235,6 @@
 
         </div>
 
-        <div id="tabuleiro"></div>
 
 
 
