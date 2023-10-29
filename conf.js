@@ -1224,6 +1224,21 @@ function Update_score(nivel_do_IA,vencedor){
     }
 }
 
+//Função de desistir (neste caso só o jogador pode desistir )
+async function give_up() {
+    console.log("Carreguei no botão");
+    let dif = get_dificulty();
+    Update_score(dif,"branca");
+    
+    DisplayMessage("Jogador desistiu !!!");
+
+    await sleep(1000);
+    
+    //Cria um novo tabuleiro 
+    get_nr_linhas_colunas();
+}
+
+
 //O que é carregado no inicio
 window.onload = function () {
     console.log("Carregou a Dom");
