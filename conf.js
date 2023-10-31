@@ -2,8 +2,8 @@
 class Tabuleiro {
     //"variaveis estaticas" que permitem guardar o numero de peças brancas e pretas
     //todo Voltar a por com 12 
-    nr_pecas_brancas = 12;
-    nr_pecas_pretas = 12;
+    nr_pecas_brancas = 6;
+    nr_pecas_pretas = 6;
 
     //Numero de linhas e colunas
     rows = 0;
@@ -11,25 +11,30 @@ class Tabuleiro {
 
     //Array booleano que contem as linhas/colunas com 3 peças
     //contiguas da mesma cor
-    used_linha = undefined;
-    used_coluna = undefined;
+    used_linha_preta = undefined;
+    used_coluna_preta = undefined;
+    used_linha_branca = undefined;
+    used_coluna_branca = undefined;
 
     //Quem é que vai mover uma peça(Começa com a peça preta)
     cur_playing = "preta";
 
-    constructor(parentid, rows, cols,dificulty) {
+    constructor(parentid, rows, cols, dificulty) {
         let parent = document.getElementById(parentid);
 
         //Inicializamos as variaveis da classe
         this.rows = rows;
         this.cols = cols;
-        this.used_linha = new Array(parseInt(rows) + 1).fill(false);  //indice começa em 1
-        this.used_coluna = new Array(parseInt(cols) + 1).fill(false);
-        this.dificulty = dificulty;
-        //?console.log(this.used_linha);
-        //?console.log(this.used_coluna);
+        this.used_linha_preta = new Array(parseInt(rows) + 1).fill(false);  //indice começa em 1
+        this.used_coluna_preta = new Array(parseInt(cols) + 1).fill(false);
+        this.used_linha_branca = new Array(parseInt(rows) + 1).fill(false);
+        this.used_coluna_branca = new Array(parseInt(cols) + 1).fill(false);
 
-        console.log("Dificuldade da Ia = "+ this.dificulty);
+        this.dificulty = dificulty;
+        //?console.log(this.used_linha_preta);
+        //?console.log(this.used_coluna_preta);
+
+        console.log("Dificuldade da Ia = " + this.dificulty);
 
         //Representamos o tabuleiro como array (com indice que começa em 1)
         this.tab = new Array(rows * cols + 1);
@@ -161,16 +166,28 @@ class Tabuleiro {
 
                                 let coluna = this.coluna_aux(src.id, vez);
                                 let linha = this.linha_aux(src.id, vez);
-                                let aux = Max_Pecas_continguas(linha, coluna, vez, src.id, this.GamePhase);
+                                let aux = Max_Pecas_continguas(linha, coluna, vez, src.id, this.GamePhase,"");
                                 console.log("VERIFICAÇÃO APÓS MOVIMENTO(" + vez + "): " + aux);
-                                if (aux[0] < 3) {
-                                    this.used_linha[aux[2]] = false;
-                                    // console.log("LINHA " + aux[2] + " está disponivel para remover");
+
+                                if (vez == "preta") {
+                                    if (aux[0] < 3) {
+                                        this.used_linha_preta[aux[2]] = false;
+                                        // console.log("LINHA " + aux[2] + " está disponivel para remover");
+                                    }
+                                    if (aux[1] < 3) {
+                                        this.used_coluna_preta[aux[3]] = false;
+                                        // console.log("coluna " + aux[3] + " está disponivel para remover");
+                                    }
                                 }
-                                if (aux[1] < 3) {
-                                    this.used_coluna[aux[3]] = false;
-                                    // console.log("coluna " + aux[3] + " está disponivel para remover");
+                                else if (vez == "branca") {
+                                    if (aux[0] < 3) {
+                                        this.used_linha_branca[aux[2]] = false;
+                                    }
+                                    if (aux[1] < 3) {
+                                        this.used_coluna_branca[aux[3]] = false;
+                                    }
                                 }
+
 
                             }
                         }
@@ -179,10 +196,10 @@ class Tabuleiro {
                             console.log("Movimento escolhido inválido");
                             console.log("Selected div = " + selected_div.id);
                             console.log("Selected move = " + selected_move.id);
-                            console.log("this.peca_selecionada_moveu = " + this.peca_selecionada_moveu )
+                            console.log("this.peca_selecionada_moveu = " + this.peca_selecionada_moveu)
                             console.log("Selected_move.classList.contains('peca_tabuleiro_preta') = " + selected_move.classList.contains('peca_tabuleiro_preta'));
                             console.log("Selected_move.classList.contains('peca_tabuleiro_branca') = " + selected_move.classList.contains('peca_tabuleiro_branca'));
-                            console.log("!(this.Last_Move_branca[0] == to && this.Last_Move_branca[1] == from) = " +!(this.Last_Move_branca[0] == to && this.Last_Move_branca[1] == from) );
+                            console.log("!(this.Last_Move_branca[0] == to && this.Last_Move_branca[1] == from) = " + !(this.Last_Move_branca[0] == to && this.Last_Move_branca[1] == from));
                             console.log("!(this.Last_Move_preta[0] == to && this.Last_Move_preta[1] == from) = " + !(this.Last_Move_preta[0] == to && this.Last_Move_preta[1] == from));
                             console.log(this.tab);
                             DisplayMessage("Escolhe uma posição válida para mover a peça ")
@@ -238,12 +255,12 @@ class Tabuleiro {
 
                 let coluna = this.coluna_aux(to.id, cor_peca);
                 let linha = this.linha_aux(to.id, cor_peca);
-                let t = Max_Pecas_continguas(linha,coluna,cor_peca,to.id,this.GamePhase);
-     
+                let t = Max_Pecas_continguas(linha, coluna, cor_peca, to.id, this.GamePhase,"");
+
                 //Restauramos o tabuleiro para o estado "original"
                 this.tab[from.id] = cor_peca;
                 this.tab[to.id] = undefined;
-                if(t[0] <= 3 && t[1] <= 3 ){
+                if (t[0] <= 3 && t[1] <= 3) {
                     console.log("Max linha t[0] = " + t[0]);
                     console.log("Max coluna t[1] = " + t[1]);
                     console.log("(Antes movimento ) linha: " + linha);
@@ -354,7 +371,7 @@ class Tabuleiro {
         if ((this.selected_a_piece == true || this.selected_a_piece == undefined) &&
             (this.peca_selecionada_moveu == true || this.peca_selecionada_moveu == undefined) &&
             (this.Eliminar_peca_resolvido == true || this.Eliminar_peca_resolvido == undefined)) {
-            console.log("Move Phase");
+            console.log("======ENTREI NA MOVE PHASE======");
             console.log("Próximo a mover : " + this.cur_playing);
             DisplayMessage("Proxima peça a mover : (" + this.cur_playing + ")");
             let cor_peca = this.cur_playing;
@@ -370,6 +387,7 @@ class Tabuleiro {
         // usamos esta var , para ter uma variavel "global"
         //dentro deste bloco (para permitir que ao clicar
         //uma peça qualquer ela fique verdadeira)
+        console.log("----------------INICIO--------------");
         var selected = false;
 
         //usamos para indicar se uma peça selecionada foi deesselecionada
@@ -414,10 +432,13 @@ class Tabuleiro {
 
         this.selected_a_piece = false;
         while (selected == false) {
-            console.log("A ESPERA QUE SELECIONEM A PEÇA PARA MOVER");
+            console.log("A ESPERA QUE SELECIONEM A PEÇA PARA MOVER " );
+
             await sleep(100);
         }
-        console.log("SELECIONOU UMA PEÇA")
+        console.log("SELECIONOU UMA PEÇA");
+        this.selected_a_piece = true;
+
 
         //retira a possibilidade de selecionar das outras peças
         // para impedir que selecionemos mais do que uma peça
@@ -432,7 +453,7 @@ class Tabuleiro {
         while (this.peca_selecionada_moveu == false) {
             //caso uma peça seja desselcionada
             if (unselected == true) {
-                this.peca_selecionada_moveu = true;
+                //! this.peca_selecionada_moveu = true;
                 break;
             }
             console.log("A ESPERA MOVAM A PEÇA");
@@ -456,8 +477,6 @@ class Tabuleiro {
                 await sleep(200);
             }
 
-            //retira a possibilidade de selecionar de todas as peças
-            restore(true);
 
             console.log(this.tab);
         }
@@ -469,14 +488,26 @@ class Tabuleiro {
                 this.cur_playing = "branca";
             else
                 this.cur_playing = "preta";
+
+            //pus aqui para tentar resolver o bug 
+            this.peca_selecionada_moveu = true;
+            //confirmar restore abaixo
+
         }
 
         // this.peca_selecionada_moveu = true;
-        this.selected_a_piece = true;
+        //! (CONFIRMAR) this.selected_a_piece = true;
+
+        //retira a possibilidade de selecionar de todas as peças
+        restore(true);
+
 
         //Chamamos o MOVE() outra vez no fim (se não chegamos ao fim do jogo)
-        if (Chegou_ao_fim(this.dificulty) == false)
+        if (Chegou_ao_fim(this.dificulty) == false){
+            console.log("----------------FIM-----------------");
+            console.log("=====CHAMEI NOVAMENTE this.Move()=====")
             this.Move();
+        }
 
     }
 
@@ -593,13 +624,17 @@ class Tabuleiro {
         //[Max_nr_peças_linha,Max_nr_peças_coluna
         //linha_no_tabuleiro_onde_ocorreu, 
         //coluna_no_tabuleiro_onde_ocorreu]
-        let aux = Max_Pecas_continguas(linha, coluna, cor_peca, Posicao, this.GamePhase);
+        let aux = Max_Pecas_continguas(linha, coluna, cor_peca, Posicao, this.GamePhase,"");
 
-        //Se tivermos 3 peças contiguas numa linha ou coluna
+        //Se tivermos 3 peças contiguas ,de uma certa cor, numa linha ou coluna
         // que não tido usadas previamente podemos elimnar a peça
+        let condition = undefined;
+        if (cor_peca == "preta")
+            condition = (aux[0] == 3 && this.used_linha_preta[aux[2]] == false) || (aux[1] == 3 && this.used_coluna_preta[aux[3]] == false)
+        else if (cor_peca == "branca")
+            condition = (aux[0] == 3 && this.used_linha_branca[aux[2]] == false) || (aux[1] == 3 && this.used_coluna_branca[aux[3]] == false)
 
-        if ((aux[0] == 3 && this.used_linha[aux[2]] == false) ||
-            (aux[1] == 3 && this.used_coluna[aux[3]] == false)) {
+        if (condition) {
             let peca_a_remover = "";
             switch (cor_peca) {
                 case "preta":
@@ -616,6 +651,7 @@ class Tabuleiro {
 
 
             console.log("Podemos remover uma peça da cor " + peca_a_remover);
+            
 
             //Guardamos todas as divs que correspondem as peças
             let divs = document.querySelectorAll('div.item_tabuleiro > div');
@@ -689,11 +725,11 @@ class Tabuleiro {
 
             let new_coluna = this.coluna_aux(Posicao_removida, cor_peca_removida);
             let new_linha = this.linha_aux(Posicao_removida, cor_peca_removida);
-            //?console.log (new_linha);
-            //?console.log (new_coluna);
+            console.log ("Line after removal = " +new_linha);
+            console.log ("Colum aftre removal = "  + new_coluna);
 
 
-            let teste = Max_Pecas_continguas(new_linha, new_coluna, cor_peca_removida, Posicao_removida, this.GamePhase);
+            let teste = Max_Pecas_continguas(new_linha, new_coluna, cor_peca_removida, Posicao_removida, this.GamePhase,"removed");
             // ?console.log("(Pos : ["+ Posicao_removida+ "] : Max Peças contíguas " + cor_peca_removida + "s na linha = " + (teste[0]-1));
             // ?console.log("(Pos : ["+ Posicao_removida+ "] : Max Peças contíguas " + cor_peca_removida + "s na coluna = " + (teste[1]-1));
 
@@ -704,14 +740,27 @@ class Tabuleiro {
             //!(o que faz sentido na parte de colocar a peça mas neste caso
             //! não faz)
 
-            // caso nessa linha não tenha 3 de peças contíguas
-            if (teste[0] - 1 < 3) {
-                this.used_linha[teste[2]] = false;
+            console.log("Max BEFORE ("+cor_peca + ")= " + aux);
+            console.log("Max AFTER (" + cor_peca_removida + ")= " +  teste );
+            // caso nessa linha/coluna não tenha 3 de peças contíguas
+            if (cor_peca_removida == "preta") {
+                
+                if (teste[0] < 3) {
+                    this.used_linha_preta[teste[2]] = false;
+                }
+                if (teste[1] < 3) {
+                    this.used_coluna_preta[teste[3]] = false;
+                }
             }
-            //caso nessa coluna não tenha 3 peças contíguas
-            if (teste[1] - 1 < 3) {
-                this.used_coluna[teste[3]] = false;
+            else if (cor_peca_removida == "branca") {
+                if (teste[0] < 3) {
+                    this.used_linha_branca[teste[2]] = false;
+                }
+                if (teste[1]  < 3) {
+                    this.used_coluna_branca[teste[3]] = false;
+                }
             }
+
 
 
 
@@ -719,15 +768,31 @@ class Tabuleiro {
             //Colocamos true na linha ou coluna que contem as 3 peças
             //contiguas
 
-            if (aux[0] == 3 && this.used_linha[aux[2]] == false) {
-                this.used_linha[aux[2]] = true;
+            if (cor_peca == "preta") {
+                if (aux[0] == 3 && this.used_linha_preta[aux[2]] == false) {
+                    this.used_linha_preta[aux[2]] = true;
+                }
+                if (aux[1] == 3 && this.used_coluna_preta[aux[3]] == false) {
+                    this.used_coluna_preta[aux[3]] = true;
+                }
             }
-            else if (aux[1] == 3 && this.used_coluna[aux[3]] == false) {
-                this.used_coluna[aux[3]] = true;
+            else if (cor_peca == "branca"){
+                if (aux[0] == 3 && this.used_linha_branca[aux[2]] == false){
+                    this.used_linha_branca[aux[2]] = true;
+                }
+                if (aux[1] == 3 && this.used_coluna_branca[aux[3]] == false) {
+                    this.used_coluna_branca[aux[3]] = true;
+                }
             }
+
+
             console.log("Removeu a peça");
-            // console.log("Estado da linha used = " + this.used_linha);
-            // console.log("Estado da coluna used = " + this.used_coluna);
+            console.log("Estado da linha used PRETA = " + this.used_linha_preta);
+            console.log("Estado da coluna used PRETA = " + this.used_coluna_preta);
+            console.log("Estado da linha used BRANCA = " + this.used_linha_branca);
+            console.log("Estado da coluna used BRANCA = " + this.used_coluna_branca);
+            // console.log("Estado da linha used = " + this.used_linha_preta);
+            // console.log("Estado da coluna used = " + this.used_coluna_preta);
 
             /*parte das mensagens*/
             if (cor_peca == "preta")
@@ -741,8 +806,11 @@ class Tabuleiro {
             //verifica se alguma linha ou coluna tem menos de 3 peças contiguas
             //se sim atualiza this.used_(...) para false
             console.log("Nao existe condições para remover");
-            console.log("Estado da linha used = " + this.used_linha);
-            console.log("Estado da coluna used = " + this.used_coluna);
+            console.log("Estado da linha used PRETA = " + this.used_linha_preta);
+            console.log("Estado da coluna used PRETA = " + this.used_coluna_preta);
+            console.log("Estado da linha used BRANCA = " + this.used_linha_branca);
+            console.log("Estado da coluna used BRANCA = " + this.used_coluna_branca);
+
 
         }
 
@@ -823,7 +891,7 @@ class Tabuleiro {
         console.log("-------------------------------");
         */
 
-        let peca_contiguas = Max_Pecas_continguas(cur_linha, cur_coluna, cor_peca, Posicao, this.GamePhase);
+        let peca_contiguas = Max_Pecas_continguas(cur_linha, cur_coluna, cor_peca, Posicao, this.GamePhase,"");
 
         //condição que aplicamos na dropphase 
         if (peca_contiguas[0] <= 3 && peca_contiguas[1] <= 3)
@@ -847,13 +915,13 @@ function Chegou_ao_fim(nivel_do_IA) {
     //verifico se alguma das cores só tem duas peças (Fim de jogo)
     if (nr_brancas < 3) {
         console.log("Peças pretas Ganham ");
-        Update_score(nivel_do_IA,"preta");
+        Update_score(nivel_do_IA, "preta");
         DisplayMessage("Peças pretas  Ganharam!!!");
         return true;
     }
     else if (nr_pretas < 3) {
         console.log("Peças brancas Ganham ");
-        Update_score(nivel_do_IA,"branca");
+        Update_score(nivel_do_IA, "branca");
         DisplayMessage("Peças brancas Ganharam!!!");
         return true;
     }
@@ -957,7 +1025,7 @@ function DisplayMessage(message) {
 //e retorna um array 
 //[Max_pecas_contíguas_linha,Max_pecas_contíguas_coluna
 //,linha_no_tabuleiro_onde_ocorreu,coluna_no_tabuleiro_onde_ocorreu] 
-function Max_Pecas_continguas(linha, coluna, cor_peca, Posicao, GamePhase) {
+function Max_Pecas_continguas(linha, coluna, cor_peca, Posicao, GamePhase,removed) {
     let cols = linha.length - 1;
     // console.log("Dentro de Max");
     //? console.log("Posicao " + Posicao + " pertence a linha " + getLinha(Posicao,cols) + " e coluna "+  getColuna(Posicao,cols));
@@ -985,10 +1053,12 @@ function Max_Pecas_continguas(linha, coluna, cor_peca, Posicao, GamePhase) {
     //Maior numero de pecas contíguas,da mesma cor , na linha e coluna 
     //onde queremos inserir a nossa peça (esta contagem
     //tem em conta a peça que queremos por, ela faz parte deste nr) 
-    let nr_pecas_linha = Biggest_sequence(linha, cor_peca, pos_col_on_array, GamePhase);
-    let nr_pecas_coluna = Biggest_sequence(coluna, cor_peca, pos_row_on_array, GamePhase);
-    //? console.log("maior numero de peças (" + cor_peca + "s) contiguas nesta LINHA = " + nr_pecas_linha);
-    //? console.log("maior numero de peças (" + cor_peca + "s) contiguas nesta COLUNA = " + nr_pecas_coluna);
+    let nr_pecas_linha = Biggest_sequence(linha, cor_peca, pos_col_on_array, GamePhase,removed);
+    let nr_pecas_coluna = Biggest_sequence(coluna, cor_peca, pos_row_on_array, GamePhase,removed);
+    // console.log("linha = " + linha);
+    console.log("maior numero de peças (" + cor_peca + "s) contiguas nesta LINHA = " + nr_pecas_linha);
+    // console.log("coluna = "+ coluna);
+    console.log("maior numero de peças (" + cor_peca + "s) contiguas nesta COLUNA = " + nr_pecas_coluna);
 
 
     //Jogada valida (nao tem mais de 3 peças da mesma cor contiguas)
@@ -998,22 +1068,25 @@ function Max_Pecas_continguas(linha, coluna, cor_peca, Posicao, GamePhase) {
         console.log("JOGADA INVALIDA: não podemos ter mais de 3 peças contiguas da mesma cor (vertical ou horizontal)");
         //Adicionamos o 3 parametro a false para garantir que 
         //é explicito que não valido o jogador ganhar
-        return [nr_pecas_linha, nr_pecas_coluna,false];
+        return [nr_pecas_linha, nr_pecas_coluna, false];
     }
 }
 
 //retorna qual e a maior sequencia simultânea de pecas com a mesma cor
-function Biggest_sequence(seq, cor_peca, pos, GamePhase) {
+function Biggest_sequence(seq, cor_peca, pos, GamePhase,removed) {
     let ans = 0;
     let cur_max = 0
     // console.log("Dentro Biggest");
-    //!colocamos la a peça se tivermos na move phase
-    if (GamePhase != "MovePhase")
+    //!colocamos la a peça se nãotivermos na move phase
+    // console.log("Sequencia("+cor_peca  + ") = " + seq);
+
+    if (GamePhase != "MovePhase" && removed != "removed") 
         seq[pos] = cor_peca;
+    // console.log("Sequencia("+cor_peca  + ") = " + seq);
 
     //ciclo que procura a maior sequencia de peças com a cor == cor_peca
     for (let i = 1; i < seq.length; i++) {
-        //?console.log("seq["+i+ "]="+seq[i]);
+        // console.log("seq["+i+ "]="+seq[i]);
         if (seq[i] == cor_peca) {
             cur_max++;
         }
@@ -1026,10 +1099,10 @@ function Biggest_sequence(seq, cor_peca, pos, GamePhase) {
     if (cur_max > ans) {
         ans = cur_max;
     }
-
-    // console.log("Maior sequencia contígua ,na linha atual , de peças da cor " + cor_peca + " = " + ans);
+    // console.log("Sequencia("+cor_peca  + ") = " + seq);
+    // console.log("Maior sequencia contígua de peças da cor " + cor_peca + " = " + ans);
     //!retiramos a peça colocada 
-    if (GamePhase != "MovePhase")
+    if (GamePhase != "MovePhase" && removed != removed)
         seq[pos] = undefined;
 
     return ans;
@@ -1071,7 +1144,7 @@ function get_nr_linhas_colunas() {
     removeAllChildNodes(tabuleiro);
 
     //criamos um novo Tabuleiro com as linhas e colunas selecionadas
-    tabuleiro = new Tabuleiro("tabuleiro", selector_linhas.value, selector_colunas.value,get_dificulty());
+    tabuleiro = new Tabuleiro("tabuleiro", selector_linhas.value, selector_colunas.value, get_dificulty());
 
 
     //mensagem de inicio de jogo
@@ -1199,7 +1272,7 @@ function create_div_Player(parentid) {
 }
 
 //Vai buscar a dificuldade assim que clicamos no botão de começar o jogo
-function get_dificulty(){
+function get_dificulty() {
     let fieldset = document.getElementById('escolha_dificuldade');
 
     let button_selected = fieldset.querySelector('input[type="radio"]:checked');
@@ -1210,7 +1283,7 @@ function get_dificulty(){
 }
 
 //Função que atualiza a tabela de scores
-function Update_score(nivel_do_IA,vencedor){
+function Update_score(nivel_do_IA, vencedor) {
     //caso preça preta  (jogador) ganhe
     let v = "numero_vitorias_" + nivel_do_IA;
     //caso preça branca (computador) ganhe
@@ -1221,14 +1294,14 @@ function Update_score(nivel_do_IA,vencedor){
     console.log(v);
     console.log(d);
 
-    if (vencedor == "preta"){
+    if (vencedor == "preta") {
         let aux = document.getElementById(v);
-        let cur_value = parseInt(aux.innerHTML) +1;
+        let cur_value = parseInt(aux.innerHTML) + 1;
         aux.innerHTML = cur_value;
     }
-    else if (vencedor == "branca"){
+    else if (vencedor == "branca") {
         let aux = document.getElementById(d);
-        let cur_value = parseInt(aux.innerHTML) +1;
+        let cur_value = parseInt(aux.innerHTML) + 1;
         aux.innerHTML = cur_value;
     }
 }
@@ -1237,12 +1310,12 @@ function Update_score(nivel_do_IA,vencedor){
 async function give_up() {
     console.log("Carreguei no botão");
     let dif = get_dificulty();
-    Update_score(dif,"branca");
-    
+    Update_score(dif, "branca");
+
     DisplayMessage("Jogador desistiu !!!");
 
     await sleep(1000);
-    
+
     //Cria um novo tabuleiro 
     get_nr_linhas_colunas();
 }
