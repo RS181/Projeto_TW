@@ -2,8 +2,8 @@
 class Tabuleiro {
     //"variaveis estaticas" que permitem guardar o numero de peças brancas e pretas
     //todo Voltar a por com 12 
-    nr_pecas_brancas = 12;
-    nr_pecas_pretas = 12;
+    nr_pecas_brancas = 6;
+    nr_pecas_pretas = 6;
 
     //Numero de linhas e colunas
     rows = 0;
@@ -371,7 +371,7 @@ class Tabuleiro {
         if ((this.selected_a_piece == true || this.selected_a_piece == undefined) &&
             (this.peca_selecionada_moveu == true || this.peca_selecionada_moveu == undefined) &&
             (this.Eliminar_peca_resolvido == true || this.Eliminar_peca_resolvido == undefined)) {
-            console.log("Move Phase");
+            console.log("======ENTREI NA MOVE PHASE======");
             console.log("Próximo a mover : " + this.cur_playing);
             DisplayMessage("Proxima peça a mover : (" + this.cur_playing + ")");
             let cor_peca = this.cur_playing;
@@ -387,6 +387,7 @@ class Tabuleiro {
         // usamos esta var , para ter uma variavel "global"
         //dentro deste bloco (para permitir que ao clicar
         //uma peça qualquer ela fique verdadeira)
+        console.log("----------------INICIO--------------");
         var selected = false;
 
         //usamos para indicar se uma peça selecionada foi deesselecionada
@@ -431,7 +432,8 @@ class Tabuleiro {
 
         this.selected_a_piece = false;
         while (selected == false) {
-            console.log("A ESPERA QUE SELECIONEM A PEÇA PARA MOVER");
+            console.log("A ESPERA QUE SELECIONEM A PEÇA PARA MOVER " );
+
             await sleep(100);
         }
         console.log("SELECIONOU UMA PEÇA");
@@ -475,8 +477,6 @@ class Tabuleiro {
                 await sleep(200);
             }
 
-            //retira a possibilidade de selecionar de todas as peças
-            restore(true);
 
             console.log(this.tab);
         }
@@ -491,14 +491,23 @@ class Tabuleiro {
 
             //pus aqui para tentar resolver o bug 
             this.peca_selecionada_moveu = true;
+            //confirmar restore abaixo
+
         }
 
         // this.peca_selecionada_moveu = true;
         //! (CONFIRMAR) this.selected_a_piece = true;
 
+        //retira a possibilidade de selecionar de todas as peças
+        restore(true);
+
+
         //Chamamos o MOVE() outra vez no fim (se não chegamos ao fim do jogo)
-        if (Chegou_ao_fim(this.dificulty) == false)
+        if (Chegou_ao_fim(this.dificulty) == false){
+            console.log("----------------FIM-----------------");
+            console.log("=====CHAMEI NOVAMENTE this.Move()=====")
             this.Move();
+        }
 
     }
 
@@ -1046,9 +1055,9 @@ function Max_Pecas_continguas(linha, coluna, cor_peca, Posicao, GamePhase,remove
     //tem em conta a peça que queremos por, ela faz parte deste nr) 
     let nr_pecas_linha = Biggest_sequence(linha, cor_peca, pos_col_on_array, GamePhase,removed);
     let nr_pecas_coluna = Biggest_sequence(coluna, cor_peca, pos_row_on_array, GamePhase,removed);
-    console.log("linha = " + linha);
+    // console.log("linha = " + linha);
     console.log("maior numero de peças (" + cor_peca + "s) contiguas nesta LINHA = " + nr_pecas_linha);
-    console.log("coluna = "+ coluna);
+    // console.log("coluna = "+ coluna);
     console.log("maior numero de peças (" + cor_peca + "s) contiguas nesta COLUNA = " + nr_pecas_coluna);
 
 
@@ -1067,17 +1076,17 @@ function Max_Pecas_continguas(linha, coluna, cor_peca, Posicao, GamePhase,remove
 function Biggest_sequence(seq, cor_peca, pos, GamePhase,removed) {
     let ans = 0;
     let cur_max = 0
-    console.log("Dentro Biggest");
+    // console.log("Dentro Biggest");
     //!colocamos la a peça se nãotivermos na move phase
-    console.log("Sequencia("+cor_peca  + ") = " + seq);
+    // console.log("Sequencia("+cor_peca  + ") = " + seq);
 
     if (GamePhase != "MovePhase" && removed != "removed") 
         seq[pos] = cor_peca;
-    console.log("Sequencia("+cor_peca  + ") = " + seq);
+    // console.log("Sequencia("+cor_peca  + ") = " + seq);
 
     //ciclo que procura a maior sequencia de peças com a cor == cor_peca
     for (let i = 1; i < seq.length; i++) {
-        console.log("seq["+i+ "]="+seq[i]);
+        // console.log("seq["+i+ "]="+seq[i]);
         if (seq[i] == cor_peca) {
             cur_max++;
         }
@@ -1090,8 +1099,8 @@ function Biggest_sequence(seq, cor_peca, pos, GamePhase,removed) {
     if (cur_max > ans) {
         ans = cur_max;
     }
-    console.log("Sequencia("+cor_peca  + ") = " + seq);
-    console.log("Maior sequencia contígua de peças da cor " + cor_peca + " = " + ans);
+    // console.log("Sequencia("+cor_peca  + ") = " + seq);
+    // console.log("Maior sequencia contígua de peças da cor " + cor_peca + " = " + ans);
     //!retiramos a peça colocada 
     if (GamePhase != "MovePhase" && removed != removed)
         seq[pos] = undefined;
