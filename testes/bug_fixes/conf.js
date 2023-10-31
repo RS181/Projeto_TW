@@ -434,7 +434,9 @@ class Tabuleiro {
             console.log("A ESPERA QUE SELECIONEM A PEÇA PARA MOVER");
             await sleep(100);
         }
-        console.log("SELECIONOU UMA PEÇA")
+        console.log("SELECIONOU UMA PEÇA");
+        this.selected_a_piece = true;
+
 
         //retira a possibilidade de selecionar das outras peças
         // para impedir que selecionemos mais do que uma peça
@@ -449,7 +451,7 @@ class Tabuleiro {
         while (this.peca_selecionada_moveu == false) {
             //caso uma peça seja desselcionada
             if (unselected == true) {
-                this.peca_selecionada_moveu = true;
+                //! this.peca_selecionada_moveu = true;
                 break;
             }
             console.log("A ESPERA MOVAM A PEÇA");
@@ -486,10 +488,13 @@ class Tabuleiro {
                 this.cur_playing = "branca";
             else
                 this.cur_playing = "preta";
+
+            //pus aqui para tentar resolver o bug 
+            this.peca_selecionada_moveu = true;
         }
 
         // this.peca_selecionada_moveu = true;
-        this.selected_a_piece = true;
+        //! (CONFIRMAR) this.selected_a_piece = true;
 
         //Chamamos o MOVE() outra vez no fim (se não chegamos ao fim do jogo)
         if (Chegou_ao_fim(this.dificulty) == false)
