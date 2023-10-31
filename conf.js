@@ -2,8 +2,8 @@
 class Tabuleiro {
     //"variaveis estaticas" que permitem guardar o numero de peças brancas e pretas
     //todo Voltar a por com 12 
-    nr_pecas_brancas = 6;
-    nr_pecas_pretas = 6;
+    nr_pecas_brancas = 12;
+    nr_pecas_pretas = 12;
 
     //Numero de linhas e colunas
     rows = 0;
@@ -175,7 +175,16 @@ class Tabuleiro {
                             }
                         }
                         else {
+
                             console.log("Movimento escolhido inválido");
+                            console.log("Selected div = " + selected_div.id);
+                            console.log("Selected move = " + selected_move.id);
+                            console.log("this.peca_selecionada_moveu = " + this.peca_selecionada_moveu )
+                            console.log("Selected_move.classList.contains('peca_tabuleiro_preta') = " + selected_move.classList.contains('peca_tabuleiro_preta'));
+                            console.log("Selected_move.classList.contains('peca_tabuleiro_branca') = " + selected_move.classList.contains('peca_tabuleiro_branca'));
+                            console.log("!(this.Last_Move_branca[0] == to && this.Last_Move_branca[1] == from) = " +!(this.Last_Move_branca[0] == to && this.Last_Move_branca[1] == from) );
+                            console.log("!(this.Last_Move_preta[0] == to && this.Last_Move_preta[1] == from) = " + !(this.Last_Move_preta[0] == to && this.Last_Move_preta[1] == from));
+                            console.log(this.tab);
                             DisplayMessage("Escolhe uma posição válida para mover a peça ")
 
                         }
