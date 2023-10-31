@@ -2,8 +2,8 @@
 class Tabuleiro {
     //"variaveis estaticas" que permitem guardar o numero de peças brancas e pretas
     //todo Voltar a por com 12 
-    nr_pecas_brancas = 6;
-    nr_pecas_pretas = 6;
+    nr_pecas_brancas = 10;
+    nr_pecas_pretas = 10;
 
     //Numero de linhas e colunas
     rows = 0;
@@ -261,10 +261,10 @@ class Tabuleiro {
                 this.tab[from.id] = cor_peca;
                 this.tab[to.id] = undefined;
                 if (t[0] <= 3 && t[1] <= 3) {
-                    console.log("Max linha t[0] = " + t[0]);
-                    console.log("Max coluna t[1] = " + t[1]);
-                    console.log("(Antes movimento ) linha: " + linha);
-                    console.log("(Antes movimento ) coluna: " + coluna);
+                    // console.log("Max linha t[0] = " + t[0]);
+                    // console.log("Max coluna t[1] = " + t[1]);
+                    // console.log("(Antes movimento ) linha: " + linha);
+                    // console.log("(Antes movimento ) coluna: " + coluna);
                     console.log("IS_VALID() = TRUE");
                     return true;
                 }
@@ -503,7 +503,7 @@ class Tabuleiro {
 
 
         //Chamamos o MOVE() outra vez no fim (se não chegamos ao fim do jogo)
-        if (Chegou_ao_fim(this.dificulty) == false){
+        if (this.Chegou_ao_fim(this.dificulty) == false){
             console.log("----------------FIM-----------------");
             console.log("=====CHAMEI NOVAMENTE this.Move()=====")
             this.Move();
@@ -555,7 +555,6 @@ class Tabuleiro {
                         }
 
                         //Verifica se o jogo terminou 
-                        // this.Chegou_ao_fim()
                     }
                     else {
                         DisplayMessage("POSIÇÃO INVALIDA: não é possivel ter mais de 3 peças contiguas na mesma linha ou coluna.Jogue novamente numa posição válida.");
@@ -597,7 +596,6 @@ class Tabuleiro {
                         }
 
                         //Verifica se o jogo terminou
-                        // this.Chegou_ao_fim()
                     }
                     else {
                         // alert("POSIÇÃO INVALIDA: não é possivel ter mais de 3 peças contiguas na mesma linha ou coluna");
@@ -901,39 +899,122 @@ class Tabuleiro {
         }
     }
 
-}
-//Verifica se jogo terminou ,se sim 
-//retorna [possivel_acabar,quem_ganha]
-function Chegou_ao_fim(nivel_do_IA) {
-    // console.log("Entrei no chegou_ao_fim");
 
-    //Guarda o nr de peças brancas atualmente no tabuleiro
-    let nr_brancas = document.querySelectorAll("div.item_tabuleiro > div.peca_tabuleiro_branca").length;
-    let nr_pretas = document.querySelectorAll("div.item_tabuleiro > div.peca_tabuleiro_preta").length;
+    Chegou_ao_fim(nivel_do_IA) {
+        console.log("Entrei no chegou_ao_fim");
+        //Lista com as peças de cada cor 
+        let pecas_brancas = document.querySelectorAll("div.item_tabuleiro > div.peca_tabuleiro_branca"); 
+        let pecas_pretas = document.querySelectorAll("div.item_tabuleiro > div.peca_tabuleiro_preta"); 
+    
+        // nr de peças brancas atualmente no tabuleiro
+        let nr_brancas = pecas_brancas.length;
+        let nr_pretas = pecas_pretas.length;
+    
+        //Se já não tiver mais peças para jogar 
+        //verifico se alguma das cores só tem duas peças (Fim de jogo)
+        if (nr_brancas < 3) {
+            console.log("Peças pretas Ganham ");
+            Update_score(nivel_do_IA, "preta");
+            DisplayMessage("Peças pretas  Ganharam!!!");
+            return true;
+        }
+        else if (nr_pretas < 3) {
+            console.log("Peças brancas Ganham ");
+            Update_score(nivel_do_IA, "branca");
+            DisplayMessage("Peças brancas Ganharam!!!");
+            return true;
+        }
+    
+        console.log(pecas_brancas);
+        console.log(pecas_pretas);
 
-    //Se já não tiver mais peças para jogar 
-    //verifico se alguma das cores só tem duas peças (Fim de jogo)
-    if (nr_brancas < 3) {
-        console.log("Peças pretas Ganham ");
-        Update_score(nivel_do_IA, "preta");
-        DisplayMessage("Peças pretas  Ganharam!!!");
-        return true;
+        //Pomos a verdadeiro (mas se econtramos algum movimento valido para
+        //qualquer peça no ciclo abaixo pomos a false)
+        let branca_perdeu = true;
+        let preta_perdeu = true;
+
+        //ciclo que quebra mal encontre um movimento válido (peças brancas)
+        loop1 : for (let peca of pecas_brancas){
+            let from = peca.parentElement.id;
+            // [cima,baixo,direita,esquerda]
+            let direction = [from-this.cols,
+                parseInt(from) + parseInt(this.cols),
+                parseInt(from) + 1,
+                parseInt(from) - 1
+                ]
+            for (let d of direction){
+                //restrições relacionadas com tabuleiro
+                if (d > 0 && d <= this.cols*this.cols && 
+                    !(from % this.cols == 0 && (d-1) % this.cols ==0) &&
+                    !((from-1) % this.cols == 0 && d % this.cols == 0) && 
+                    this.is_valid(from,d)
+                    ){
+                    console.log("DENTRO TABULEIRO(" + from + "->" + d +")");
+                    // console.log("DENTRO TABULEIRO(" + from + "->" + d +" = " + this.is_valid(from,d) +")");
+                    branca_perdeu = false;
+                    break loop1;
+                }
+                else {
+                    //?console.log ("FORA TABULEIRO (" + from + "->" + d + ")");
+                }
+            }
+        }
+
+        if (branca_perdeu == true){
+            console.log("Peças pretas Ganham (Peças brancas não tem movimentos válidos)");
+            Update_score(nivel_do_IA, "preta");
+            DisplayMessage("Peças pretas  Ganharam(Peças brancas não tem movimentos válidos)!!!");
+            return true;
+        }
+        
+        //ciclo que quebra mal encontre um movimento válido (peças pretas)
+        loop2 : for (let peca of pecas_pretas){
+            let from = peca.parentElement.id;
+            // [cima,baixo,direita,esquerda]
+            let direction = [from-this.cols,
+                parseInt(from) + parseInt(this.cols),
+                parseInt(from) + 1,
+                parseInt(from) - 1
+                ]
+            for (let d of direction){
+                //restrições relacionadas com tabuleiro
+                if (d > 0 && d <= this.cols*this.cols && 
+                    !(from % this.cols == 0 && (d-1) % this.cols ==0) &&
+                    !((from-1) % this.cols == 0 && d % this.cols == 0) && 
+                    this.is_valid(from,d)
+                    ){
+                    console.log("DENTRO TABULEIRO(" + from + "->" + d +")");
+                    // console.log("DENTRO TABULEIRO(" + from + "->" + d +" = " + this.is_valid(from,d) +")");
+                    preta_perdeu = false;
+                    break loop2;
+                }
+                else {
+                    //?console.log ("FORA TABULEIRO (" + from + "->" + d + ")");
+                }
+            }
+        }
+
+        if (preta_perdeu == true){
+            console.log("Peças brancas Ganham (Peças pretas não tem movimentos válidos)");
+            Update_score(nivel_do_IA, "branca");
+            DisplayMessage("Peças brancas Ganharam(Peças pretas não tem movimentos válidos)!!!");
+            return true;
+        }
+
+
+
+
+    
+    
+    
+        return false;
     }
-    else if (nr_pretas < 3) {
-        console.log("Peças brancas Ganham ");
-        Update_score(nivel_do_IA, "branca");
-        DisplayMessage("Peças brancas Ganharam!!!");
-        return true;
-    }
 
-    //Guarda todas as divs que contêm peças
-    let celulas_ocupadas = document.querySelectorAll("div.item_tabuleiro > div");
 
-    //todo falta implementar a parte de verificar se existem movimentos 
-    //todo validos para uma cor (senão ganhou a cor oposta) 
 
-    return false;
-    // console.log(celulas_ocupadas);
+    
+
+
 }
 
 //dessacocia a div que representa a peca , a id da
