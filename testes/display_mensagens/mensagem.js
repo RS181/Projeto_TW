@@ -1,12 +1,22 @@
 window.onload = function () {
     console.log("Dom");
-    const counter = new TicTacToe("base");
     let selector_linhas = document.querySelector('#input_linhas_tabuleiro');
 
     let selector_colunas = document.querySelector('#input_colunas_tabuleiro');
 
     tabuleiro = new Tabuleiro("tabuleiro", selector_linhas.value, selector_colunas.value);
 }
+
+/* FUNCÃO DE DISPLAY DE MENSAGENS*/
+
+function DisplayMessage (message){
+    const message_div = document.getElementById("mensagens_ui");
+    console.log(message_div);
+    const first_child = message_div.firstChild;
+    first_child.textContent = message;
+}
+
+/* FIM FUNCÃO DE DISPLAY DE MENSAGENS*/
 
 class Tabuleiro {
     //"variaveis estaticas" que permitem guardar o numero de peças brancas e pretas
@@ -22,7 +32,7 @@ class Tabuleiro {
 
     constructor(parentid, rows, cols) {
         let parent = document.getElementById(parentid);
-        this.fase = "colocacao_de_pecas";
+
         //Inicializamos as variaveis da classe
         this.rows = rows;
         this.cols = cols;
@@ -32,9 +42,10 @@ class Tabuleiro {
         console.log(this.used_linha);
         console.log(this.used_coluna);
 
-        //Representamos o tabuleiro como array (com indice que começa em 1)
+        //Representamos o tabuleiro como matriz (com indice que começa em 1)
         this.tab = new Array(rows * cols + 1);
         this.tab[0] = "NULL";
+
         if (rows == 6 && cols == 5) {
             console.log("Tabuleiro 6 por 5");
             parent.className = "tabuleiro_6_por_5";
@@ -69,60 +80,6 @@ class Tabuleiro {
             }
         }
 
-        //this.play(parentid, 12, 12);
-    }
-
-    play(id_celula) {
-        if (this.fase === "colocacao_de_pecas") {
-            // Fase de colocação de peças
-            if (this.nr_pecas_brancas !== 0) {
-                this.por_peca(id_celula);
-            } else {
-                this.fase = "movimento_de_pecas";
-                console.log("Iniciando a fase de movimento de peças");
-            }
-        } else if (this.fase === "movimento_de_pecas") {
-            // Fase de movimento de peças
-            if (this.nr_pecas_brancas > 0 || this.nr_pecas_pretas > 0) {
-                console.log("Você ainda tem peças para colocar na fase de movimento de peças.");
-            } else {
-                this.movePiece(id_celula);
-            }
-        }
-    }
-
-    //Função movePiece por completar
-    movePiece() {
-        return;
-    }
-    
-    //Serve como Drop_phase
-    por_peca(id_celula) {
-        // Query que contém cada célula da tabela
-        const posicoes = document.querySelectorAll(".item_tabuleiro");
-    
-        for (let celula of posicoes) {
-            if (id_celula == celula.id) {
-                const existingPiece = celula.querySelector('.peca_tabuleiro_preta, .peca_tabuleiro_branca');
-                if (!existingPiece) {
-                    // A célula está vazia, então podemos colocar uma peça nela
-                    let peca = document.createElement('div');
-                    // Jogam primeiro quem escolheu as peças pretas
-                    if (this.nr_pecas_pretas >= this.nr_pecas_brancas) {
-                        this.nr_pecas_pretas--;
-                        peca.className = "peca_tabuleiro_preta";
-                    } else {
-                        this.nr_pecas_brancas--;
-                        peca.className = "peca_tabuleiro_branca";
-                    }
-                    celula.appendChild(peca);
-                    console.log("Número atual de peças brancas: " + this.nr_pecas_brancas);
-                    console.log("Número atual de peças pretas: " + this.nr_pecas_pretas);
-                } else {
-                    console.log("Esta célula já possui uma peça. Escolha outra célula vazia.");
-                }
-            }
-        }
     }
 
     play(id_celula) {
@@ -143,7 +100,7 @@ class Tabuleiro {
                 this.por_peca(id_celula);
         }
         else {
-            console.log("TODO: Implementar a move phase");
+            console.log("TODO: Implementar a move phase")
             //TODO testar a ver se funciona
             this.Chegou_ao_fim();
         }
@@ -155,6 +112,7 @@ class Tabuleiro {
         //Debug de consola
 
 
+        //todo Falta fazer verificação a ver se posição e valida para colocar 
         for (let celula of posicoes) {
             let peca = document.createElement('div');
 
@@ -167,6 +125,10 @@ class Tabuleiro {
 
                     //Verifica se a posição é válida
                     if (this.Posicao_valida(celula.id, "preta") == true) {
+
+                        //!Supondo que o jogador joga com as peças pretas
+                        DisplayMessage("É a vez do oponente  de pôr uma peça");
+
                         // ?console.log("TESTE =>" + this.Posicao_valida(celula.id, "preta"));
                         //Diminuimos o nr de peças pretas
                         this.nr_pecas_pretas--;
@@ -198,8 +160,8 @@ class Tabuleiro {
                     }
                     //Se for inválida manda um alert 
                     else {
-
-                        alert("POSIÇÃO INVALIDA: não é possivel ter mais de 3 peças contiguas na mesma linha ou coluna");
+                        DisplayMessage("POSIÇÃO INVALIDA: não é possivel ter mais de 3 peças contiguas na mesma linha ou coluna.Jogue novamente numa posição válida.");
+                        // alert("POSIÇÃO INVALIDA: não é possivel ter mais de 3 peças contiguas na mesma linha ou coluna");
 
                     }
                 }
@@ -208,6 +170,10 @@ class Tabuleiro {
                     //Verifica se a posição é válida
                     if (this.Posicao_valida(celula.id, "branca") == true) {
                         //?console.log("TESTE =>" + this.Posicao_valida(celula.id, "branca"));
+
+                        //!Supondo que o oponente joga com as peças brancas
+                        DisplayMessage("É a vez do jogador de pôr uma peça");
+
 
                         //Diminuimos o nr de peças brancas
                         this.nr_pecas_brancas--;
@@ -237,7 +203,9 @@ class Tabuleiro {
                     }
                     //Se for inválida manda um alert
                     else {
-                        alert("POSIÇÃO INVALIDA: não é possivel ter mais de 3 peças contiguas na mesma linha ou coluna");
+                        // alert("POSIÇÃO INVALIDA: não é possivel ter mais de 3 peças contiguas na mesma linha ou coluna");
+                        DisplayMessage("POSIÇÃO INVALIDA: não é possivel ter mais de 3 peças contiguas na mesma linha ou coluna.Jogue novamente numa posição válida.");
+
                     }
 
                 }
@@ -247,7 +215,9 @@ class Tabuleiro {
             }
             else if (id_celula == celula.id && celula.childElementCount != 0) {
                 console.log("Celula está ocupada");
-                alert("Posição ocupada,por favor selecione uma posição vazia");
+                // alert("Posição ocupada,por favor selecione uma posição vazia");
+                DisplayMessage("POSIÇÃO INVALIDA: Posição ocupada,por favor selecione uma posição vazia.");
+
             }
 
         }
@@ -281,6 +251,11 @@ class Tabuleiro {
 
         //todo Implementar o resto 
         // console.log(celulas_ocupadas);
+
+        
+
+                
+
     }
 
 
@@ -302,6 +277,8 @@ class Tabuleiro {
 
         if ((aux[0] ==3 && this.used_linha[aux[2]] == false) ||
          (aux[1] == 3 && this.used_coluna[aux[3]] == false)){
+
+            DisplayMessage("Foi feita uma linha e deve capturar uma peça do adversário");
             let peca_a_remover = "";
             switch (cor_peca){
                 case "preta":
@@ -433,6 +410,13 @@ class Tabuleiro {
             console.log("Removeu a peça");    
             console.log("Estado da linha used = " + this.used_linha);
             console.log("Estado da coluna used = " + this.used_coluna);
+
+            /*parte das mensagens*/
+            if (cor_peca == "preta")
+                DisplayMessage("É a vez do oponente de pôr uma peça");
+            else if (cor_peca == "branca")
+                DisplayMessage("É a vez do jogador de pôr uma peça");
+                
 
         }
         //
@@ -751,41 +735,7 @@ function findDifferentElement(array1, array2) {
     //é o elemento diferente
     return array1[array1.length-1];
     
-}
-
-
-class TicTacToe {
-    constructor(id) { //...      
-        this.content = new Array(9);
-        this.board = new Array(9);
-        this.current = 'X';
-        // ...
-        const parent = document.getElementById(id);
-        const board = document.createElement('div');
-
-        board.className = 'board';
-        parent.appendChild(board);
-        //..
-
-        for (let i = 0; i < 9; i++) {
-            let cell = document.createElement("div");
-            cell.className = "cell";
-            board.appendChild(cell);
-
-            cell.onclick = () => this.play(i);
-
-            this.board[i] = cell;
-        }
-    }
-    play(pos) {
-        this.content[pos] = this.current;
-        this.board[pos].innerHTML = this.current;
-
-        this.current = (this.current == 'X' ? 'O' : 'X');
-    }
-}
-
-
+  }
 
 //Função que remove todos os filhos de um pai
 function removeAllChildNodes(parent) {
