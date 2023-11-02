@@ -1,6 +1,7 @@
 body{
     font-family: sans-serif;
     font-size: larger;
+    background-color: #C9CEBD;
 }
 h1 {
    font-size: xx-large;   
@@ -34,42 +35,62 @@ fieldset{
     margin-bottom: 10px;
     border-style: solid;
     padding-left: 10px;
+    background-color: #838E83;
+    border-color: #3A403A;
 }
 
 /*Caixa de texto com as regras com scr*/
 .caixa_texto {
     width: 500px;
     height: 150px;
-    overflow: scroll;
+    overflow: auto;
     margin: 0;
     background-color: #eeeeee;
     text-align: left;
     padding: 0;
     margin: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 
 .container_v1 {
     display: inline-block;
-    border-style: solid;
     width: 250px;
     float: left;
-    border-color: rgb(206, 56, 56);
+    background-color: #838E83;
     padding: 5px;
 }
 .container_v2{
-    border-style: solid;
     float: left;
-    border-color: royalblue;
-    padding: 5px;
+    background-color: #838E83;
+    margin-right: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.container_v3{
+    float: left;
+    background-color: #838E83;
+    padding: 2.5px;
+    border-bottom: 20px;
+}
+
+.container_v4{
+    float: right;
+    background-color: #838E83;
+    display: flex;
+    flex-direction: column;
+    visibility: hidden;
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 
 .container_login{
-    margin-top: 390px;
-    border-style: solid;
-    border-color: chocolate;
     padding: 5px;
     width: 250px;
+    background-color: #838E83;
 
 }
 
@@ -78,12 +99,10 @@ fieldset{
 .tabuleiro_5_por_5,
 .tabuleiro_5_por_6 {
     float: right;
-    position: relative;
-    top: -580px;
-    right: 30px;
+    position: static;
     display: grid;
     border-style: solid;
-    border-color: blue;
+    border-color: #3A403A;
     background-color: wheat;
     padding: 5px;
 }
@@ -122,9 +141,10 @@ fieldset{
 .item {
     padding: 5px;
     margin: 5px;
-    border-color: chartreuse;
+    border-color: #3A403A;
     border-style: solid;
     text-align: center;
+    flex-grow: 1;
 }
 
 .item_tabuleiro {
@@ -166,30 +186,72 @@ fieldset{
 
 /*Css para as mensagens UI*/
 .mensagens_ui {
-    width: 611px;
-    height: 70px;
-    border-style: solid;
-    border-color: purple;
+    background-color: #838E83;
     float: right;
-    text-align: left;
+    text-align: center;
     font-size: larger;
     position: relative;
-    top: -80px;
-    right: 30px;
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    visibility: hidden;
+    max-width: 500px;
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
+
+/* CSS */
 .standard_button {
-    padding: 8px;
-    background-color: aqua;
-    font-family: sans-serif;
-    font-weight: bold;
-    border-radius: 100px;
+    align-items: center;
+    appearance: none;
+    background-color: #FCFCFD;
+    border-radius: 4px;
+    border-width: 0;
+    box-shadow: rgba(45, 35, 66, 0.4) 0 2px 4px,rgba(45, 35, 66, 0.3) 0 7px 13px -3px,#D6D6E7 0 -3px 0 inset;
+    box-sizing: border-box;
     cursor: pointer;
+    display: inline-flex;
+    font-family: sans-serif;
+    font-size: larger;
+    height: 48px;
+    justify-content: center;
+    line-height: 1;
+    list-style: none;
+    overflow: hidden;
+    padding-left: 16px;
+    padding-right: 16px;
+    position: relative;
+    text-align: left;
+    text-decoration: none;
+    transition: box-shadow .15s,transform .15s;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    white-space: nowrap;
+    will-change: box-shadow,transform;
 }
+
+.standard_button:focus {
+  box-shadow: #D6D6E7 0 0 0 1.5px inset, rgba(45, 35, 66, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+}
+
+.standard_button:hover {
+  box-shadow: rgba(45, 35, 66, 0.4) 0 4px 8px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+  transform: translateY(-2px);
+}
+
+.standard_button:active {
+  box-shadow: #D6D6E7 0 3px 7px inset;
+  transform: translateY(2px);
+}
+
 
 /*css das Regras (inclui alguns elementos extras de formatação)*/
 details>summary {
-    padding: 4px;
+    padding: 10px;
     width: 200px;
     background-color: #eeeeee;
     border: none;
@@ -221,8 +283,8 @@ p.destacar {
 
 .form_l {
     padding: 20px;
-    color: grey;
-    border-color: chartreuse;
+    color: black;
+    border-color: #3A403A;
     border-style: solid;
 }
 
@@ -234,3 +296,8 @@ p.destacar {
 .standard_button:active {
     opacity: 0.5;
 }
+
+.regras {
+    border-color: #3A403A;
+}
+
