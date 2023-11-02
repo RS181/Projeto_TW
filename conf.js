@@ -1226,7 +1226,12 @@ function get_nr_linhas_colunas() {
 
     //criamos um novo Tabuleiro com as linhas e colunas selecionadas
     tabuleiro = new Tabuleiro("tabuleiro", selector_linhas.value, selector_colunas.value, get_dificulty());
-
+     //A frase que explica o estado do jogo passa a ser vísivel depois da criação do tabuleiro
+     let mensagem = document.getElementById("mensagens_ui");
+     mensagem.style.visibility = "visible";
+     mensagem.style.justifyContent = "center";
+     let container_v4 = document.getElementById("container_v4");
+     container_v4.style.visibility = "visible";
 
     //mensagem de inicio de jogo
     DisplayMessage("É a vez da peça preta jogar");
