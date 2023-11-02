@@ -1,9 +1,8 @@
 /* Classe que representa o tabuleiro*/
 class Tabuleiro {
     //"variaveis estaticas" que permitem guardar o numero de peças brancas e pretas
-    //todo Voltar a por com 12 
-    nr_pecas_brancas = 10;
-    nr_pecas_pretas = 10;
+    nr_pecas_brancas = 12;
+    nr_pecas_pretas = 12;
 
     //Numero de linhas e colunas
     rows = 0;
@@ -347,7 +346,6 @@ class Tabuleiro {
 
         //Enquanto tem pecas para jogar
         if (this.nr_pecas_brancas != 0 || this.nr_pecas_pretas != 0) {
-            //! TER CUIDADO COM ESTA DEFINIÇÃO
             // Se existir um caso em que é possivel remover uma peça
             // então está condição obriga a que se remova primeiro a peça
             // e só depois de remover-la é que this.Eliminar_peca_resolvido 
@@ -557,7 +555,7 @@ class Tabuleiro {
                         //Verifica se o jogo terminou 
                     }
                     else {
-                        DisplayMessage("POSIÇÃO INVALIDA: não é possivel ter mais de 3 peças contiguas na mesma linha ou coluna.Jogue novamente numa posição válida.");
+                        DisplayMessage("So é possivel ter 3 peças contiguas de uma cor na mesma linha/coluna.Escolha uma jogada válida.");
                         // alert("POSIÇÃO INVALIDA: não é possivel ter mais de 3 peças contiguas na mesma linha ou coluna");
                     }
                 }
