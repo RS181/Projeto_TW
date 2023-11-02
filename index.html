@@ -69,7 +69,7 @@
         </div>
 
         
-        <div class="item"><button class="standard_button">Desistir</button></div>
+        <div class="item"><button class="standard_button" onclick="give_up()">Desistir</button></div>
     </div>
         <!--Desistir do jogo-->
     </div>    
@@ -206,6 +206,26 @@
                     
                 
             </div>
+                <!--Contem o que há de mais "relevante" na pagina -->
+        <main id="Area_principal">
+
+            <!--Área de Identificação -->
+            <div class="container_login" id="Identificacao">
+
+                <!--Formulário Login-->
+
+                <!--Depois da autenticação,
+                    esta mesma área deve ser usada para apresentar o identificador, 
+                    permitindo terminar a sessão autenticada.-->
+                <form action="registar" method=post class="form_l">
+                    Username <input name="User_name" style="margin-bottom: 10px;"><br>
+                    Password <input type="password" name="Password" style="margin-bottom: 10px;"> <br>
+                    <input type=reset>
+                    <input type=submit value=Registar>
+                </form>
+
+            </div>
+            </main>
         </div>
         <div class="container_v4" id="container_v4">
             <!--Área de Mensagens-->
@@ -215,33 +235,6 @@
             <div id="tabuleiro"></div>
         </div>
     </nav>
-    <!--Contem o que há de mais "relevante" na pagina -->
-    <main id="Area_principal">
-
-        <!--Área de Identificação -->
-        <div class="container_login" id="Identificacao">
-
-            <!--Formulário Login-->
-
-            <!--Depois da autenticação,
-                esta mesma área deve ser usada para apresentar o identificador, 
-                permitindo terminar a sessão autenticada.-->
-            <form action="registar" method=post class="form_l">
-                Username <input name="User_name" style="margin-bottom: 10px;"><br>
-                Password <input type="password" name="Password" style="margin-bottom: 10px;"> <br>
-                <input type=reset>
-                <input type=submit value=Registar>
-            </form>
-
-        </div>
-
-
-
-
-
-
-    </main>
-
 </body>
 
 </html>

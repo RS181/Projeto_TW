@@ -82,10 +82,12 @@ fieldset{
     display: flex;
     flex-direction: column;
     visibility: hidden;
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 
 .container_login{
-    margin-top: 500px;
     padding: 5px;
     width: 250px;
     background-color: #838E83;
@@ -196,8 +198,8 @@ fieldset{
     max-width: 500px;
     padding-left: 50px;
     padding-right: 50px;
-    padding-top: 20px;
-    padding-bottom: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 
