@@ -33,7 +33,7 @@ class Tabuleiro {
         //?console.log(this.used_linha_preta);
         //?console.log(this.used_coluna_preta);
 
-        console.log("Dificuldade da Ia = " + this.dificulty);
+        //console.log("Dificuldade da Ia = " + this.dificulty);
 
         //Representamos o tabuleiro como array (com indice que começa em 1)
         this.tab = new Array(rows * cols + 1);
@@ -49,19 +49,19 @@ class Tabuleiro {
 
 
         if (rows == 6 && cols == 5) {
-            console.log("Tabuleiro 6 por 5");
+            //console.log("Tabuleiro 6 por 5");
             parent.className = "tabuleiro_6_por_5";
         }
         else if (rows == 6 && cols == 6) {
-            console.log("Tabuleiro 6 por 6");
+            //console.log("Tabuleiro 6 por 6");
             parent.className = "tabuleiro_6_por_6";
         }
         else if (rows == 5 && cols == 5) {
-            console.log("Tabuleiro 5 por 5");
+            //console.log("Tabuleiro 5 por 5");
             parent.className = "tabuleiro_5_por_5";
         }
         else if (rows == 5 && cols == 6) {
-            console.log("Tabuleiro 5 por 6");
+            //console.log("Tabuleiro 5 por 6");
             parent.className = "tabuleiro_5_por_6"
         }
 
@@ -94,7 +94,7 @@ class Tabuleiro {
                             && !(this.Last_Move_branca[0] == to && this.Last_Move_branca[1] == from)
                             && !(this.Last_Move_preta[0] == to && this.Last_Move_preta[1] == from)) {
 
-                            console.log("Pronto para mover uma peça")
+                            //console.log("Pronto para mover uma peça")
                             //! Cuidado com estas condições
                             /*
                             console.log(from + " -> " + to);
@@ -127,7 +127,7 @@ class Tabuleiro {
                             */
                             //só faz o movimento se for valido
                             if (valida) {
-                                console.log("Movimento escolhido [válido]");
+                                //console.log("Movimento escolhido [válido]");
                                 let src = selected_div.parentElement;
                                 let dest = document.getElementById(event.target.id);
 
@@ -166,7 +166,7 @@ class Tabuleiro {
                                 let coluna = this.coluna_aux(src.id, vez);
                                 let linha = this.linha_aux(src.id, vez);
                                 let aux = Max_Pecas_continguas(linha, coluna, vez, src.id, this.GamePhase, "");
-                                console.log("VERIFICAÇÃO APÓS MOVIMENTO(" + vez + "): " + aux);
+                                //console.log("VERIFICAÇÃO APÓS MOVIMENTO(" + vez + "): " + aux);
 
                                 if (vez == "preta") {
                                     if (aux[0] < 3) {
@@ -192,15 +192,15 @@ class Tabuleiro {
                         }
                         else {
 
-                            console.log("Movimento escolhido inválido");
-                            console.log("Selected div = " + selected_div.id);
-                            console.log("Selected move = " + selected_move.id);
-                            console.log("this.peca_selecionada_moveu = " + this.peca_selecionada_moveu)
-                            console.log("Selected_move.classList.contains('peca_tabuleiro_preta') = " + selected_move.classList.contains('peca_tabuleiro_preta'));
-                            console.log("Selected_move.classList.contains('peca_tabuleiro_branca') = " + selected_move.classList.contains('peca_tabuleiro_branca'));
-                            console.log("!(this.Last_Move_branca[0] == to && this.Last_Move_branca[1] == from) = " + !(this.Last_Move_branca[0] == to && this.Last_Move_branca[1] == from));
-                            console.log("!(this.Last_Move_preta[0] == to && this.Last_Move_preta[1] == from) = " + !(this.Last_Move_preta[0] == to && this.Last_Move_preta[1] == from));
-                            console.log(this.tab);
+                            //console.log("Movimento escolhido inválido");
+                            //console.log("Selected div = " + selected_div.id);
+                            //console.log("Selected move = " + selected_move.id);
+                            //console.log("this.peca_selecionada_moveu = " + this.peca_selecionada_moveu)
+                            //console.log("Selected_move.classList.contains('peca_tabuleiro_preta') = " + selected_move.classList.contains('peca_tabuleiro_preta'));
+                            //console.log("Selected_move.classList.contains('peca_tabuleiro_branca') = " + selected_move.classList.contains('peca_tabuleiro_branca'));
+                            //console.log("!(this.Last_Move_branca[0] == to && this.Last_Move_branca[1] == from) = " + !(this.Last_Move_branca[0] == to && this.Last_Move_branca[1] == from));
+                            //console.log("!(this.Last_Move_preta[0] == to && this.Last_Move_preta[1] == from) = " + !(this.Last_Move_preta[0] == to && this.Last_Move_preta[1] == from));
+                            //console.log(this.tab);
                             DisplayMessage("Escolhe uma posição válida para mover a peça ")
 
                         }
@@ -264,17 +264,17 @@ class Tabuleiro {
                     // console.log("Max coluna t[1] = " + t[1]);
                     // console.log("(Antes movimento ) linha: " + linha);
                     // console.log("(Antes movimento ) coluna: " + coluna);
-                    console.log("IS_VALID() = TRUE");
+                    //console.log("IS_VALID() = TRUE");
                     return true;
                 }
                 else {
-                    console.log("IS_VALID() = FALSE");
+                    //console.log("IS_VALID() = FALSE");
                     return false;
                 }
                 // ?console.log("===========================================");
             }
             else {
-                console.log("Posição ocupada");
+                //console.log("Posição ocupada");
                 //retorna falso caso celula destino esteja ocupada
                 return false;
                 //alert("Posição ocupada");
@@ -359,8 +359,8 @@ class Tabuleiro {
         if ((this.selected_a_piece == true || this.selected_a_piece == undefined) &&
             (this.peca_selecionada_moveu == true || this.peca_selecionada_moveu == undefined) &&
             (this.Eliminar_peca_resolvido == true || this.Eliminar_peca_resolvido == undefined)) {
-            console.log("======ENTREI NA MOVE PHASE======");
-            console.log("Próximo a mover : " + this.cur_playing);
+            //console.log("======ENTREI NA MOVE PHASE======");
+            //console.log("Próximo a mover : " + this.cur_playing);
             DisplayMessage("Proxima peça a mover : (" + this.cur_playing + ")");
             let cor_peca = this.cur_playing;
             if (this.cur_playing == "preta")
@@ -375,7 +375,7 @@ class Tabuleiro {
         // usamos esta var , para ter uma variavel "global"
         //dentro deste bloco (para permitir que ao clicar
         //uma peça qualquer ela fique verdadeira)
-        console.log("----------------INICIO--------------");
+        //console.log("----------------INICIO--------------");
         var selected = false;
 
         //usamos para indicar se uma peça selecionada foi deesselecionada
@@ -402,15 +402,15 @@ class Tabuleiro {
             peca.onclick = function () {
                 // unclick 
                 if (this.classList.contains("selected")) {
-                    console.log("UNCLICK");
-                    console.log("esta peça já foi selecionada");
+                    //console.log("UNCLICK");
+                    //console.log("esta peça já foi selecionada");
                     peca.classList.remove("selected");
                     peca.style["border-color"] = "grey";
                     unselected = true;
                 }
                 // click 
                 else {
-                    console.log("CLICK");
+                    //console.log("CLICK");
                     peca.style["border-color"] = "#60e550";
                     peca.classList.add("selected");
                     selected = true;
@@ -420,11 +420,11 @@ class Tabuleiro {
 
         this.selected_a_piece = false;
         while (selected == false) {
-            console.log("A ESPERA QUE SELECIONEM A PEÇA PARA MOVER ");
+            //console.log("A ESPERA QUE SELECIONEM A PEÇA PARA MOVER ");
 
             await sleep(100);
         }
-        console.log("SELECIONOU UMA PEÇA");
+        //console.log("SELECIONOU UMA PEÇA");
         this.selected_a_piece = true;
 
 
@@ -444,10 +444,10 @@ class Tabuleiro {
                 //! this.peca_selecionada_moveu = true;
                 break;
             }
-            console.log("A ESPERA MOVAM A PEÇA");
+            //console.log("A ESPERA MOVAM A PEÇA");
             await sleep(1000);
         }
-        console.log("PEÇA MOVEU");
+        //console.log("PEÇA MOVEU");
         /* 
         ! Depois de mover a peça
         */
@@ -466,7 +466,7 @@ class Tabuleiro {
             }
 
 
-            console.log(this.tab);
+            //console.log(this.tab);
         }
         else {
             //troca a vez do jogador , para depois ao chamar this.move
@@ -492,8 +492,8 @@ class Tabuleiro {
 
         //Chamamos o MOVE() outra vez no fim (se não chegamos ao fim do jogo)
         if (this.Chegou_ao_fim(this.dificulty) == false) {
-            console.log("----------------FIM-----------------");
-            console.log("=====CHAMEI NOVAMENTE this.Move()=====")
+            //console.log("----------------FIM-----------------");
+            //console.log("=====CHAMEI NOVAMENTE this.Move()=====")
             this.Move();
         }
 
@@ -571,7 +571,7 @@ class Tabuleiro {
                 }
             }
             else if (id_celula == celula.id && celula.childElementCount != 0) {
-                console.log("Celula está ocupada");
+                //console.log("Celula está ocupada");
                 // alert("Posição ocupada,por favor selecione uma posição vazia");
                 DisplayMessage("POSIÇÃO INVALIDA: Posição ocupada,por favor selecione uma posição vazia.");
             }
@@ -609,14 +609,15 @@ class Tabuleiro {
                     DisplayMessage("Foi feita uma linha e deve capturar uma peça Preta");
                     break;
                 default:
-                    console.log("ERRO: em Eliminar_peca");
+                    //console.log("ERRO: em Eliminar_peca");
+                    break;
             }
 
             //Só entramos aqui se for MovePhase
             if (this.GamePhase != "DropPhase") {
 
 
-                console.log("Podemos remover uma peça da cor " + peca_a_remover);
+                //console.log("Podemos remover uma peça da cor " + peca_a_remover);
 
 
                 //Guardamos todas as divs que correspondem as peças
@@ -669,13 +670,13 @@ class Tabuleiro {
                         peca.onclick = function () { }
                     }
                 }
-                console.log("Removeu a peça");
+                //console.log("Removeu a peça");
 
                 //Verificamos se após remover uma peça 
                 //uma linha ou coluna ficou sem 3 peças 
                 //contíguas , se sim temos de por o used a false
                 let Posicao_removida = findDifferentElement(Save, Current);
-                console.log("Posição da peça removida = " + Posicao_removida);
+                //console.log("Posição da peça removida = " + Posicao_removida);
 
 
                 let cor_peca_removida = "";
@@ -691,8 +692,8 @@ class Tabuleiro {
 
                 let new_coluna = this.coluna_aux(Posicao_removida, cor_peca_removida);
                 let new_linha = this.linha_aux(Posicao_removida, cor_peca_removida);
-                console.log("Line after removal = " + new_linha);
-                console.log("Colum aftre removal = " + new_coluna);
+                //console.log("Line after removal = " + new_linha);
+                //console.log("Colum aftre removal = " + new_coluna);
 
 
                 let teste = Max_Pecas_continguas(new_linha, new_coluna, cor_peca_removida, Posicao_removida, this.GamePhase, "removed");
@@ -702,8 +703,8 @@ class Tabuleiro {
                 //colocamos false nas linhas ou colunas
                 //que deixarem de ter 3 peças contiguas
 
-                console.log("Max BEFORE (" + cor_peca + ")= " + aux);
-                console.log("Max AFTER (" + cor_peca_removida + ")= " + teste);
+                //console.log("Max BEFORE (" + cor_peca + ")= " + aux);
+                //console.log("Max AFTER (" + cor_peca_removida + ")= " + teste);
                 // caso nessa linha/coluna não tenha 3 de peças contíguas
                 if (cor_peca_removida == "preta") {
 
@@ -765,11 +766,11 @@ class Tabuleiro {
         else {
             //verifica se alguma linha ou coluna tem menos de 3 peças contiguas
             //se sim atualiza this.used_(...) para false
-            console.log("Nao existe condições para remover");
-            console.log("Estado da linha used PRETA = " + this.used_linha_preta);
-            console.log("Estado da coluna used PRETA = " + this.used_coluna_preta);
-            console.log("Estado da linha used BRANCA = " + this.used_linha_branca);
-            console.log("Estado da coluna used BRANCA = " + this.used_coluna_branca);
+            //console.log("Nao existe condições para remover");
+            //console.log("Estado da linha used PRETA = " + this.used_linha_preta);
+            //console.log("Estado da coluna used PRETA = " + this.used_coluna_preta);
+            //console.log("Estado da linha used BRANCA = " + this.used_linha_branca);
+            //console.log("Estado da coluna used BRANCA = " + this.used_coluna_branca);
 
 
         }
@@ -854,7 +855,7 @@ class Tabuleiro {
 
 
     Chegou_ao_fim(nivel_do_IA) {
-        console.log("Entrei no chegou_ao_fim");
+        //console.log("Entrei no chegou_ao_fim");
         //Lista com as peças de cada cor 
         let pecas_brancas = document.querySelectorAll("div.item_tabuleiro > div.peca_tabuleiro_branca");
         let pecas_pretas = document.querySelectorAll("div.item_tabuleiro > div.peca_tabuleiro_preta");
@@ -866,20 +867,20 @@ class Tabuleiro {
         //Se já não tiver mais peças para jogar 
         //verifico se alguma das cores só tem duas peças (Fim de jogo)
         if (nr_brancas < 3) {
-            console.log("Peças pretas Ganham ");
+            //console.log("Peças pretas Ganham ");
             Update_score(nivel_do_IA, "preta");
             DisplayMessage("Peças pretas  Ganharam!!!");
             return true;
         }
         else if (nr_pretas < 3) {
-            console.log("Peças brancas Ganham ");
+            //console.log("Peças brancas Ganham ");
             Update_score(nivel_do_IA, "branca");
             DisplayMessage("Peças brancas Ganharam!!!");
             return true;
         }
 
-        console.log(pecas_brancas);
-        console.log(pecas_pretas);
+        //console.log(pecas_brancas);
+        //console.log(pecas_pretas);
 
         //Pomos a verdadeiro (mas se econtramos algum movimento valido para
         //qualquer peça no ciclo abaixo pomos a false)
@@ -902,7 +903,7 @@ class Tabuleiro {
                     !((from - 1) % this.cols == 0 && d % this.cols == 0) &&
                     this.is_valid(from, d)
                 ) {
-                    console.log("DENTRO TABULEIRO(" + from + "->" + d + ")");
+                    //console.log("DENTRO TABULEIRO(" + from + "->" + d + ")");
                     // console.log("DENTRO TABULEIRO(" + from + "->" + d +" = " + this.is_valid(from,d) +")");
                     branca_perdeu = false;
                     break loop1;
@@ -914,7 +915,7 @@ class Tabuleiro {
         }
 
         if (branca_perdeu == true) {
-            console.log("Peças pretas Ganham (Peças brancas não tem movimentos válidos)");
+            //console.log("Peças pretas Ganham (Peças brancas não tem movimentos válidos)");
             Update_score(nivel_do_IA, "preta");
             DisplayMessage("Peças pretas  Ganharam(Peças brancas não tem movimentos válidos)!!!");
             return true;
@@ -936,7 +937,7 @@ class Tabuleiro {
                     !((from - 1) % this.cols == 0 && d % this.cols == 0) &&
                     this.is_valid(from, d)
                 ) {
-                    console.log("DENTRO TABULEIRO(" + from + "->" + d + ")");
+                    //console.log("DENTRO TABULEIRO(" + from + "->" + d + ")");
                     // console.log("DENTRO TABULEIRO(" + from + "->" + d +" = " + this.is_valid(from,d) +")");
                     preta_perdeu = false;
                     break loop2;
@@ -948,7 +949,7 @@ class Tabuleiro {
         }
 
         if (preta_perdeu == true) {
-            console.log("Peças brancas Ganham (Peças pretas não tem movimentos válidos)");
+            //console.log("Peças brancas Ganham (Peças pretas não tem movimentos válidos)");
             Update_score(nivel_do_IA, "branca");
             DisplayMessage("Peças brancas Ganharam(Peças pretas não tem movimentos válidos)!!!");
             return true;
@@ -995,7 +996,7 @@ function restore(incluir_peca_selecionada) {
 
 function remove(parent) {
     let aux = document.getElementById(parent);
-    console.log("Remove filho de " + aux.id)
+    //console.log("Remove filho de " + aux.id)
     aux.removeChild(aux.firstChild);
 
 }
@@ -1083,16 +1084,16 @@ function Max_Pecas_continguas(linha, coluna, cor_peca, Posicao, GamePhase, remov
     let nr_pecas_linha = Biggest_sequence(linha, cor_peca, pos_col_on_array, GamePhase, removed);
     let nr_pecas_coluna = Biggest_sequence(coluna, cor_peca, pos_row_on_array, GamePhase, removed);
     // console.log("linha = " + linha);
-    console.log("maior numero de peças (" + cor_peca + "s) contiguas nesta LINHA = " + nr_pecas_linha);
-    // console.log("coluna = "+ coluna);
-    console.log("maior numero de peças (" + cor_peca + "s) contiguas nesta COLUNA = " + nr_pecas_coluna);
+    //console.log("maior numero de peças (" + cor_peca + "s) contiguas nesta LINHA = " + nr_pecas_linha);
+     //console.log("coluna = "+ coluna);
+    //console.log("maior numero de peças (" + cor_peca + "s) contiguas nesta COLUNA = " + nr_pecas_coluna);
 
 
     //Jogada valida (nao tem mais de 3 peças da mesma cor contiguas)
     if (nr_pecas_linha <= 3 && nr_pecas_coluna <= 3)
         return [nr_pecas_linha, nr_pecas_coluna, getLinha(Posicao, cols), getColuna(Posicao, cols)];
     else {
-        console.log("JOGADA INVALIDA: não podemos ter mais de 3 peças contiguas da mesma cor (vertical ou horizontal)");
+        //console.log("JOGADA INVALIDA: não podemos ter mais de 3 peças contiguas da mesma cor (vertical ou horizontal)");
         //Adicionamos o 3 parametro a false para garantir que 
         //é explicito que não valido o jogador ganhar
         return [nr_pecas_linha, nr_pecas_coluna, false];
@@ -1163,7 +1164,7 @@ e cria um novo tabuleiro */
 function get_nr_linhas_colunas() {
     let selector_linhas = document.querySelector('#input_linhas_tabuleiro');
     let selector_colunas = document.querySelector('#input_colunas_tabuleiro');
-    console.log(selector_linhas.value + " " + selector_colunas.value);
+    //console.log(selector_linhas.value + " " + selector_colunas.value);
 
     //vamos buscar o div com o tabuleiro atual
     let tabuleiro = document.getElementById('tabuleiro');
@@ -1206,7 +1207,7 @@ function displayRadioValue() {
 
 //Função que decidi qual div criar 
 function create(parentid, oponente) {
-    console.log("Oponente: " + oponente);
+    //console.log("Oponente: " + oponente);
     let parent = document.getElementById(parentid);
 
     removeAllChildNodes(parent);
@@ -1255,6 +1256,13 @@ function create_div_Computer(parentid) {
         label.htmlFor = "radio" + i;
         fieldset.appendChild(label);
     }
+
+    //pomos as tabela de classificações a mostra
+    let aux = document.querySelector('#classificacao_computador');
+    let aux2 = document.querySelector('#classificacao_jogador');
+    aux.style.visibility = "visible";
+    aux2.style.visibility = "hidden";
+    // console.log(aux);
 }
 
 
@@ -1301,15 +1309,23 @@ function create_div_Player(parentid) {
 
         }
     }
+
+    //pomos as tabelas de classificações
+    let aux = document.querySelector('#classificacao_computador');
+    let aux2 = document.querySelector('#classificacao_jogador');
+    aux.style.visibility = "hidden";
+    aux2.style.visibility = "visible";
 }
 
 //Vai buscar a dificuldade assim que clicamos no botão de começar o jogo
 function get_dificulty() {
     let fieldset = document.getElementById('escolha_dificuldade');
-
+    // console.log(fieldset);
+    if (fieldset == null)
+        return 0;
     let button_selected = fieldset.querySelector('input[type="radio"]:checked');
     // console.log(fieldset);
-    console.log(button_selected.value[12]);
+    //console.log(button_selected.value[12]);
     return button_selected.value[12];
 
 }
@@ -1322,9 +1338,9 @@ function Update_score(nivel_do_IA, vencedor) {
     let d = "numero_derrotas_" + nivel_do_IA;
 
     let score = document.getElementById("classificacao");
-    console.log(score);
-    console.log(v);
-    console.log(d);
+    //console.log(score);
+    //console.log(v);
+    //console.log(d);
 
     if (vencedor == "preta") {
         let aux = document.getElementById(v);
@@ -1340,21 +1356,172 @@ function Update_score(nivel_do_IA, vencedor) {
 
 //Função de desistir (neste caso só o jogador pode desistir )
 async function give_up() {
-    console.log("Carreguei no botão");
+    //console.log("Carreguei no botão");
     let dif = get_dificulty();
-    Update_score(dif, "branca");
+    // console.log(dif);
+    if (dif == 0){
+        leave();
+    }
+    else {
+        Update_score(dif, "branca");
 
-    DisplayMessage("Jogador desistiu !!!");
-
+        DisplayMessage("Jogador desistiu !!!");
+    }
     await sleep(1000);
 
     //Cria um novo tabuleiro 
-    get_nr_linhas_colunas();
+    // get_nr_linhas_colunas();
 }
-
 
 //O que é carregado no inicio
 window.onload = function () {
     console.log("Carregou a Dom");
     displayRadioValue();
+}
+
+
+/* 
+! Funções relacionadas com comunicação abaixo
+*/
+
+const url = "http://twserver.alunos.dcc.fc.up.pt:8008/";
+
+/* Inicio /register */
+
+function getUsername(){
+    let aux = document.querySelector('#username');
+    return aux.value;
+}
+function getPassword(){
+    let aux = document.querySelector('#password');
+    return aux.value;
+}
+//guarda em variaveis globais o nick e password do utilizador que fez register
+var cur_user;
+var pass;
+function SaveCredantials(json,nick,password){
+    if (JSON.stringify(json) == "{}"){
+        cur_user = nick;
+        pass = password;
+        console.log("Registado com sucesso");
+    }
+    else {
+        cur_user = undefined;
+        pass = undefined;
+    }
+}
+
+//regista utilizador (também serve ocmo login)
+function register(){
+    let user = getUsername();
+    let pass = getPassword();
+   
+    let obj = {
+        nick : user,
+        password : pass 
+    };
+
+    let body = JSON.stringify(obj);
+
+    console.log(body);
+    fetch(url+"register",{
+        method: 'POST',
+        headers: {
+            'Content-type': 'application/json'
+        },
+        body:body
+    })    
+       .then(response => response.json())
+       .then(json=>SaveCredantials(json,user,pass))
+       .catch(console.log);
+}
+
+/* Inicio /join */
+
+//guarda em variavel global a string associada ao utilizador registado
+var game_session;
+function SaveGameSession(json){
+    console.log("Dentro de SaveGameSession");
+    console.log(json);
+    game_session = json.game;
+}
+
+//Emparelhe 2 jogadores
+function join(){
+
+    //caso utilizador registado seja invalido
+    if (cur_user == undefined || pass == undefined){
+        console.log("ERRO:Registe um utilizador válido");
+    }
+    //caso utilizador registado seja invalido
+    else{
+        //todo: atualizar as rows e cols com aquelas presentes no tabuleiro
+        let obj = {
+            "group" : 7,
+            nick : cur_user,
+            password : pass,
+            "size" :{
+                "rows" : 6,
+                "columns" :5
+            }
+        }
+
+        let body = JSON.stringify(obj);
+        console.log(body);
+
+        fetch(url+"join",{
+            method: 'POST',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body:body
+        })
+          .then(response => response.json())
+          .then(json => SaveGameSession(json))
+          .then(console.log);
+
+    }
+}
+
+
+/* Inicio /leave */
+
+/*
+Primeiro caso: Se for invocada durante o emparelhamento, enquanto espera por outros jogador, então não tem consequências
+todo Segundo caso: Se o jogo já tiver em curso, a saída com este método concede a vitória ao adversário.
+todo Terceiro caso:  Se uma jogada não for realizada no tempo devido(2min) então é executado um leave automático, nas condições descritas no parágrafo anterior
+*/
+function leave(){
+    if (game_session == undefined){
+        console.log("ERRO:Faça join , para começar a procura por um jogo");          
+        return;
+    }
+    //caso utilizador registado seja invalido
+    if (cur_user == undefined || pass == undefined){
+        console.log("ERRO:Registe um utilizador válido");
+    }
+    
+    //caso utilizador registado seja invalido
+    else {
+        let obj = {
+            nick : cur_user,
+            password: pass,
+            game:game_session
+        }
+        
+        let body = JSON.stringify(obj);
+        console.log(body);
+
+        fetch(url+"leave",{
+            method: 'POST',
+            headers : {
+                'Content-type' :  'application/json'
+            },
+            body:body
+        })
+          .then(response => response.json())
+          .then(game_session = undefined)
+          .then(console.log);
+         
+    }
 }

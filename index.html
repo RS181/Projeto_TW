@@ -80,9 +80,9 @@
             <!--Visualizar instruções, TODO ->perguntar ao professor se posso mostrar as regras desta forma -->
             <!--Tabela de classificações (TODO mais tarde adicionar com jogador , penso que seja precisso so na próxima entrega)-->
             <div class="item">
-                <details>
+                <details >
                     <summary>Classificações</summary>
-                    <table>
+                    <table  id = "classificacao_computador">
                         <tr>
                             <th>Nº de Vitórias</th>
                             <th>Nº de Derrotas</th>
@@ -115,6 +115,16 @@
                             <td>5</td>
                         </tr>
                     </table>
+                    <table  id = "classificacao_jogador">
+                        <tr>
+                            <th>Nº de Vitórias</th>
+                            <th>Nº de Derrotas</th>
+                        </tr>
+                        <tr>
+                            <td id="vitorias_jogador">0</td>
+                            <td id="derrotas_jogador">0</td>
+                        </tr>
+                    </table>
                 </details>
                 </div>
                 <div class="item">
@@ -129,8 +139,7 @@
                                 &#9830;Um jogador joga com preças pretas, outro com
                                 as brancas;<br>
     
-                                &#9830;Todas as peças 22 estão sempre visíveis, no
-                                tabuleiro ou fora;<br>
+
     
                                 &#9830; Peças fora do tabuleiro são agrupadas por
                                 cor, de cada lado;<br>
@@ -138,7 +147,7 @@
     
                             <p class="destacar">Regras básicas</p>
                             <p class="regras">
-                                &#9830; Jogadores escolhem uma cor e decidem quem
+                                &#9830; Jogadores escolhem uma cor e decidem quemg
                                 joga primeiro;<br>
                                 &#9830; Inicialmente o tabuleiro está vazio;<br>
                                 &#9830;O jogo tem 2 fases: <strong>Drop fase</strong>
@@ -218,10 +227,12 @@
                     esta mesma área deve ser usada para apresentar o identificador, 
                     permitindo terminar a sessão autenticada.-->
                 <form action="registar" method=post class="form_l">
-                    Username <input name="User_name" style="margin-bottom: 10px;"><br>
-                    Password <input type="password" name="Password" style="margin-bottom: 10px;"> <br>
+                    Username <input id="username" style="margin-bottom: 10px;"><br>
+                    Password <input type="password" id="password" style="margin-bottom: 10px;"> <br>
                     <input type=reset>
-                    <input type=submit value=Registar>
+                    <input type=button value=Registar onclick="register()">
+                    <br>
+                    <input type="button" value="Join"  onclick="join()">
                 </form>
 
             </div>
