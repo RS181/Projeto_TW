@@ -14,7 +14,11 @@ function register(){
     let user = getUsername();
     let pass = getPassword();
 
-    
+    if (user == "" || pass == ""){
+        console.log("erro");
+    }
+
+
     let obj = {
         nick : user,
         password : pass 

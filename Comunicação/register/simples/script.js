@@ -13,11 +13,13 @@ function getPassword(){
     return password.value;
 }
 
+
+
+
 function register(){
     let user = getUsername();
     let pass = getPassword();
-
-    
+   
     let obj = {
         nick : user,
         password : pass 
@@ -36,5 +38,4 @@ function register(){
        .then(response => response.json())
        .then(console.log)
        .catch(console.log);
-
 }
