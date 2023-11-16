@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Registos com formulários</title>
+        <script src="script.js"></script>
+    </head>
+    <body>
+        <h1>Post com formulários</h1>
+
+        <form >
+            <label for ="nick">nick:</label>
+            <input type="text" id="username" name="nick"><br>
+            <label for = "password">password:</label>
+            <input type="password" id= "password" name="password"><br>
+            <input type=reset>
+            <input type="button" onclick="register()" value="Registar">
+        </form>
+        <br>
+        <!--este butão só deve aparecer depois de login com sucesso-->
+        <input type="button" value="Join"  onclick="join()">
+
+        <br>
+        <br> 
+        <!-- desistir de jogo ()-->
+        <button onclick="leave()" >Desistir</button>
+    </body>
+</html>
