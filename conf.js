@@ -1201,18 +1201,15 @@ function removeAllChildNodes(parent) {
 e cria um novo tabuleiro */
 var instancia_tabuleiro;    //var.global que representa uma instancia do tabuleiro
 function get_nr_linhas_colunas() {
-    let selector_linhas = document.querySelector('#input_linhas_tabuleiro');
-    let selector_colunas = document.querySelector('#input_colunas_tabuleiro');
-    //console.log(selector_linhas.value + " " + selector_colunas.value);
-
     //vamos buscar o div com o tabuleiro atual
     let tabuleiro = document.getElementById('tabuleiro');
     //removemos todos os seus filhos (para poder colocar novos 'div' filhos)
     removeAllChildNodes(tabuleiro);
 
-
     switch (oponente) {
         case "computador":
+            let selector_linhas = document.querySelector('#input_linhas_tabuleiro');
+            let selector_colunas = document.querySelector('#input_colunas_tabuleiro');
             //criamos um novo Tabuleiro com as linhas e colunas selecionadas
             tabuleiro = new Tabuleiro("tabuleiro", selector_linhas.value, selector_colunas.value, get_dificulty(), oponente);
 
@@ -1233,6 +1230,7 @@ function get_nr_linhas_colunas() {
             //Tratamos da promessa recebida 
             update().then((data) => {
                 //criamos um novo Tabuleiro com as linhas e colunas selecionadas
+                console.log(data);
                 tabuleiro = new Tabuleiro("tabuleiro", selector_linhas.value, selector_colunas.value, get_dificulty(), oponente);
 
                 //!guardamos numa variavel global uma instancia do tabuleiro
@@ -1408,7 +1406,9 @@ function get_dificulty() {
 
 }
 
-//Função que atualiza a tabela de scores
+
+
+//Função que atualiza a tabela de scores (vs computador)
 function Update_score(nivel_do_IA, vencedor) {
     //caso preça preta  (jogador) ganhe
     let v = "numero_vitorias_" + nivel_do_IA;
@@ -1432,20 +1432,38 @@ function Update_score(nivel_do_IA, vencedor) {
     }
 }
 
-//Função de desistir (neste caso só o jogador pode desistir )
 async function give_up() {
     //console.log("Carreguei no botão");
     let dif = get_dificulty();
-    // console.log(dif);
+    //desistir contra jogador    
     if (dif == 0) {
         leave();
+        if (instancia_tabuleiro == undefined){
+            console.log("Jogador saio antes do emparelhamento");
+        }
+        else{
+            //todo Implementar atualização de score quando um dos jogadores desiste
+        }
+        
+
+        //Alterações do UI quando jogador atual desiste 
+        //todo -> falta atualizar o adversario que jogador atual desistiu
+        let x = document.querySelector('#tabuleiro');
+        let mensagem = document.getElementById("mensagens_ui");
+        removeAllChildNodes(x);
+        x.className = '';
+        mensagem.style.visibility = 'hidden';
+        mensagem.parentElement.style.visibility = 'hidden';
+        
     }
+    //desistir contra computador
     else {
         Update_score(dif, "branca");
-
         DisplayMessage("Jogador desistiu !!!");
+        await sleep(1000);
+        get_nr_linhas_colunas();
+
     }
-    await sleep(1000);
 
     //Cria um novo tabuleiro 
     // get_nr_linhas_colunas();
@@ -1534,13 +1552,16 @@ function join() {
     //caso utilizador registado seja invalido
     else {
         //todo: atualizar as rows e cols com aquelas presentes no tabuleiro
+        let selector_linhas = document.querySelector('#input_linhas_tabuleiro');
+        let selector_colunas = document.querySelector('#input_colunas_tabuleiro');
+
         let obj = {
             "group": 7,
             nick: cur_user,
             password: pass,
             "size": {
-                "rows": 6,
-                "columns": 5
+                "rows": parseInt(selector_linhas.value),
+                "columns": parseInt(selector_colunas.value)
             }
         }
 
