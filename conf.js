@@ -357,13 +357,13 @@ class Tabuleiro {
     }
 
     //Quando estabelecems conexão pela primeira vez
-    SetInitialSettings(data){
+    SetInitialSettings(data) {
         console.log("Dentro de SetInitialSettings");
         console.log(data);
         this.peça = data.players[cur_user];
         this.turn = data.turn;
         this.jogadores = data.players;
-        
+
     }
 
     //Começa o jogo contra oponente
@@ -373,7 +373,7 @@ class Tabuleiro {
     }
 
 
-   
+
 
     //Começa o jogo contra computador
     play_computador(id_celula) {
@@ -1227,28 +1227,33 @@ function get_nr_linhas_colunas() {
             DisplayMessage("É a vez da peça preta jogar");
             break;
         case "jogador":
-            //Tratamos da promessa recebida 
-            update().then((data) => {
-                //criamos um novo Tabuleiro com as linhas e colunas selecionadas
-                tabuleiro = new Tabuleiro("tabuleiro", data.board.length, data.board[0].length, get_dificulty(), oponente);
+            //fazemos o /join (POST) 
+            join().then(() => {
+                //Tratamos da promessa recebida 
+                update().then((data) => {
+                    //criamos um novo Tabuleiro com as linhas e colunas selecionadas
+                    tabuleiro = new Tabuleiro("tabuleiro", data.board.length, data.board[0].length, get_dificulty(), oponente);
 
-                //!guardamos numa variavel global uma instancia do tabuleiro
-                instancia_tabuleiro = tabuleiro;
-                instancia_tabuleiro.SetInitialSettings(data);
+                    //!guardamos numa variavel global uma instancia do tabuleiro
+                    instancia_tabuleiro = tabuleiro;
+                    instancia_tabuleiro.SetInitialSettings(data);
 
-                //A frase que explica o estado do jogo passa a ser vísivel depois da criação do tabuleiro
-                let mensagem = document.getElementById("mensagens_ui");
-                mensagem.style.visibility = "visible";
-                mensagem.style.justifyContent = "center";
-                let container_v4 = document.getElementById("container_v4");
-                container_v4.style.visibility = "visible";
+                    //A frase que explica o estado do jogo passa a ser vísivel depois da criação do tabuleiro
+                    let mensagem = document.getElementById("mensagens_ui");
+                    mensagem.style.visibility = "visible";
+                    mensagem.style.justifyContent = "center";
+                    let container_v4 = document.getElementById("container_v4");
+                    container_v4.style.visibility = "visible";
 
-                //mensagem de inicio de jogo
-                DisplayMessage("É a vez da peça preta jogar");
+                    //mensagem de inicio de jogo
+                    DisplayMessage("É a vez da peça preta jogar");
 
-                // Continue com o restante do código que depende dos dados recebidos
+                    // Continue com o restante do código que depende dos dados recebidos
+                }).catch((error) => {
+                    console.error("Erro ao realizar update:", error);
+                });
             }).catch((error) => {
-                console.error("Erro ao realizar update:", error);
+                console.error("Erro ao realizar o join:", error);
             });
             break;
         default:
@@ -1431,19 +1436,20 @@ function Update_score(nivel_do_IA, vencedor) {
     }
 }
 
+
 async function give_up() {
     //console.log("Carreguei no botão");
     let dif = get_dificulty();
     //desistir contra jogador    
     if (dif == 0) {
         leave();
-        if (instancia_tabuleiro == undefined){
+        if (instancia_tabuleiro == undefined) {
             console.log("Jogador saio antes do emparelhamento");
         }
-        else{
+        else {
             //todo Implementar atualização de score quando um dos jogadores desiste
         }
-        
+
 
         //Alterações do UI quando jogador atual desiste 
         //todo -> falta atualizar o adversario que jogador atual desistiu
@@ -1453,7 +1459,7 @@ async function give_up() {
         x.className = '';
         mensagem.style.visibility = 'hidden';
         mensagem.parentElement.style.visibility = 'hidden';
-        
+
     }
     //desistir contra computador
     else {
@@ -1543,42 +1549,45 @@ function SaveGameSession(json) {
 
 //Emparelhe 2 jogadores
 function join() {
-
-    //caso utilizador registado seja invalido
-    if (cur_user == undefined || pass == undefined) {
-        console.log("ERRO:Registe um utilizador válido");
-    }
-    //caso utilizador registado seja invalido
-    else {
-        //todo: atualizar as rows e cols com aquelas presentes no tabuleiro
-        let selector_linhas = document.querySelector('#input_linhas_tabuleiro');
-        let selector_colunas = document.querySelector('#input_colunas_tabuleiro');
-
-        let obj = {
-            "group": 7,
-            nick: cur_user,
-            password: pass,
-            "size": {
-                "rows": parseInt(selector_linhas.value),
-                "columns": parseInt(selector_colunas.value)
-            }
+    return new Promise((resolve, reject) => {
+        //caso utilizador registado seja invalido
+        if (cur_user == undefined || pass == undefined) {
+            // console.log("ERRO:Registe um utilizador válido");
+            reject("Registe-se antes de iniciar procura por jogo")
         }
+        //caso utilizador registado seja invalido
+        else {
+            //todo: atualizar as rows e cols com aquelas presentes no tabuleiro
+            let selector_linhas = document.querySelector('#input_linhas_tabuleiro');
+            let selector_colunas = document.querySelector('#input_colunas_tabuleiro');
 
-        let body = JSON.stringify(obj);
-        console.log(body);
+            let obj = {
+                "group": 7,
+                nick: cur_user,
+                password: pass,
+                "size": {
+                    "rows": parseInt(selector_linhas.value),
+                    "columns": parseInt(selector_colunas.value)
+                }
+            }
 
-        fetch(url + "join", {
-            method: 'POST',
-            headers: {
-                'Content-type': 'application/json'
-            },
-            body: body
-        })
-            .then(response => response.json())
-            .then(json => SaveGameSession(json))
-            .then(console.log);
+            let body = JSON.stringify(obj);
+            console.log(body);
 
-    }
+            fetch(url + "join", {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: body
+            })
+                .then(response => response.json())
+                .then(json => SaveGameSession(json))
+                .then(resolve)  //resolve a Promisse após do then anterior
+                .catch(reject);
+
+        }
+    });
 }
 
 
@@ -1619,7 +1628,7 @@ function leave() {
         })
             .then(response => response.json())
             .then(game_session = undefined)
-            .then(console.log);
+            .catch(console.log);
 
     }
 }
@@ -1632,7 +1641,7 @@ function update() {
     return new Promise((resolve, reject) => {
         //caso não seja possível fazer update
         if (cur_user == undefined || game_session == undefined) {
-            console.log("Não tem informação suficiente para fazer o pedido update");
+            // console.log("Não tem informação suficiente para fazer o pedido update");
             reject("Informação insuficiente para update");
         }
 
@@ -1652,7 +1661,7 @@ function update() {
 
             eventSource.onerror = function (error) {
                 console.error("Erro no EventSource:", error);
-                reject("Erro no EventSource");
+                reject("Erro no EventSource"); //rejeita a promessa
             }
         }
     });
