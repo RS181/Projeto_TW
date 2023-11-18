@@ -21,7 +21,10 @@ class Tabuleiro {
     //Quem é o oponente
     oponente;
 
-    constructor(parentid, rows, cols, dificulty,oponente) {
+    //Qual cor da peça que utilizador atual esta a jogar
+    peça;
+
+    constructor(parentid, rows, cols, dificulty, oponente) {
         let parent = document.getElementById(parentid);
 
         //Inicializamos as variaveis da classe
@@ -81,8 +84,18 @@ class Tabuleiro {
                 //do fase do jogo em que estamos)
 
                 child.addEventListener("click", (event) => {
-                    if (this.GamePhase == "DropPhase")
-                        this.play(event.target.id);
+                    if (this.GamePhase == "DropPhase") {
+                        switch (oponente) {
+                            case "computador":
+                                this.play_computador(event.target.id);
+                                break;
+                            case "jogador":
+                                this.play_jogador(event.target.id);
+                                break;
+                            default:
+                                console.log("ERRO: ao definir eventlistener para celula")
+                        }
+                    }
                     else if (this.GamePhase == "MovePhase") {
                         let selected_div = document.querySelector('div.selected');
                         let selected_move = document.getElementById(event.target.id);
@@ -341,8 +354,15 @@ class Tabuleiro {
         return false;
     }
 
+    //Começa o jogo contra oponente
+    play_jogador(id_celula) {
+        console.log("Dentro de play_jogador");
+
+    }
+
+
     //Começa o jogo contra computador
-    play(id_celula) {
+    play_computador(id_celula) {
         // Executa a função play com o id da div clicada
         //Enquanto tem pecas para jogar
         if (this.nr_pecas_brancas != 0 || this.nr_pecas_pretas != 0) {
@@ -355,8 +375,8 @@ class Tabuleiro {
         }
     }
 
+    //Começa o MovePhase contra computador
     async Move() {
-
         await sleep(100);
 
         //todo aqui temos de verificar se existem condições para acabar o jogo 
@@ -535,7 +555,7 @@ class Tabuleiro {
                         //adicionamos como filho 
                         celula.appendChild(peca);
 
-                        this.Eliminar_peca(celula.id,"preta");
+                        this.Eliminar_peca(celula.id, "preta");
 
                     }
                     else {
@@ -1089,7 +1109,7 @@ function Max_Pecas_continguas(linha, coluna, cor_peca, Posicao, GamePhase, remov
     let nr_pecas_coluna = Biggest_sequence(coluna, cor_peca, pos_row_on_array, GamePhase, removed);
     // console.log("linha = " + linha);
     //console.log("maior numero de peças (" + cor_peca + "s) contiguas nesta LINHA = " + nr_pecas_linha);
-     //console.log("coluna = "+ coluna);
+    //console.log("coluna = "+ coluna);
     //console.log("maior numero de peças (" + cor_peca + "s) contiguas nesta COLUNA = " + nr_pecas_coluna);
 
 
@@ -1176,22 +1196,40 @@ function get_nr_linhas_colunas() {
     //removemos todos os seus filhos (para poder colocar novos 'div' filhos)
     removeAllChildNodes(tabuleiro);
 
-    //criamos um novo Tabuleiro com as linhas e colunas selecionadas
-    tabuleiro = new Tabuleiro("tabuleiro", selector_linhas.value, selector_colunas.value, get_dificulty(),oponente);
-    
-    //!guardamos numa variavel global uma instancia do tabuleiro
-    instancia_tabuleiro = tabuleiro;
 
-    //A frase que explica o estado do jogo passa a ser vísivel depois da criação do tabuleiro
-    let mensagem = document.getElementById("mensagens_ui");
-    mensagem.style.visibility = "visible";
-    mensagem.style.justifyContent = "center";
-    let container_v4 = document.getElementById("container_v4");
-    container_v4.style.visibility = "visible";
+    switch (oponente) {
+        case "computador":
+            //criamos um novo Tabuleiro com as linhas e colunas selecionadas
+            tabuleiro = new Tabuleiro("tabuleiro", selector_linhas.value, selector_colunas.value, get_dificulty(), oponente);
 
-    //mensagem de inicio de jogo
-    DisplayMessage("É a vez da peça preta jogar");
+            //!guardamos numa variavel global uma instancia do tabuleiro
+            instancia_tabuleiro = tabuleiro;
 
+            //A frase que explica o estado do jogo passa a ser vísivel depois da criação do tabuleiro
+            let mensagem = document.getElementById("mensagens_ui");
+            mensagem.style.visibility = "visible";
+            mensagem.style.justifyContent = "center";
+            let container_v4 = document.getElementById("container_v4");
+            container_v4.style.visibility = "visible";
+
+            //mensagem de inicio de jogo
+            DisplayMessage("É a vez da peça preta jogar");
+            break;
+        case "jogador":
+            //Tratamos da promessa recebida 
+            update().then((data) => {
+                console.log("=====");
+                console.log(data);
+                console.log("=====");
+                // Continue com o restante do código que depende dos dados recebidos
+            }).catch((error) => {
+                console.error("Erro ao realizar update:", error);
+            });
+            break;
+        default:
+            console.log("ERRO: na função get_nr_linhas_colunas");
+            break;
+    }
 }
 
 /* Funcao que vai buscar qual o oponente escolhido */
@@ -1371,7 +1409,7 @@ async function give_up() {
     //console.log("Carreguei no botão");
     let dif = get_dificulty();
     // console.log(dif);
-    if (dif == 0){
+    if (dif == 0) {
         leave();
     }
     else {
@@ -1400,19 +1438,19 @@ const url = "http://twserver.alunos.dcc.fc.up.pt:8008/";
 
 /* Inicio /register */
 
-function getUsername(){
+function getUsername() {
     let aux = document.querySelector('#username');
     return aux.value;
 }
-function getPassword(){
+function getPassword() {
     let aux = document.querySelector('#password');
     return aux.value;
 }
 //guarda em variaveis globais o nick e password do utilizador que fez register
 var cur_user;
 var pass;
-function SaveCredantials(json,nick,password){
-    if (JSON.stringify(json) == "{}"){
+function SaveCredantials(json, nick, password) {
+    if (JSON.stringify(json) == "{}") {
         cur_user = nick;
         pass = password;
         console.log("Registado com sucesso");
@@ -1424,73 +1462,73 @@ function SaveCredantials(json,nick,password){
 }
 
 //regista utilizador (também serve ocmo login)
-function register(){
+function register() {
     let user = getUsername();
     let pass = getPassword();
-   
+
     let obj = {
-        nick : user,
-        password : pass 
+        nick: user,
+        password: pass
     };
 
     let body = JSON.stringify(obj);
 
     console.log(body);
-    fetch(url+"register",{
+    fetch(url + "register", {
         method: 'POST',
         headers: {
             'Content-type': 'application/json'
         },
-        body:body
-    })    
-       .then(response => response.json())
-       .then(json=>SaveCredantials(json,user,pass))
-       .catch(console.log);
+        body: body
+    })
+        .then(response => response.json())
+        .then(json => SaveCredantials(json, user, pass))
+        .catch(console.log);
 }
 
 /* Inicio /join */
 
 //guarda em variavel global a string associada ao utilizador registado
 var game_session;
-function SaveGameSession(json){
+function SaveGameSession(json) {
     console.log("Dentro de SaveGameSession");
     console.log(json);
     game_session = json.game;
 }
 
 //Emparelhe 2 jogadores
-function join(){
+function join() {
 
     //caso utilizador registado seja invalido
-    if (cur_user == undefined || pass == undefined){
+    if (cur_user == undefined || pass == undefined) {
         console.log("ERRO:Registe um utilizador válido");
     }
     //caso utilizador registado seja invalido
-    else{
+    else {
         //todo: atualizar as rows e cols com aquelas presentes no tabuleiro
         let obj = {
-            "group" : 7,
-            nick : cur_user,
-            password : pass,
-            "size" :{
-                "rows" : 6,
-                "columns" :5
+            "group": 7,
+            nick: cur_user,
+            password: pass,
+            "size": {
+                "rows": 6,
+                "columns": 5
             }
         }
 
         let body = JSON.stringify(obj);
         console.log(body);
 
-        fetch(url+"join",{
+        fetch(url + "join", {
             method: 'POST',
-            headers : {
-                'Content-type' : 'application/json'
+            headers: {
+                'Content-type': 'application/json'
             },
-            body:body
+            body: body
         })
-          .then(response => response.json())
-          .then(json => SaveGameSession(json))
-          .then(console.log);
+            .then(response => response.json())
+            .then(json => SaveGameSession(json))
+            .then(console.log);
 
     }
 }
@@ -1503,62 +1541,71 @@ Primeiro caso: Se for invocada durante o emparelhamento, enquanto espera por out
 todo Segundo caso: Se o jogo já tiver em curso, a saída com este método concede a vitória ao adversário.
 todo Terceiro caso:  Se uma jogada não for realizada no tempo devido(2min) então é executado um leave automático, nas condições descritas no parágrafo anterior
 */
-function leave(){
-    if (game_session == undefined){
-        console.log("ERRO:Faça join , para começar a procura por um jogo");          
+function leave() {
+    if (game_session == undefined) {
+        console.log("ERRO:Faça join , para começar a procura por um jogo");
         return;
     }
     //caso utilizador registado seja invalido
-    if (cur_user == undefined || pass == undefined){
+    if (cur_user == undefined || pass == undefined) {
         console.log("ERRO:Registe um utilizador válido");
     }
-    
+
     //caso utilizador registado seja invalido
     else {
         let obj = {
-            nick : cur_user,
+            nick: cur_user,
             password: pass,
-            game:game_session
+            game: game_session
         }
-        
+
         let body = JSON.stringify(obj);
         console.log(body);
 
-        fetch(url+"leave",{
+        fetch(url + "leave", {
             method: 'POST',
-            headers : {
-                'Content-type' :  'application/json'
+            headers: {
+                'Content-type': 'application/json'
             },
-            body:body
+            body: body
         })
-          .then(response => response.json())
-          .then(game_session = undefined)
-          .then(console.log);
-         
+            .then(response => response.json())
+            .then(game_session = undefined)
+            .then(console.log);
+
     }
 }
 
 /* Inicio de /update */
 
 //! Verificar se esta correto
-function update(){
-    //caso não seja possivel fazer update
-    if(cur_user == undefined || game_session == undefined){
-        console.log("Não tem informação suficiente para fazer o pedido udpate");
-    }
-    //caso seja possivel fazer update
-    else {
-        // http://twserver.alunos.dcc.fc.up.pt:8008/
-        console.log("ENTREI AQUI");
-        const eventSource = new EventSource(url+"update?nick=" +cur_user+"&game="+game_session);
-        console.log(eventSource);
-        eventSource.onmessage = function(event){
-            const data = JSON.parse(event.data);
-            //Recebe o tabuleiro
-            console.log(data);
-            eventSource.close();
+function update() {
+    //retornamos uma promessa de resposta 
+    return new Promise((resolve, reject) => {
+        //caso não seja possível fazer update
+        if (cur_user == undefined || game_session == undefined) {
+            console.log("Não tem informação suficiente para fazer o pedido update");
+            reject("Informação insuficiente para update");
         }
-        //todo (...)
-        
-    }
+
+        //caso seja possível fazer update
+        else {
+            // http://twserver.alunos.dcc.fc.up.pt:8008/
+            const eventSource = new EventSource(url + "update?nick=" + cur_user + "&game=" + game_session);
+            console.log(eventSource);
+
+            //só entra aqui quando temos a conexão com outro jogador
+            eventSource.onmessage = function (event) {
+                const data = JSON.parse(event.data);    //data <=> tabuleiro + informações extras
+                console.log("Emparelhamento com sucesso");
+                eventSource.close();
+                resolve(data); // resolve a Promise com os dados recebidos
+            }
+
+            eventSource.onerror = function (error) {
+                console.error("Erro no EventSource:", error);
+                reject("Erro no EventSource");
+            }
+        }
+    });
 }
