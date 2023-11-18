@@ -1230,8 +1230,7 @@ function get_nr_linhas_colunas() {
             //Tratamos da promessa recebida 
             update().then((data) => {
                 //criamos um novo Tabuleiro com as linhas e colunas selecionadas
-                console.log(data);
-                tabuleiro = new Tabuleiro("tabuleiro", selector_linhas.value, selector_colunas.value, get_dificulty(), oponente);
+                tabuleiro = new Tabuleiro("tabuleiro", data.board.length, data.board[0].length, get_dificulty(), oponente);
 
                 //!guardamos numa variavel global uma instancia do tabuleiro
                 instancia_tabuleiro = tabuleiro;
