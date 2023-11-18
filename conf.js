@@ -21,8 +21,10 @@ class Tabuleiro {
     //Quem é o oponente
     oponente;
 
-    //Qual cor da peça que utilizador atual esta a jogar
-    peça;
+    //Informações só utilizadas para jogador vs jogador 
+    peça;   //cor peça associada a utilizador
+    jogadores = new Object();  //objeto com jogadores que vão jogar (e respetivas cor de peça)
+    turn;   //Quem é que está a jogar neste momento
 
     constructor(parentid, rows, cols, dificulty, oponente) {
         let parent = document.getElementById(parentid);
@@ -354,12 +356,24 @@ class Tabuleiro {
         return false;
     }
 
+    //Quando estabelecems conexão pela primeira vez
+    SetInitialSettings(data){
+        console.log("Dentro de SetInitialSettings");
+        console.log(data);
+        this.peça = data.players[cur_user];
+        this.turn = data.turn;
+        this.jogadores = data.players;
+        
+    }
+
     //Começa o jogo contra oponente
     play_jogador(id_celula) {
         console.log("Dentro de play_jogador");
 
     }
 
+
+   
 
     //Começa o jogo contra computador
     play_computador(id_celula) {
@@ -1218,9 +1232,23 @@ function get_nr_linhas_colunas() {
         case "jogador":
             //Tratamos da promessa recebida 
             update().then((data) => {
-                console.log("=====");
-                console.log(data);
-                console.log("=====");
+                //criamos um novo Tabuleiro com as linhas e colunas selecionadas
+                tabuleiro = new Tabuleiro("tabuleiro", selector_linhas.value, selector_colunas.value, get_dificulty(), oponente);
+
+                //!guardamos numa variavel global uma instancia do tabuleiro
+                instancia_tabuleiro = tabuleiro;
+                instancia_tabuleiro.SetInitialSettings(data);
+
+                //A frase que explica o estado do jogo passa a ser vísivel depois da criação do tabuleiro
+                let mensagem = document.getElementById("mensagens_ui");
+                mensagem.style.visibility = "visible";
+                mensagem.style.justifyContent = "center";
+                let container_v4 = document.getElementById("container_v4");
+                container_v4.style.visibility = "visible";
+
+                //mensagem de inicio de jogo
+                DisplayMessage("É a vez da peça preta jogar");
+
                 // Continue com o restante do código que depende dos dados recebidos
             }).catch((error) => {
                 console.error("Erro ao realizar update:", error);
