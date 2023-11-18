@@ -18,7 +18,10 @@ class Tabuleiro {
     //Quem é que vai mover uma peça(Começa com a peça preta)
     cur_playing = "preta";
 
-    constructor(parentid, rows, cols, dificulty) {
+    //Quem é o oponente
+    oponente;
+
+    constructor(parentid, rows, cols, dificulty,oponente) {
         let parent = document.getElementById(parentid);
 
         //Inicializamos as variaveis da classe
@@ -28,6 +31,7 @@ class Tabuleiro {
         this.used_coluna_preta = new Array(parseInt(cols) + 1).fill(false);
         this.used_linha_branca = new Array(parseInt(rows) + 1).fill(false);
         this.used_coluna_branca = new Array(parseInt(cols) + 1).fill(false);
+        this.oponente = oponente;
 
         this.dificulty = dificulty;
         //?console.log(this.used_linha_preta);
@@ -337,7 +341,7 @@ class Tabuleiro {
         return false;
     }
 
-    //Começa o jog em si
+    //Começa o jogo contra computador
     play(id_celula) {
         // Executa a função play com o id da div clicada
         //Enquanto tem pecas para jogar
@@ -1161,6 +1165,7 @@ function removeAllChildNodes(parent) {
 
 /* Funcao que vai buscar o nr de linhas e colunas ao "input" do utilizador
 e cria um novo tabuleiro */
+var instancia_tabuleiro;    //var.global que representa uma instancia do tabuleiro
 function get_nr_linhas_colunas() {
     let selector_linhas = document.querySelector('#input_linhas_tabuleiro');
     let selector_colunas = document.querySelector('#input_colunas_tabuleiro');
@@ -1172,7 +1177,11 @@ function get_nr_linhas_colunas() {
     removeAllChildNodes(tabuleiro);
 
     //criamos um novo Tabuleiro com as linhas e colunas selecionadas
-    tabuleiro = new Tabuleiro("tabuleiro", selector_linhas.value, selector_colunas.value, get_dificulty());
+    tabuleiro = new Tabuleiro("tabuleiro", selector_linhas.value, selector_colunas.value, get_dificulty(),oponente);
+    
+    //!guardamos numa variavel global uma instancia do tabuleiro
+    instancia_tabuleiro = tabuleiro;
+
     //A frase que explica o estado do jogo passa a ser vísivel depois da criação do tabuleiro
     let mensagem = document.getElementById("mensagens_ui");
     mensagem.style.visibility = "visible";
@@ -1186,6 +1195,7 @@ function get_nr_linhas_colunas() {
 }
 
 /* Funcao que vai buscar qual o oponente escolhido */
+var oponente;   //var.global que representa o oponente atual 
 function displayRadioValue() {
     let x = document.getElementById("Mostrar");
     x.className = "";
@@ -1194,11 +1204,13 @@ function displayRadioValue() {
         if (ele[i].value == "escolha_computador" && ele[i].checked == true) {
             // console.log("Escolheu computador");
             create(x.id, "computador");
+            oponente = "computador";
         }
         else {
             // console.log("Escolheu jogador");
             removeAllChildNodes(x);
             create(x.id, "jogador");
+            oponente = "jogador";
         }
         // console.log(ele[i].value + "=" + ele[i].checked);
     }
@@ -1523,5 +1535,30 @@ function leave(){
           .then(game_session = undefined)
           .then(console.log);
          
+    }
+}
+
+/* Inicio de /update */
+
+//! Verificar se esta correto
+function update(){
+    //caso não seja possivel fazer update
+    if(cur_user == undefined || game_session == undefined){
+        console.log("Não tem informação suficiente para fazer o pedido udpate");
+    }
+    //caso seja possivel fazer update
+    else {
+        // http://twserver.alunos.dcc.fc.up.pt:8008/
+        console.log("ENTREI AQUI");
+        const eventSource = new EventSource(url+"update?nick=" +cur_user+"&game="+game_session);
+        console.log(eventSource);
+        eventSource.onmessage = function(event){
+            const data = JSON.parse(event.data);
+            //Recebe o tabuleiro
+            console.log(data);
+            eventSource.close();
+        }
+        //todo (...)
+        
     }
 }
