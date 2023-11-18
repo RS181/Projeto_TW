@@ -1549,6 +1549,7 @@ function SaveGameSession(json) {
 
 //Emparelhe 2 jogadores
 function join() {
+    //retorna uma Promise
     return new Promise((resolve, reject) => {
         //caso utilizador registado seja invalido
         if (cur_user == undefined || pass == undefined) {
@@ -1562,12 +1563,12 @@ function join() {
             let selector_colunas = document.querySelector('#input_colunas_tabuleiro');
 
             let obj = {
-                "group": 7,
+                group: 7,
                 nick: cur_user,
                 password: pass,
-                "size": {
-                    "rows": parseInt(selector_linhas.value),
-                    "columns": parseInt(selector_colunas.value)
+                size: {
+                    rows: parseInt(selector_linhas.value),
+                    columns: parseInt(selector_colunas.value)
                 }
             }
 
@@ -1665,4 +1666,47 @@ function update() {
             }
         }
     });
+}
+
+/*Inicio de /notify */
+
+//todo por a notify com argumentos (linha e coluna)
+//todo fazer com que notify retorne promessa 
+function notify() {
+    //caso não seja possivel fazer o update
+    return new Promise((resolve, reject) => {
+        if (cur_user == undefined || game_session == undefined) {
+            // console.log("Não tem informação suficiente para fazer o pedido notify");
+            reject("Não é possivel fazer notify, com os dados atuais");
+        }
+        //caso seja possível fazer update
+        else {
+            //todo atualizar row e col pela posição selecionada
+            let obj = {
+                nick: cur_user,
+                password: pass,
+                game: game_session,
+                move: {
+                    row: 0,
+                    column: 0
+                }
+            }
+
+            let body = JSON.stringify(obj);
+            console.log(body);
+
+            fetch(url + "notify", {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: body
+            })
+                .then(response => response.json())
+                .then(resolve)
+                .catch(reject)
+        }
+    });
+
+
 }
