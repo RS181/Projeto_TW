@@ -358,8 +358,8 @@ class Tabuleiro {
 
     //Quando estabelecems conexão pela primeira vez
     SetInitialSettings(data) {
-        console.log("Dentro de SetInitialSettings");
-        console.log(data);
+        // console.log("Dentro de SetInitialSettings");
+        // console.log(data);
         this.peça = data.players[cur_user];
         this.turn = data.turn;
         this.jogadores = data.players;
@@ -368,8 +368,12 @@ class Tabuleiro {
 
     //Começa o jogo contra oponente
     play_jogador(id_celula) {
-        console.log("Dentro de play_jogador");
+        let row = getLinha(id_celula, this.cols);
+        let col = getColuna(id_celula, this.cols);
 
+        notify(row, col);
+        // A atualização foi concluída com sucesso
+        // console.log(resposta_update);
     }
 
 
@@ -1227,8 +1231,35 @@ function get_nr_linhas_colunas() {
             DisplayMessage("É a vez da peça preta jogar");
             break;
         case "jogador":
-            //fazemos o /join (POST) 
-            join().then(() => {
+
+            //Primeiro Update
+            // update();
+            join();
+            //criamos um novo Tabuleiro com as linhas e colunas selecionadas
+            /*
+            let data = resposta_update;
+            tabuleiro = new Tabuleiro("tabuleiro", data.board.length, data.board[0].length, get_dificulty(), oponente);
+
+            //!guardamos numa variavel global uma instancia do tabuleiro
+            instancia_tabuleiro = tabuleiro;
+            instancia_tabuleiro.SetInitialSettings(data);
+
+            //A frase que explica o estado do jogo passa a ser vísivel depois da criação do tabuleiro
+            let mensagem = document.getElementById("mensagens_ui");
+            mensagem.style.visibility = "visible";
+            mensagem.style.justifyContent = "center";
+            let container_v4 = document.getElementById("container_v4");
+            container_v4.style.visibility = "visible";
+            */
+
+            break;
+        default:
+            console.log("ERRO: na função get_nr_linhas_colunas");
+            break;
+    }
+}
+/* OLD case jogador
+join().then(() => {
                 //Tratamos da promessa recebida 
                 update().then((data) => {
                     //criamos um novo Tabuleiro com as linhas e colunas selecionadas
@@ -1246,7 +1277,7 @@ function get_nr_linhas_colunas() {
                     container_v4.style.visibility = "visible";
 
                     //mensagem de inicio de jogo
-                    DisplayMessage("É a vez da peça preta jogar");
+                    DisplayMessage("(" + data.phase + ") vez de " + data.turn);
 
                     // Continue com o restante do código que depende dos dados recebidos
                 }).catch((error) => {
@@ -1255,12 +1286,9 @@ function get_nr_linhas_colunas() {
             }).catch((error) => {
                 console.error("Erro ao realizar o join:", error);
             });
-            break;
-        default:
-            console.log("ERRO: na função get_nr_linhas_colunas");
-            break;
-    }
-}
+*/
+
+
 
 /* Funcao que vai buscar qual o oponente escolhido */
 var oponente;   //var.global que representa o oponente atual 
@@ -1542,53 +1570,51 @@ function register() {
 //guarda em variavel global a string associada ao utilizador registado
 var game_session;
 function SaveGameSession(json) {
-    console.log("Dentro de SaveGameSession");
-    console.log(json);
+    // console.log("Dentro de SaveGameSession");
+    // console.log(json);
     game_session = json.game;
+    //primeiro update
+    update();
 }
 
 //Emparelhe 2 jogadores
 function join() {
     //retorna uma Promise
-    return new Promise((resolve, reject) => {
-        //caso utilizador registado seja invalido
-        if (cur_user == undefined || pass == undefined) {
-            // console.log("ERRO:Registe um utilizador válido");
-            reject("Registe-se antes de iniciar procura por jogo")
-        }
-        //caso utilizador registado seja invalido
-        else {
-            //todo: atualizar as rows e cols com aquelas presentes no tabuleiro
-            let selector_linhas = document.querySelector('#input_linhas_tabuleiro');
-            let selector_colunas = document.querySelector('#input_colunas_tabuleiro');
+    //caso utilizador registado seja invalido
+    if (cur_user == undefined || pass == undefined) {
+        console.log("ERRO:Registe um utilizador válido");
+    }
+    //caso utilizador registado seja invalido
+    else {
+        //todo: atualizar as rows e cols com aquelas presentes no tabuleiro
+        let selector_linhas = document.querySelector('#input_linhas_tabuleiro');
+        let selector_colunas = document.querySelector('#input_colunas_tabuleiro');
 
-            let obj = {
-                group: 7,
-                nick: cur_user,
-                password: pass,
-                size: {
-                    rows: parseInt(selector_linhas.value),
-                    columns: parseInt(selector_colunas.value)
-                }
+        let obj = {
+            group: 7,
+            nick: cur_user,
+            password: pass,
+            size: {
+                rows: parseInt(selector_linhas.value),
+                columns: parseInt(selector_colunas.value)
             }
-
-            let body = JSON.stringify(obj);
-            console.log(body);
-
-            fetch(url + "join", {
-                method: 'POST',
-                headers: {
-                    'Content-type': 'application/json'
-                },
-                body: body
-            })
-                .then(response => response.json())
-                .then(json => SaveGameSession(json))
-                .then(resolve)  //resolve a Promisse após do then anterior
-                .catch(reject);
-
         }
-    });
+
+        let body = JSON.stringify(obj);
+        console.log(body);
+
+        fetch(url + "join", {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: body
+        })
+            .then(response => response.json())
+            .then(json => SaveGameSession(json))
+            .catch(console.log);
+
+    }
 }
 
 
@@ -1636,7 +1662,159 @@ function leave() {
 
 /* Inicio de /update */
 
-//! Verificar se esta correto
+//Guarda numa variavel global o pedido GET que foi feito
+var resposta_update; //todo no fim do jogo colocar a undefined!!!!!!
+function ProcessUpdate(json) {
+    resposta_update = json;
+    // console.log("Processei resposta do update");
+    DisplayMessage("(" + resposta_update.phase + ") vez de: " + resposta_update.turn);
+}
+
+
+function create_board(data) {
+    //criamos um novo Tabuleiro com as linhas e colunas selecionadas
+    tabuleiro = new Tabuleiro("tabuleiro", data.board.length, data.board[0].length, get_dificulty(), oponente);
+
+    //!guardamos numa variavel global uma instancia do tabuleiro
+    instancia_tabuleiro = tabuleiro;
+    instancia_tabuleiro.SetInitialSettings(data);
+
+    //A frase que explica o estado do jogo passa a ser vísivel depois da criação do tabuleiro
+    let mensagem = document.getElementById("mensagens_ui");
+    mensagem.style.visibility = "visible";
+    mensagem.style.justifyContent = "center";
+    let container_v4 = document.getElementById("container_v4");
+    container_v4.style.visibility = "visible";
+
+}
+
+
+function por_peça_jogador(classe_cor,id_celula){
+    let celula = document.getElementById(id_celula);
+    let peca = document.createElement('div');
+    peca.className = classe_cor;
+    celula.appendChild(peca);
+}
+
+function update_tabuleiro(board){
+    console.log("---------------");
+    let peca;
+    let pos;
+    for (let i = 0 ; i < board.length ; i++){
+        for (let j = 0 ; j < board[0].length ; j++){
+            console.log(" (" + (i*board[0].length + j +1) + ") board["+i+"][" + j+ "] = " + board[i][j]);
+            peca = board[i][j];
+            pos = i*board[0].length + j + 1;
+            switch (peca) {
+                case "white":
+                    por_peça_jogador("peca_tabuleiro_branca",pos);
+                    break;
+                case "black":
+                    por_peça_jogador("peca_tabuleiro_preta",pos);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    console.log("---------------");
+
+}
+
+//! Verificar se esta correto (professor diz que não é precisso retornar promessa)
+//todo FECHAR O eventSource quando receber no update {winner }
+function update() {
+
+    if (cur_user == undefined || game_session == undefined) {
+        console.log("Não tem informação suficiente para fazer o pedido update");
+    }
+
+    //caso seja possível fazer update
+    else {
+        // http://twserver.alunos.dcc.fc.up.pt:8008/
+        const eventSource = new EventSource(url + "update?nick=" + cur_user + "&game=" + game_session);
+        // console.log(eventSource);
+
+        //só entra aqui quando temos a conexão com outro jogador
+        eventSource.onmessage = function (event) {
+            const data = JSON.parse(event.data);    //data <=> tabuleiro + informações extras
+            if ('board' in data) {
+                console.log("==================================");
+                console.log("Recebi atualização por parte do servidor")
+                console.log(data);
+                //Primeira resposta do servidor 
+                if (resposta_update == undefined) {
+                    create_board(data);
+                }
+                //caso estajamos no dropphase
+                else if (data.phase == "drop"){
+                    update_tabuleiro(data.board);
+                }
+                ProcessUpdate(data);
+                console.log("==================================");
+
+            }
+        }
+
+        eventSource.onerror = function (error) {
+            console.error("Erro no EventSource:", error);
+        }
+    }
+}
+/*Inicio de /notify */
+function ValidPlay(json,row,play) {
+    console.log("Resposta do notify ");
+    console.log(json);
+
+    //Faz o update notify tiver como resposta {} -> jogada valida
+    if (JSON.stringify(json) == "{}") {
+        console.log("jogada válida , vou fazer update");
+
+    }
+
+}
+
+function notify(row, col) {
+    //caso não seja possivel fazer o update
+    if (cur_user == undefined || game_session == undefined) {
+        // console.log("Não tem informação suficiente para fazer o pedido notify");
+        reject("Não é possivel fazer notify, com os dados atuais");
+    }
+    //caso seja possível fazer update
+    else {
+        //Indice começa em 0 
+        row = row - 1;
+        col = col - 1;
+        let obj = {
+            nick: cur_user,
+            password: pass,
+            game: game_session,
+            move: {
+                row: row,
+                column: col
+            }
+        }
+
+        let body = JSON.stringify(obj);
+        console.log(body);
+
+        fetch(url + "notify", {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: body
+        })
+            .then(response => response.json())
+            .then(json => ValidPlay(json,row,col))
+            .catch(console.log)
+    }
+}
+
+
+
+
+/* OLD UPDATE
 function update() {
     //retornamos uma promessa de resposta 
     return new Promise((resolve, reject) => {
@@ -1655,9 +1833,11 @@ function update() {
             //só entra aqui quando temos a conexão com outro jogador
             eventSource.onmessage = function (event) {
                 const data = JSON.parse(event.data);    //data <=> tabuleiro + informações extras
-                console.log("Emparelhamento com sucesso");
-                eventSource.close();
-                resolve(data); // resolve a Promise com os dados recebidos
+                console.log("RECEBI RESPOSTA DO SERVIDOR");
+                // eventSource.close();
+                ProcessUpdate(data);
+                //! NOTA AQUI DEVEMOS COLOCAR 
+                resolve(); // resolve a Promise com os dados recebidos
             }
 
             eventSource.onerror = function (error) {
@@ -1667,12 +1847,10 @@ function update() {
         }
     });
 }
+*/
 
-/*Inicio de /notify */
-
-//todo por a notify com argumentos (linha e coluna)
-//todo fazer com que notify retorne promessa 
-function notify() {
+/* (OLD notify)
+function notify(row, col) {
     //caso não seja possivel fazer o update
     return new Promise((resolve, reject) => {
         if (cur_user == undefined || game_session == undefined) {
@@ -1681,14 +1859,13 @@ function notify() {
         }
         //caso seja possível fazer update
         else {
-            //todo atualizar row e col pela posição selecionada
             let obj = {
                 nick: cur_user,
                 password: pass,
                 game: game_session,
                 move: {
-                    row: 0,
-                    column: 0
+                    row: row,
+                    column: col
                 }
             }
 
@@ -1707,6 +1884,50 @@ function notify() {
                 .catch(reject)
         }
     });
-
-
 }
+ */
+
+/* (OLD JOIN)
+function join() {
+    //retorna uma Promise
+    return new Promise((resolve, reject) => {
+        //caso utilizador registado seja invalido
+        if (cur_user == undefined || pass == undefined) {
+            // console.log("ERRO:Registe um utilizador válido");
+            reject("Registe-se antes de iniciar procura por jogo")
+        }
+        //caso utilizador registado seja invalido
+        else {
+            //todo: atualizar as rows e cols com aquelas presentes no tabuleiro
+            let selector_linhas = document.querySelector('#input_linhas_tabuleiro');
+            let selector_colunas = document.querySelector('#input_colunas_tabuleiro');
+
+            let obj = {
+                group: 7,
+                nick: cur_user,
+                password: pass,
+                size: {
+                    rows: parseInt(selector_linhas.value),
+                    columns: parseInt(selector_colunas.value)
+                }
+            }
+
+            let body = JSON.stringify(obj);
+            console.log(body);
+
+            fetch(url + "join", {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: body
+            })
+                .then(response => response.json())
+                .then(json => SaveGameSession(json))
+                .then(resolve)  //resolve a Promisse após do then anterior
+                .catch(reject);
+
+        }
+    });
+}
+ */
