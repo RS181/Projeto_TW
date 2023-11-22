@@ -1415,6 +1415,26 @@ function Update_score(nivel_do_IA, vencedor) {
     }
 }
 
+//Função que atualiza a tabela de scores (vs jogador)
+function Update_score_jogador(vencedor) {
+    let v = document.getElementById("vitorias_jogador");
+    let d = document.getElementById("derrotas_jogador");
+    let cur_value;
+    //Atribui score ao utilizador atual.
+
+
+    if (cur_user == vencedor) {
+        cur_value = parseInt(v.innerHTML) + 1;
+        v.innerHTML = cur_value;
+    }
+    else if (vencedor != null) {
+        cur_value = parseInt(d.innerHTML) + 1;
+        d.innerHTML = cur_value;
+    }
+
+}
+
+
 
 async function give_up() {
     //console.log("Carreguei no botão");
@@ -1425,10 +1445,8 @@ async function give_up() {
         if (instancia_tabuleiro == undefined) {
             console.log("Jogador saio antes do emparelhamento");
         }
-        else {
-            //todo Implementar atualização de score quando um dos jogadores desiste
-        }
 
+        resposta_update = undefined; //!Pomos aqui para poder começar outro jogo (confirmar)
 
         //Alterações do UI quando jogador atual desiste 
         //todo -> falta atualizar o adversario que jogador atual desistiu
@@ -1616,17 +1634,27 @@ function leave() {
 //Guarda numa variavel global o pedido GET que foi feito
 var resposta_update; //todo no fim do jogo colocar a undefined!!!!!!
 function ProcessUpdate(json) {
-    resposta_update = json;
-    // console.log("Processei resposta do update");
-    if (resposta_update.phase == "drop")
-        DisplayMessage("(" + resposta_update.phase + ") vez de: " + resposta_update.turn);
-    else if (resposta_update.phase == "move")
-        DisplayMessage("(" + resposta_update.phase + ") step: [" + resposta_update.step + "] vez de: " + resposta_update.turn);
-    else
-        DisplayMessage("NÃO TENHO MENSAGEM DEFINIDA")
+    console.log("TESTE");
+    if ( 'winner' in json) {
+        resposta_update = undefined;    //para garantir 
+    }
+    else {
+        resposta_update = json;
+        // console.log("Processei resposta do update");
+        if (resposta_update.phase == "drop")
+            DisplayMessage("(" + resposta_update.phase + ") vez de: " + resposta_update.turn);
+        else if (resposta_update.phase == "move")
+            DisplayMessage("(" + resposta_update.phase + ") step: [" + resposta_update.step + "] vez de: " + resposta_update.turn);
+        else if ('winner' in resposta_update)
+            DisplayMessage("Vencedor  (" + winner + ")");
+        else
+            DisplayMessage("NÃO TENHO MENSAGEM DEFINIDA");
+    }
+    
+
 }
 
-
+//Cria o tabuleiro
 function create_board(data) {
     //criamos um novo Tabuleiro com as linhas e colunas selecionadas
     tabuleiro = new Tabuleiro("tabuleiro", data.board.length, data.board[0].length, get_dificulty(), oponente);
@@ -1655,13 +1683,13 @@ function por_peça_jogador(classe_cor, id_celula) {
     else {
         celula.firstChild.style["border-color"] = "grey";
     }
-    
+
 }
 
 //Remove a peça nesta posição
-function remove_peca_jogador(id_celula){
+function remove_peca_jogador(id_celula) {
     let celula = document.getElementById(id_celula);
-    if (celula.childNodes.length != 0){
+    if (celula.childNodes.length != 0) {
         celula.removeChild(celula.firstChild);
     }
 }
@@ -1721,13 +1749,30 @@ function update() {
         //só entra aqui quando temos a conexão com outro jogador
         eventSource.onmessage = function (event) {
             const data = JSON.parse(event.data);    //data <=> tabuleiro + informações extras
+            if ('winner' in data) {
+                Update_score_jogador(data.winner);
+
+                resposta_update = undefined; //!Pomos aqui para poder começar outro jogo (confirmar)
+                //Fechamos o eventSource (fim de jogo)
+                eventSource.close();
+            }
+
             if ('board' in data) {
                 console.log("===========================");
                 console.log("Recebi atualização por parte do servidor")
                 console.log(data);
+
+
                 //Primeira resposta do servidor 
+
                 if (resposta_update == undefined) {
                     create_board(data);
+                }
+                if ('winner' in data) {
+                    Update_score_jogador(data.winner);
+                    resposta_update = undefined; //!Pomos aqui para poder começar outro jogo (confirmar)
+                    //Fechamos o eventSource (fim de jogo)
+                    eventSource.close();
                 }
                 else {
                     //Drop phase não precisa de condicação
@@ -1743,16 +1788,17 @@ function update() {
                                 if (data.turn == cur_user) {
                                     let pos = last_row * instancia_tabuleiro.cols + last_col + 1;
                                     select_piece(pos);
-                                    console.log("TODO : implementar to");
+                                    // console.log("TODO : implementar to");
                                 }
                                 break;
-                            case ("capture"):
-                                console.log("Implementar capture");
+                            case ("take"):
+                                console.log("DENTRO DE TAKE");
                                 break;
                         }
                     }
                 }
-                if (data.step != "to"){
+                //Para mostrar selecionamento de peça (so no ecra do jogador que selecionou a peça)
+                if (data.step != "to") {
                     update_tabuleiro(data.board);
                 }
             }
