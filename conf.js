@@ -1652,6 +1652,18 @@ function por_peça_jogador(classe_cor, id_celula) {
         peca.className = classe_cor;
         celula.appendChild(peca);
     }
+    else {
+        celula.firstChild.style["border-color"] = "grey";
+    }
+    
+}
+
+//Remove a peça nesta posição
+function remove_peca_jogador(id_celula){
+    let celula = document.getElementById(id_celula);
+    if (celula.childNodes.length != 0){
+        celula.removeChild(celula.firstChild);
+    }
 }
 
 //Atualiza o tabuleiro a cada onmessage do tabuleiro 
@@ -1673,19 +1685,21 @@ function update_tabuleiro(board) {
                 case "black":
                     por_peça_jogador("peca_tabuleiro_preta", pos);
                     break;
+                case "empty":
+                    remove_peca_jogador(pos);
+                    break;
                 default:
                     break;
             }
         }
     }
-    // last_board = board;
     // console.log("---------------");
 
 }
 
 //mostra peça selecionada
 function select_piece(celula_id) {
-    console.log("ENTREI NO SELECT_PIECE")
+    console.log("ENTREI NO SELECT_PIECE");
     let celula = document.getElementById(celula_id);
     let peca = celula.firstChild;
     peca.style["border-color"] = "#60e550";
@@ -1724,7 +1738,6 @@ function update() {
                         switch (data.step) {
                             case ("from"):
                                 console.log("DENTRO DE FROM");
-                                //todo por aqui o unselect_piece (por todas as peças com estilo default)
                                 break;
                             case ("to"):
                                 if (data.turn == cur_user) {
@@ -1739,7 +1752,9 @@ function update() {
                         }
                     }
                 }
-                update_tabuleiro(data.board);
+                if (data.step != "to"){
+                    update_tabuleiro(data.board);
+                }
             }
             ProcessUpdate(data);
             console.log("=============================");
