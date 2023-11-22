@@ -1080,7 +1080,7 @@ function getColuna(Posicao, cols) {
         ans++;
     }
 
-    alert("ERRO na função getColuna");
+    // alert("ERRO na função getColuna");
 }
 
 /* FUNCÃO DE DISPLAY DE MENSAGENS*/
@@ -1231,26 +1231,8 @@ function get_nr_linhas_colunas() {
             DisplayMessage("É a vez da peça preta jogar");
             break;
         case "jogador":
-
-            //Primeiro Update
-            // update();
+            //Começamos a procura por adversário
             join();
-            //criamos um novo Tabuleiro com as linhas e colunas selecionadas
-            /*
-            let data = resposta_update;
-            tabuleiro = new Tabuleiro("tabuleiro", data.board.length, data.board[0].length, get_dificulty(), oponente);
-
-            //!guardamos numa variavel global uma instancia do tabuleiro
-            instancia_tabuleiro = tabuleiro;
-            instancia_tabuleiro.SetInitialSettings(data);
-
-            //A frase que explica o estado do jogo passa a ser vísivel depois da criação do tabuleiro
-            let mensagem = document.getElementById("mensagens_ui");
-            mensagem.style.visibility = "visible";
-            mensagem.style.justifyContent = "center";
-            let container_v4 = document.getElementById("container_v4");
-            container_v4.style.visibility = "visible";
-            */
 
             break;
         default:
@@ -1667,7 +1649,12 @@ var resposta_update; //todo no fim do jogo colocar a undefined!!!!!!
 function ProcessUpdate(json) {
     resposta_update = json;
     // console.log("Processei resposta do update");
-    DisplayMessage("(" + resposta_update.phase + ") vez de: " + resposta_update.turn);
+    if (resposta_update.phase == "drop")
+        DisplayMessage("(" + resposta_update.phase + ") vez de: " + resposta_update.turn);
+    else if (resposta_update.phase == "move")
+        DisplayMessage("(" + resposta_update.phase + ") step: [" + resposta_update.step + "] vez de: " + resposta_update.turn);
+    else
+        DisplayMessage("NÃO TENHO MENSAGEM DEFINIDA")
 }
 
 
@@ -1688,40 +1675,53 @@ function create_board(data) {
 
 }
 
-
-function por_peça_jogador(classe_cor,id_celula){
+//Cria a div peça
+function por_peça_jogador(classe_cor, id_celula) {
     let celula = document.getElementById(id_celula);
-    let peca = document.createElement('div');
-    peca.className = classe_cor;
-    celula.appendChild(peca);
+    if (celula.childNodes.length == 0) {
+        let peca = document.createElement('div');
+        peca.className = classe_cor;
+        celula.appendChild(peca);
+    }
 }
 
-function update_tabuleiro(board){
-    console.log("---------------");
+//Atualiza o tabuleiro a cada onmessage do tabuleiro 
+function update_tabuleiro(board) {
+    // console.log("---------------");
     let peca;
     let pos;
-    for (let i = 0 ; i < board.length ; i++){
-        for (let j = 0 ; j < board[0].length ; j++){
-            console.log(" (" + (i*board[0].length + j +1) + ") board["+i+"][" + j+ "] = " + board[i][j]);
+
+    //todo remover os filhos das posições que estao a empty (criar função para isso)
+    for (let i = 0; i < board.length; i++) {
+        for (let j = 0; j < board[0].length; j++) {
+            // console.log(" (" + (i*board[0].length + j +1) + ") board["+i+"][" + j+ "] = " + board[i][j]);
             peca = board[i][j];
-            pos = i*board[0].length + j + 1;
+            pos = i * board[0].length + j + 1;
             switch (peca) {
                 case "white":
-                    por_peça_jogador("peca_tabuleiro_branca",pos);
+                    por_peça_jogador("peca_tabuleiro_branca", pos);
                     break;
                 case "black":
-                    por_peça_jogador("peca_tabuleiro_preta",pos);
+                    por_peça_jogador("peca_tabuleiro_preta", pos);
                     break;
                 default:
                     break;
             }
         }
     }
-    console.log("---------------");
+    // last_board = board;
+    // console.log("---------------");
 
 }
 
-//! Verificar se esta correto (professor diz que não é precisso retornar promessa)
+//mostra peça selecionada
+function select_piece(celula_id) {
+    console.log("ENTREI NO SELECT_PIECE")
+    let celula = document.getElementById(celula_id);
+    let peca = celula.firstChild;
+    peca.style["border-color"] = "#60e550";
+}
+
 //todo FECHAR O eventSource quando receber no update {winner }
 function update() {
 
@@ -1739,52 +1739,80 @@ function update() {
         eventSource.onmessage = function (event) {
             const data = JSON.parse(event.data);    //data <=> tabuleiro + informações extras
             if ('board' in data) {
-                console.log("==================================");
+                console.log("===========================");
                 console.log("Recebi atualização por parte do servidor")
                 console.log(data);
                 //Primeira resposta do servidor 
                 if (resposta_update == undefined) {
                     create_board(data);
                 }
-                //caso estajamos no dropphase
-                else if (data.phase == "drop"){
-                    update_tabuleiro(data.board);
+                else {
+                    //Drop phase não precisa de condicação
+                    //Estamos na Movephase
+                    if (data.phase == "move") {
+                        // update_tabuleiro(data.board);
+                        //selecionamos peça para mover
+                        switch (data.step) {
+                            case ("from"):
+                                console.log("DENTRO DE FROM");
+                                //todo por aqui o unselect_piece (por todas as peças com estilo default)
+                                break;
+                            case ("to"):
+                                if (data.turn == cur_user) {
+                                    let pos = last_row * instancia_tabuleiro.cols + last_col + 1;
+                                    select_piece(pos);
+                                    console.log("TODO : implementar to");
+                                }
+                                break;
+                            case ("capture"):
+                                console.log("Implementar capture");
+                                break;
+                        }
+                    }
                 }
-                ProcessUpdate(data);
-                console.log("==================================");
-
+                update_tabuleiro(data.board);
             }
-        }
+            ProcessUpdate(data);
+            console.log("=============================");
 
-        eventSource.onerror = function (error) {
-            console.error("Erro no EventSource:", error);
         }
+    }
+
+    eventSource.onerror = function (error) {
+        console.error("Erro no EventSource:", error);
     }
 }
 /*Inicio de /notify */
-function ValidPlay(json,row,play) {
-    console.log("Resposta do notify ");
-    console.log(json);
 
+
+function ValidPlay(json) {
+    // console.log("Resposta do notify ");
+    // console.log(json);
     //Faz o update notify tiver como resposta {} -> jogada valida
     if (JSON.stringify(json) == "{}") {
-        console.log("jogada válida , vou fazer update");
-
+        //mensagem de debug
+        console.log("(notify) jogada válida , vou fazer update");
+        //guarda a linha e coluna do ultimo notif válido
     }
 
 }
-
+//variáveis globais com ultima posição
+var last_row;
+var last_col;
 function notify(row, col) {
     //caso não seja possivel fazer o update
     if (cur_user == undefined || game_session == undefined) {
-        // console.log("Não tem informação suficiente para fazer o pedido notify");
-        reject("Não é possivel fazer notify, com os dados atuais");
+        console.log("Não tem informação suficiente para fazer o pedido notify");
+        // reject("Não é possivel fazer notify, com os dados atuais");
     }
     //caso seja possível fazer update
     else {
         //Indice começa em 0 
         row = row - 1;
         col = col - 1;
+        last_row = row;
+        last_col = col;
+
         let obj = {
             nick: cur_user,
             password: pass,
@@ -1806,7 +1834,7 @@ function notify(row, col) {
             body: body
         })
             .then(response => response.json())
-            .then(json => ValidPlay(json,row,col))
+            .then(json => ValidPlay(json))
             .catch(console.log)
     }
 }
