@@ -1634,9 +1634,9 @@ function leave() {
 //Guarda numa variavel global o pedido GET que foi feito
 var resposta_update; //todo no fim do jogo colocar a undefined!!!!!!
 function ProcessUpdate(json) {
-    console.log("TESTE");
+    // console.log("TESTE");
     if ( 'winner' in json) {
-        resposta_update = undefined;    //para garantir 
+        resposta_update = undefined;    //para garantir que e criado novo tabuleiro
     }
     else {
         resposta_update = json;
@@ -1652,6 +1652,19 @@ function ProcessUpdate(json) {
     }
     
 
+}
+
+//Remove o tabuleiro e mensagens
+function erase_board(){
+    resposta_update = undefined; //!Pomos aqui para poder começar outro jogo (confirmar)
+
+    //Alterações do UI quando jogador atual desiste 
+    let x = document.querySelector('#tabuleiro');
+    let mensagem = document.getElementById("mensagens_ui");
+    removeAllChildNodes(x);
+    x.className = '';
+    mensagem.style.visibility = 'hidden';
+    mensagem.parentElement.style.visibility = 'hidden';
 }
 
 //Cria o tabuleiro
@@ -1749,30 +1762,26 @@ function update() {
         //só entra aqui quando temos a conexão com outro jogador
         eventSource.onmessage = function (event) {
             const data = JSON.parse(event.data);    //data <=> tabuleiro + informações extras
+            console.log("===========================");
+            console.log("Recebi atualização por parte do servidor")
+            console.log(data);
+
+            //caso haja vencedor 
             if ('winner' in data) {
+                //atualiza score (jogador atual)
                 Update_score_jogador(data.winner);
 
-                resposta_update = undefined; //!Pomos aqui para poder começar outro jogo (confirmar)
+                //limpa o tabuleiro
+                erase_board();
+
                 //Fechamos o eventSource (fim de jogo)
                 eventSource.close();
             }
 
-            if ('board' in data) {
-                console.log("===========================");
-                console.log("Recebi atualização por parte do servidor")
-                console.log(data);
-
-
+            else if ('board' in data) {
                 //Primeira resposta do servidor 
-
                 if (resposta_update == undefined) {
                     create_board(data);
-                }
-                if ('winner' in data) {
-                    Update_score_jogador(data.winner);
-                    resposta_update = undefined; //!Pomos aqui para poder começar outro jogo (confirmar)
-                    //Fechamos o eventSource (fim de jogo)
-                    eventSource.close();
                 }
                 else {
                     //Drop phase não precisa de condicação
