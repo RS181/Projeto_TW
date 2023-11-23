@@ -1475,6 +1475,7 @@ async function give_up() {
 window.onload = function () {
     console.log("Carregou a Dom");
     displayRadioValue();
+
 }
 
 
@@ -1502,11 +1503,13 @@ function SaveCredantials(json, nick, password) {
         cur_user = nick;
         pass = password;
         console.log("Registado com sucesso");
+        ranking();
     }
     else {
         cur_user = undefined;
         pass = undefined;
     }
+    
 }
 
 //regista utilizador (também serve ocmo login)
@@ -1881,6 +1884,27 @@ function notify(row, col) {
 
 
 /* Inicio de ranking */
+
+//Atualiza o score (consoante o nr linhas e colunas de um jogador)
+function update_score_table(json){
+    console.log(json);
+    let v = document.getElementById("vitorias_jogador");
+    let d = document.getElementById("derrotas_jogador");
+    if ('ranking' in json){
+        for (let info of json.ranking){
+            if (info.nick == cur_user){
+                console.log(info);
+                let nr_vitorias = info.victories;
+                let nr_derrotas = info.games - nr_vitorias;
+                v.innerHTML = nr_vitorias;
+                d.innerHTML = nr_derrotas;
+            }
+        }
+    }
+}
+
+
+//vai buscar o ranking
 function ranking(){
     // nosso grupo é o 7
     let group = 7;
@@ -1907,7 +1931,7 @@ function ranking(){
         body: body
     })
       .then(responce => responce.json())
-      .then(console.log)
+      .then(json => update_score_table(json))
       .catch(console.log)   
 
 }
