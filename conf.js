@@ -1542,11 +1542,12 @@ function SaveGameSession(json) {
     // console.log("Dentro de SaveGameSession");
     // console.log(json);
     game_session = json.game;
+
     //primeiro update
     update();
 }
 
-//Emparelhe 2 jogadores
+//Emparelha 2 jogadores
 function join() {
     //retorna uma Promise
     //caso utilizador registado seja invalido
@@ -1876,4 +1877,37 @@ function notify(row, col) {
             .then(json => ValidPlay(json))
             .catch(console.log)
     }
+}
+
+
+/* Inicio de ranking */
+function ranking(){
+    // nosso grupo é o 7
+    let group = 7;
+    
+    let selector_linhas = document.querySelector('#input_linhas_tabuleiro');
+    let selector_colunas = document.querySelector('#input_colunas_tabuleiro');
+
+    let obj = {
+        group: group,
+        size: {
+            rows : parseInt(selector_linhas.value),
+            columns : parseInt(selector_colunas.value)
+        }
+    }
+
+    let body = JSON.stringify(obj);
+    console.log(body);
+
+    fetch(url + "ranking", {
+        method: 'POST',
+        headers : {
+            'Content-type': 'application/json'
+        },
+        body: body
+    })
+      .then(responce => responce.json())
+      .then(console.log)
+      .catch(console.log)   
+
 }
