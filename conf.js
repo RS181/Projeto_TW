@@ -1543,7 +1543,7 @@ function register() {
 var game_session;
 function SaveGameSession(json) {
     // console.log("Dentro de SaveGameSession");
-    // console.log(json);
+    console.log(json);
     game_session = json.game;
 
     //primeiro update
@@ -1764,6 +1764,14 @@ function select_piece(celula_id) {
     peca.style["border-color"] = "#60e550";
 }
 
+//faz reset ao contador de peças (div de peça com texto dentro)
+function reset_piece_counter(){
+    let pretas = document.querySelector(".peca_p");
+    let brancas = document.querySelector(".peca_b");
+    pretas.innerHTML = 0;
+    brancas.innerHTML = 0;
+}
+
 //todo FECHAR O eventSource quando receber no update {winner }
 function update() {
 
@@ -1789,8 +1797,11 @@ function update() {
                 //atualiza score (jogador atual)
                 Update_score_jogador(data.winner);
 
-                //limpa o tabuleiro
+                //limpa o tabuleiro 
                 erase_board();
+
+                //reset contador das peças
+                reset_piece_counter()
 
                 //Fechamos o eventSource (fim de jogo)
                 eventSource.close();
@@ -1901,13 +1912,13 @@ function notify(row, col) {
 
 //Atualiza o score (consoante o nr linhas e colunas de um jogador)
 function update_score_table(json){
-    console.log(json);
+    // console.log(json);
     let v = document.getElementById("vitorias_jogador");
     let d = document.getElementById("derrotas_jogador");
     if ('ranking' in json){
         for (let info of json.ranking){
             if (info.nick == cur_user){
-                console.log(info);
+                // console.log(info);
                 let nr_vitorias = info.victories;
                 let nr_derrotas = info.games - nr_vitorias;
                 v.innerHTML = nr_vitorias;
