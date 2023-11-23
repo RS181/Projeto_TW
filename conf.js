@@ -1711,11 +1711,22 @@ function remove_peca_jogador(id_celula) {
     }
 }
 
+
+function update_nr_pecas_removidas(nr_brancas_removidas,nr_pretas_removidas){
+    let pretas = document.querySelector(".peca_p");
+    let brancas = document.querySelector(".peca_b");
+    pretas.innerHTML = nr_brancas_removidas;
+    brancas.innerHTML = nr_pretas_removidas;
+}
+
 //Atualiza o tabuleiro a cada onmessage do tabuleiro 
 function update_tabuleiro(board) {
     // console.log("---------------");
     let peca;
     let pos;
+
+    let pretas = 0;
+    let brancas = 0;
 
     //todo remover os filhos das posições que estao a empty (criar função para isso)
     for (let i = 0; i < board.length; i++) {
@@ -1726,9 +1737,11 @@ function update_tabuleiro(board) {
             switch (peca) {
                 case "white":
                     por_peça_jogador("peca_tabuleiro_branca", pos);
+                    pretas++;
                     break;
                 case "black":
                     por_peça_jogador("peca_tabuleiro_preta", pos);
+                    brancas++;
                     break;
                 case "empty":
                     remove_peca_jogador(pos);
@@ -1738,6 +1751,7 @@ function update_tabuleiro(board) {
             }
         }
     }
+    update_nr_pecas_removidas(12-brancas,12-pretas);
     // console.log("---------------");
 
 }

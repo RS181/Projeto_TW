@@ -156,6 +156,38 @@ fieldset{
     position: relative;
 }
 
+.peca_p{
+    color: white;
+    text-align: center;
+    line-height: 45px;
+    font-weight: bold;
+
+    border-style: solid;
+    border-color: grey;
+    background-color: black;
+    margin: auto;
+    height: 50px;
+    width: 50px;
+    border-radius: 100px;
+    float: left;
+}
+.peca_b{
+    color: black;
+    text-align: center;
+    line-height: 45px;
+    font-weight: bold;
+
+
+    border-style: solid;
+    border-color: grey;
+    background-color: white;
+    margin: auto;
+    height: 50px;
+    width: 50px;
+    border-radius: 100px;
+}
+
+
 .peca_tabuleiro_preta {
     border-style: solid;
     border-color: grey;
