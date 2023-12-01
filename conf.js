@@ -1914,18 +1914,20 @@ function notify(row, col) {
 
 //Atualiza o score (consoante o nr linhas e colunas de um jogador)
 function update_score_table(json){
-    // console.log(json);
-    let v = document.getElementById("vitorias_jogador");
-    let d = document.getElementById("derrotas_jogador");
+    console.log(json.ranking);
+
+    let id = 1;
+
     if ('ranking' in json){
         for (let info of json.ranking){
-            if (info.nick == cur_user){
-                // console.log(info);
-                let nr_vitorias = info.victories;
-                let nr_derrotas = info.games - nr_vitorias;
-                v.innerHTML = nr_vitorias;
-                d.innerHTML = nr_derrotas;
-            }
+            let player_name = document.getElementById("score_player_" + id);
+            let player_victories = document.getElementById("vitorias_jogador_" + id);
+            let player_defeats = document.getElementById("derrotas_jogador_" + id);
+            player_name.removeAttribute("hidden");
+            player_name.firstChild.nextSibling.innerHTML = info.nick;
+            player_victories.innerHTML = info.victories;
+            player_defeats.innerHTML = info.games - info.victories;
+            id++;
         }
     }
 }
