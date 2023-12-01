@@ -912,6 +912,7 @@ class Tabuleiro {
             //console.log("Peças pretas Ganham ");
             Update_score(nivel_do_IA, "preta");
             DisplayMessage("Peças pretas  Ganharam!!!");
+            erase_board();
             return true;
         }
         else if (nr_pretas < 3) {
@@ -1463,8 +1464,8 @@ async function give_up() {
         Update_score(dif, "branca");
         DisplayMessage("Jogador desistiu !!!");
         await sleep(1000);
-        get_nr_linhas_colunas();
-
+        // get_nr_linhas_colunas();
+        erase_board();
     }
 
     //Cria um novo tabuleiro 
