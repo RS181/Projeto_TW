@@ -919,6 +919,7 @@ class Tabuleiro {
             //console.log("Peças brancas Ganham ");
             Update_score(nivel_do_IA, "branca");
             DisplayMessage("Peças brancas Ganharam!!!");
+            erase_board();
             return true;
         }
 
@@ -961,6 +962,7 @@ class Tabuleiro {
             //console.log("Peças pretas Ganham (Peças brancas não tem movimentos válidos)");
             Update_score(nivel_do_IA, "preta");
             DisplayMessage("Peças pretas  Ganharam(Peças brancas não tem movimentos válidos)!!!");
+            erase_board();
             return true;
         }
 
@@ -995,16 +997,11 @@ class Tabuleiro {
             //console.log("Peças brancas Ganham (Peças pretas não tem movimentos válidos)");
             Update_score(nivel_do_IA, "branca");
             DisplayMessage("Peças brancas Ganharam(Peças pretas não tem movimentos válidos)!!!");
+            erase_board();
             return true;
         }
         return false;
     }
-
-
-
-
-
-
 }
 
 //dessacocia a div que representa a peca , a id da
@@ -1475,8 +1472,10 @@ async function give_up() {
 //O que é carregado no inicio
 window.onload = function () {
     console.log("Carregou a Dom");
+    
     displayRadioValue();
 
+    StoreComputerResults();
 }
 
 
@@ -1963,3 +1962,38 @@ function ranking(){
       .catch(console.log)   
 
 }
+
+
+
+/* Parte de WebStorage */
+
+//Antes de fazer refresh guarda  os dados de vs computador em localstorage
+window.onbeforeunload = function(){
+    if (typeof(Storage) === 'undefined') {
+        console.log("WebStorage não suportado");   
+        return; 
+    }
+    for( let i = 1 ; i <= 5 ; i++){
+        let v = document.getElementById("numero_vitorias_" + i);
+        let d = document.getElementById("numero_derrotas_" + i);
+        localStorage.setItem("numero_vitorias_" + i,v.innerHTML);
+        localStorage.setItem("numero_derrotas_" + i ,d.innerHTML);
+    }
+}
+
+//função executado após o refresh (coloca os valores em localStorage)
+function StoreComputerResults(){
+    // console.log("Web Storage part")
+    if (typeof(Storage) === 'undefined') {
+        console.log("WebStorage não suportado");    
+    }
+
+    for( let i = 1 ; i <= 5 ; i++){
+        let v = document.getElementById("numero_vitorias_" + i);
+        let d = document.getElementById("numero_derrotas_" + i);
+        v.innerHTML = localStorage.getItem("numero_vitorias_" + i);
+        d.innerHTML = localStorage.getItem("numero_derrotas_" + i);  
+    }
+}
+
+
