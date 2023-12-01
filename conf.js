@@ -1512,7 +1512,7 @@ function SaveCredantials(json, nick, password) {
     
 }
 
-//regista utilizador (também serve ocmo login)
+//regista utilizador (também serve como login)
 function register() {
     let user = getUsername();
     let pass = getPassword();
@@ -1772,7 +1772,6 @@ function reset_piece_counter(){
     brancas.innerHTML = 0;
 }
 
-//todo FECHAR O eventSource quando receber no update {winner }
 function update() {
 
     if (cur_user == undefined || game_session == undefined) {
@@ -1848,6 +1847,9 @@ function update() {
 
     eventSource.onerror = function (error) {
         console.error("Erro no EventSource:", error);
+        //! Fechamos o eventSource em caso de erro 
+        //todo confirmar se não causa erro
+        eventSource.close();
     }
 }
 /*Inicio de /notify */
