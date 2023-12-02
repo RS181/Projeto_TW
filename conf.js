@@ -1413,24 +1413,24 @@ function Update_score(nivel_do_IA, vencedor) {
     }
 }
 
-//Função que atualiza a tabela de scores (vs jogador)
-function Update_score_jogador(vencedor) {
-    let v = document.getElementById("vitorias_jogador");
-    let d = document.getElementById("derrotas_jogador");
-    let cur_value;
-    //Atribui score ao utilizador atual.
+// //Função que atualiza a tabela de scores (vs jogador)
+// function Update_score_jogador(vencedor) {
+//     let v = document.getElementById("vitorias_jogador");
+//     let d = document.getElementById("derrotas_jogador");
+//     let cur_value;
+//     //Atribui score ao utilizador atual.
 
 
-    if (cur_user == vencedor) {
-        cur_value = parseInt(v.innerHTML) + 1;
-        v.innerHTML = cur_value;
-    }
-    else if (vencedor != null) {
-        cur_value = parseInt(d.innerHTML) + 1;
-        d.innerHTML = cur_value;
-    }
+//     if (cur_user == vencedor) {
+//         cur_value = parseInt(v.innerHTML) + 1;
+//         v.innerHTML = cur_value;
+//     }
+//     else if (vencedor != null) {
+//         cur_value = parseInt(d.innerHTML) + 1;
+//         d.innerHTML = cur_value;
+//     }
 
-}
+// }
 
 
 
@@ -1628,6 +1628,7 @@ function leave() {
         })
             .then(response => response.json())
             .then(game_session = undefined)
+            .then(ranking())
             .catch(console.log);
 
     }
@@ -1794,7 +1795,8 @@ function update() {
             //caso haja vencedor 
             if ('winner' in data) {
                 //atualiza score (jogador atual)
-                Update_score_jogador(data.winner);
+                //todo testar este ranking 
+                ranking();
 
                 //limpa o tabuleiro 
                 erase_board();
@@ -1914,8 +1916,8 @@ function notify(row, col) {
 
 //Atualiza o score (consoante o nr linhas e colunas de um jogador)
 function update_score_table(json){
-    console.log(json.ranking);
-
+    // console.log(json.ranking);
+    console.log("ATUALIZAR SCOREBOARD");
     let id = 1;
 
     if ('ranking' in json){
