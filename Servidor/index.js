@@ -9,6 +9,7 @@ let PORT = 8008;
 const http = require('http');
 const url = require('url');
 const fs = require('fs');
+const rank = require('./rank.js');
 
 //todo importar os modulos para restantes funções
 
@@ -58,10 +59,11 @@ http.createServer(function (request, response) {
     switch (pathname) {
         case '/register':
             console.log("Entrei no /register");
-            register(request,response);
+            register(request, response);
             break;
         case '/ranking':
             console.log("Entrei no /ranking");
+            ranking(request, response);
             break;
         case '/join':
             console.log("Entrei no /join");
@@ -75,6 +77,13 @@ http.createServer(function (request, response) {
         case '/update':
             console.log("Entrei no /update");
             break;
+        default:
+            console.log("Pedido desconhecido");
+            response.writeHead(404, headers.plain);
+            response.end();
+            console.log("=======Fim Pedido=======");
+            break;
+
     }
 
     // response.end("fim");
@@ -82,8 +91,7 @@ http.createServer(function (request, response) {
 }).listen(PORT);
 
 
-
-
+//Função que trata dos pedidos em /register
 function register(request, response) {
 
     //obter dados do pedido (quando bloco de dados estiver disponivel)
@@ -100,7 +108,7 @@ function register(request, response) {
             const requestDataObj = JSON.parse(requestData);
 
             // Ler os dados do arquivo
-            fs.readFile('dados.txt', 'utf8', (err, data) => {
+            fs.readFile('user.txt', 'utf8', (err, data) => {
                 if (err) {
                     console.error("Erro ao ler dados do arquivo:", err);
                     response.writeHead(500, headers.plain);
@@ -110,7 +118,7 @@ function register(request, response) {
 
                 let userDatabase = {};
 
-                //Tentamos colocar os dados em dados.txt (no objeto userDatabase)
+                //Tentamos colocar os dados em user.txt (no objeto userDatabase)
                 if (data) {
                     try {
                         userDatabase = JSON.parse(data);
@@ -132,7 +140,7 @@ function register(request, response) {
                         console.log("=======Fim Pedido=======");
                     } else {
                         // password diferente
-                        response.writeHead(200, headers.plain);
+                        response.writeHead(401, headers.plain);
                         response.end('{"error": "User registered with a different password"}');
                         console.log("=======Fim Pedido=======");
                     }
@@ -141,7 +149,7 @@ function register(request, response) {
                     userDatabase[requestDataObj.nick] = requestDataObj.password;
 
                     // Escrever os dados atualizados no arquivo
-                    fs.writeFile('dados.txt', JSON.stringify(userDatabase), 'utf8', (writeErr) => {
+                    fs.writeFile('user.txt', JSON.stringify(userDatabase), 'utf8', (writeErr) => {
                         if (writeErr) {
                             console.error("Erro ao escrever dados no arquivo:", writeErr);
                             response.writeHead(500, headers.plain);
@@ -152,14 +160,87 @@ function register(request, response) {
                         // Responder com sucesso
                         response.writeHead(200, headers.plain);
                         response.end("{}");
+                        console.log("=======Fim Pedido=======");
                     });
                 }
             });
         } catch (error) {
-            // Erro ao analisar os dados do
+            // Erro ao analisar os dados do pedido
             response.writeHead(400, headers.plain);
             response.end('{"error": "Invalid request data"}');
         }
     });
+}
 
+
+//Função que trata dos pedidos em /ranking
+function ranking(request, response) {
+    //obter dados do pedido (quando bloco de dados estiver disponivel)
+    let requestData = '';
+    request.on('data', chunk => {
+        requestData += chunk.toString();
+        console.log("Request Data = " + requestData);
+    });
+
+    // Quando a leitura terminar
+    request.on('end', () => {
+        try {
+            // Serialização dos dados no pedido
+            const requestDataObj = JSON.parse(requestData);
+
+            // Verificar se a propriedade 'group' está definida
+            if (!requestDataObj.group) {
+                response.writeHead(200, headers.plain);
+                response.end('{"error": "Undefined group"}');
+                console.log("=======Fim Pedido=======");
+                return;
+            }
+
+            // Verificar se a propriedade 'size' está definida e é um objeto
+            if (!requestDataObj.size || typeof requestDataObj.size !== 'object') {
+                response.writeHead(400, headers.plain);
+                response.end('{"error": "Invalid size \'' + requestDataObj.size + '\'" }');
+                console.log("=======Fim Pedido=======");
+
+                return;
+            }
+
+            // Verificar se a propriedade 'size.rows' está definida e é um número
+            if (!requestDataObj.size.rows || typeof requestDataObj.size.rows !== 'number') {
+                response.writeHead(400, headers.plain);
+                response.end('{"error": "size property rows with invalid value \'' + requestDataObj.size.rows + '\'" }');                console.log("=======Fim Pedido=======");
+                console.log("=======Fim Pedido=======");
+                return;
+            }
+
+            // Verificar se a propriedade 'size.columns' está definida e é um número
+            if (!requestDataObj.size.columns || typeof requestDataObj.size.columns !== 'number') {
+                response.writeHead(400, headers.plain);
+                response.end('{"error": "size property columns with invalid value \'' + requestDataObj.size.columns + '\'" }');
+                console.log("=======Fim Pedido=======");
+                return;
+            }
+
+            // Verificar se o 'group' é válido 
+            if (typeof requestDataObj.group !== 'number') {
+                response.writeHead(200, headers.plain);
+                response.end('{"error": "Invalid group \'' + requestDataObj.group + '\'" }');
+                console.log("=======Fim Pedido=======");
+                return;
+            }
+
+            // Se todos os dados são válidos, pode retornar a resposta do ranking (por enquanto, uma resposta padrão sem dados)
+            response.writeHead(200, headers.plain);
+            //todo Utilizador o modulo rank.js e criar uma função que vai buscar o ranking
+            //todo do grupo e retorna-o (ver como é que vamos guardar ranking com professor
+            //todo ,num ficheiro texto?)
+            response.end('{ "ranking": [] }');
+            console.log("=======Fim Pedido=======");
+
+        } catch (error) {
+            // Erro ao analisar os dados da solicitação
+            response.writeHead(400, headers.plain);
+            response.end('{"error": "Invalid request data"}');
+        }
+    });
 }
