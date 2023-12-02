@@ -206,15 +206,15 @@ function ranking(request, response) {
             }
 
             // Verificar se a propriedade 'size.rows' está definida e é um número
-            if (!requestDataObj.size.rows || typeof requestDataObj.size.rows !== 'number') {
+            if (!requestDataObj.size.rows || typeof requestDataObj.size.rows !== 'number' || !Number.isInteger(requestDataObj.size.rows)) {
                 response.writeHead(400, headers.plain);
-                response.end('{"error": "size property rows with invalid value \'' + requestDataObj.size.rows + '\'" }');                console.log("=======Fim Pedido=======");
+                response.end('{"error": "size property rows with invalid value \'' + requestDataObj.size.rows + '\'" }');
                 console.log("=======Fim Pedido=======");
                 return;
             }
 
             // Verificar se a propriedade 'size.columns' está definida e é um número
-            if (!requestDataObj.size.columns || typeof requestDataObj.size.columns !== 'number') {
+            if (!requestDataObj.size.columns || typeof requestDataObj.size.columns !== 'number' || !Number.isInteger(requestDataObj.size.columns)) {
                 response.writeHead(400, headers.plain);
                 response.end('{"error": "size property columns with invalid value \'' + requestDataObj.size.columns + '\'" }');
                 console.log("=======Fim Pedido=======");
