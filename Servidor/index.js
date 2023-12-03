@@ -10,6 +10,7 @@ const http = require('http');
 const url = require('url');
 const fs = require('fs');
 const rank = require('./rank.js');
+const { Console } = require('console');
 
 //todo importar os modulos para restantes funções
 
@@ -187,9 +188,13 @@ function ranking(request, response) {
         try {
             // Serialização dos dados no pedido
             const requestDataObj = JSON.parse(requestData);
+            const group = requestDataObj.group;
+            const size = requestDataObj.size;
+            const rows = requestDataObj.size.rows;
+            const columns = requestDataObj.size.columns;
 
             // Verificar se a propriedade 'group' está definida
-            if (!requestDataObj.group) {
+            if (!group) {
                 response.writeHead(200, headers.plain);
                 response.end('{"error": "Undefined group"}');
                 console.log("=======Fim Pedido=======");
@@ -197,34 +202,34 @@ function ranking(request, response) {
             }
 
             // Verificar se a propriedade 'size' está definida e é um objeto
-            if (!requestDataObj.size || typeof requestDataObj.size !== 'object') {
+            if (!size || typeof size !== 'object') {
                 response.writeHead(400, headers.plain);
-                response.end('{"error": "Invalid size \'' + requestDataObj.size + '\'" }');
+                response.end('{"error": "Invalid size \'' + size + '\'" }');
                 console.log("=======Fim Pedido=======");
 
                 return;
             }
 
-            // Verificar se a propriedade 'size.rows' está definida e é um número
-            if (!requestDataObj.size.rows || typeof requestDataObj.size.rows !== 'number' || !Number.isInteger(requestDataObj.size.rows)) {
+            // Verificar se a propriedade 'size.rows' está definida e é um inteiro
+            if (!rows || typeof rows !== 'number' || !Number.isInteger(rows)) {
                 response.writeHead(400, headers.plain);
-                response.end('{"error": "size property rows with invalid value \'' + requestDataObj.size.rows + '\'" }');
+                response.end('{"error": "size property rows with invalid value \'' + rows + '\'" }');
                 console.log("=======Fim Pedido=======");
                 return;
             }
 
             // Verificar se a propriedade 'size.columns' está definida e é um número
-            if (!requestDataObj.size.columns || typeof requestDataObj.size.columns !== 'number' || !Number.isInteger(requestDataObj.size.columns)) {
+            if (!columns || typeof columns !== 'number' || !Number.isInteger(columns)) {
                 response.writeHead(400, headers.plain);
-                response.end('{"error": "size property columns with invalid value \'' + requestDataObj.size.columns + '\'" }');
+                response.end('{"error": "size property columns with invalid value \'' + columns + '\'" }');
                 console.log("=======Fim Pedido=======");
                 return;
             }
 
             // Verificar se o 'group' é válido 
-            if (typeof requestDataObj.group !== 'number') {
-                response.writeHead(200, headers.plain);
-                response.end('{"error": "Invalid group \'' + requestDataObj.group + '\'" }');
+            if (typeof group !== 'number') {
+                response.writeHead(400, headers.plain);
+                response.end('{"error": "Invalid group \'' + group + '\'" }');
                 console.log("=======Fim Pedido=======");
                 return;
             }
@@ -234,6 +239,11 @@ function ranking(request, response) {
             //todo Utilizador o modulo rank.js e criar uma função que vai buscar o ranking
             //todo do grupo e retorna-o (ver como é que vamos guardar ranking com professor
             //todo ,num ficheiro texto?)
+
+            const tabela = new rank.Score();
+            console.log(tabela);
+
+
             response.end('{ "ranking": [] }');
             console.log("=======Fim Pedido=======");
 
