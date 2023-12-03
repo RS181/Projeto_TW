@@ -1,0 +1,24 @@
+{
+    "group_7": {
+        "6_por_6": {
+            "ranking": [
+                {"nick": "rui","victories": 0,"games": 0}
+            ]
+        },
+        "6_por_5":{
+            "ranking": [
+                {"nick": "ze","victories": 0,"games": 0}
+            ]
+        },
+        "5_por_6":{
+            "ranking": [
+                {"nick": "quim","victories": 0,"games": 0}
+            ]
+        },
+        "5_por_5":{
+            "ranking": [
+                {"nick": "raul","victories": 0,"games": 0}
+            ]            
+        }
+    }
+}
