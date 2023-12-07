@@ -56,8 +56,39 @@ module.exports.Score = class {
             console.log(rankDatabase["group_"+this.group]);
             console.log(rankDatabase["group_"+this.group][this.rows + "_por_" + this.columns]);
 
+            this.ranking = rankDatabase["group_"+this.group][this.rows + "_por_" + this.columns];
 
         })
     }
 
 };
+
+/* (versão correta mas assincrona)
+    loadFromFile(){
+        fs.readFile('rankData.txt','utf8',(err,data) => {
+            if (err){
+                console.log("Erro ao ler dados do arquivo:", err);
+                return null;
+            }
+
+            //objeto que guarda dados provenientes de .txt
+            let rankDatabase = {};
+            
+            if (data){
+                try{
+                    rankDatabase = JSON.parse(data);
+                }catch(parseError){
+                    console.log("Erro ao analisar dados do ficheiro " + this.filePath + ":", parseError);
+                    return null;
+                }
+            }
+
+            // console.log("=>" + JSON.stringify(rankDatabase));
+            console.log(rankDatabase["group_"+this.group]);
+            console.log(rankDatabase["group_"+this.group][this.rows + "_por_" + this.columns]);
+
+            this.ranking = rankDatabase["group_"+this.group][this.rows + "_por_" + this.columns];
+
+        })
+    }
+ */
