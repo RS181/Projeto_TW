@@ -51,3 +51,35 @@ function register() {
         // .then(console.log)
         .catch(console.log);
 }
+
+//vai buscar o ranking
+function ranking(){
+    // nosso grupo é o 7
+    let group = 7;
+    
+    let selector_linhas = document.querySelector('#input_linhas_tabuleiro');
+    let selector_colunas = document.querySelector('#input_colunas_tabuleiro');
+
+    let obj = {
+        group: group,
+        size: {
+            rows : parseInt(selector_linhas.value),
+            columns : parseInt(selector_colunas.value)
+        }
+    }
+
+    let body = JSON.stringify(obj);
+    console.log(body);
+
+    fetch(url + "ranking", {
+        method: 'POST',
+        headers : {
+            'Content-type': 'application/json'
+        },
+        body: body
+    })
+      .then(responce => responce.json())
+      .then(json => console.log(JSON.stringify(json)))
+      .catch(console.log)   
+
+}
