@@ -10,6 +10,7 @@ let host = "localhost"
 const http = require('http');
 const url = require('url');
 const fs = require('fs');
+const crypto = require('crypto');
 const rank = require('./rank.js');
 
 //todo importar os modulos para restantes funções
@@ -202,10 +203,18 @@ function register(request, response) {
             // Serialização dos dados no pedido
             const requestDataObj = JSON.parse(requestData);
 
+            //Encriptação da palavra passe
+            const HashedPassword = crypto
+            .createHash('md5')
+            .update(requestDataObj.password)
+            .digest('hex');
+           
+
+
             // Verificar se o utilizador já está registrado
             if (UserDataObject[requestDataObj.nick]) {
                 // Verificar se a password está correta
-                if (UserDataObject[requestDataObj.nick] === requestDataObj.password) {
+                if (UserDataObject[requestDataObj.nick] === HashedPassword) {
                     // Sucesso: utilizador registado e password correta
                     response.writeHead(200, headers.plain);
                     response.end("{}");
@@ -218,7 +227,7 @@ function register(request, response) {
                 }
             } else {
                 // Utilizador não registrado(Adicionar)
-                UserDataObject[requestDataObj.nick] = requestDataObj.password;
+                UserDataObject[requestDataObj.nick] = HashedPassword;
                 console.log("--------------------");
                 console.log("Estado objeto após adicionamento");
                 console.log(UserDataObject);
@@ -450,5 +459,8 @@ function ranking(request, response) {
         }
     });
 }
+
+/* Inicio do /join */
+
 
 
