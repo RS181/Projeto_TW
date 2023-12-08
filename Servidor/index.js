@@ -66,12 +66,14 @@ const Server = http.createServer(function (request, response) {
 
     //todo fazer função que carrega objetos que contêm os dados
     //todo de utilizadores e ranking 
-    
+
     console.log("=======Inicio Pedido=======");
 
     console.log("--------------------");
-    console.log("Estado do objeto do inicio pedido");
+    console.log("Estado dos objeto no inicio pedido");
     console.log(UserDataObject);
+    console.log();
+    console.log(RankDataObject);
     console.log("--------------------");
 
 
@@ -118,18 +120,18 @@ Server.listen(PORT, () => {
     //Inicializa objecto que guarda dados de utilizador 
     GetUserData();
 
-    //todo fazer  objecto que guarda dados de ranking 
+    //Inicializa objecto que guarda dados de ranking
+    GetRankData();
 });
 
 
-//Objecto que guarda , em memória , o user.txt
+//Objecto que guarda , em memória , os dados em user.txt
 var UserDataObject = {};
 
 //carrega dados de utilizadores (quando inicia servidor) 
 function GetUserData() {
-    console.log("Entrei aqui");
     if (fs.existsSync("user.txt")) {
-        console.log("Ficheiro já user.txt existe");
+        console.log("Ficheiro user.txt já existe");
         //carrega dados do ficheiro ...
         fs.readFile('user.txt', 'utf8', (err, data) => {
             if (err) {
@@ -151,8 +153,7 @@ function GetUserData() {
     else {
         console.log("Ficheiro  user.txt não existe");
         //criar ficheiro ...
-        //todo criar ficheiro  user.txt 
-        fs.writeFile('user.txt','',function(err){
+        fs.writeFile('user.txt', '', function (err) {
             if (err) throw err;
             console.log("Criado ficheiro user.txt");
         });
@@ -160,13 +161,44 @@ function GetUserData() {
 }
 
 
+//Objecto que guarda , em memória , os dados em rankData.txt
+var RankDataObject = {};
+function GetRankData() {
+    if (fs.existsSync("rankData.txt")) {
+        console.log("Ficheiro rankData.txt já existe");
+        //carrega dados do ficheiro ...
+        fs.readFile('rankData.txt', 'utf8', (err, data) => {
+            if (err) {
+                console.error("Erro ao ler dados do arquivo:", err);
+                return;
+            }
+            if (data) {
+                try {
+                    RankDataObject = JSON.parse(data);
+                    // console.log(UserDataObject);
+                } catch (parseError) {
+                    console.error("Erro ao analisar dados do ficheiro user.txt : ", parseError);
+                    return;
+                }
+            }
+        });
+    }
+    else {
+        console.log("Ficheiro  rankData.txt não existe");
+        //criar ficheiro ...
+        fs.writeFile('rankData.txt', '', function (err) {
+            if (err) throw err;
+            console.log("Criado ficheiro rankData.txt");
+        });
+
+    }
+}
+
+
+
 
 
 //Função que trata dos pedidos em /register 
-/* 
-TODO Adicionar o seguinte no método abaixo
-1) verificar se o ficheiro existe se não cria um ficheiro chamado user.txt (no primeiro registo)
-*/
 function register(request, response) {
 
     //obter dados do pedido (quando bloco de dados estiver disponivel)
@@ -183,10 +215,6 @@ function register(request, response) {
         try {
             // Serialização dos dados no pedido
             const requestDataObj = JSON.parse(requestData);
-            //todo
-            //Modificar isto abaixo para ler e guardar dados através do objeto (usamos o objeto
-            //para evitar ter que estar a fazer a leitura de ficheiros).Em termos do ficheiro devemos
-            //ir guardando o proprio objeto stringificado lá   
 
             // Verificar se o utilizador já está registrado
             if (UserDataObject[requestDataObj.nick]) {
@@ -209,6 +237,7 @@ function register(request, response) {
                 console.log("Estado objeto após adicionamento");
                 console.log(UserDataObject);
                 console.log("--------------------");
+
                 // Escrever os dados atualizados no arquivo
                 fs.writeFile('user.txt', JSON.stringify(UserDataObject), 'utf8', (writeErr) => {
                     if (writeErr) {
@@ -240,12 +269,51 @@ TODO Adicionar o seguinte no método abaixo
 2) resolver aquele problema de esperar até receber objeto vindo do 
 módulo rank.js
 */
+
+//Verifica se um grupo existe no objeto rankData.txt
+function GroupExists(group) {
+    console.log("--------------------");
+    console.log("Dentro de GroupExists");
+    if (RankDataObject["group_" + group] != undefined) {
+        console.log("grupo [" + group + "] já existe")
+    } else {
+        console.log("grupo [" + group + "] não existe")
+        //criar os dados para um novo grupo em formato de objeto 
+        RankDataObject["group_" + group] = {
+            "6_por_6": {
+                "ranking": []
+            },
+            "6_por_5": {
+                "ranking": []
+            },
+            "5_por_6": {
+                "ranking": []
+            },
+            "5_por_5": {
+                "ranking": []
+            }
+        };
+
+        //guarda objeto 
+        SaveRank.saveToFile(RankDataObject);
+        
+    }
+    console.log(RankDataObject);
+    console.log("--------------------");
+
+}
+
+//SaveRank permite utilizar o modulo rank.js
+const SaveRank = new rank.Score();
+
 function ranking(request, response) {
     //obter dados do pedido (quando bloco de dados estiver disponivel)
     let requestData = '';
     request.on('data', chunk => {
         requestData += chunk.toString();
+        console.log("--------------------");
         console.log("Request Data = " + requestData);
+        console.log("--------------------");
     });
 
     // Quando a leitura terminar
@@ -299,25 +367,11 @@ function ranking(request, response) {
                 return;
             }
 
-            const tabela = new rank.Score();
-            //chamamos o construtor
-            tabela.Score(group, rows, columns);
-            console.log("Group = " + tabela.group);
-            console.log("Nr Linhas = " + tabela.rows);
-            console.log("Nr Colunas = " + tabela.columns);
-
-            //estou a ter problemas 
-            //pelo facto de execução não esperar que acaba 
-            //loadFromFile , indicar possiveis soluções que eu penso que funcionem 
-            // como uso de promessas
-            tabela.loadFromFile();
-            console.log(tabela.ranking);
-
+            //Verifica se grupo existe no objeto
+            GroupExists(group);
 
             // Se todos os dados são válidos, pode retornar a resposta do ranking (por enquanto, uma resposta padrão sem dados)
             response.writeHead(200, headers.plain);
-
-
 
             response.end('{ "ranking": [] }');
             console.log("=======Fim Pedido=======");
@@ -331,3 +385,5 @@ function ranking(request, response) {
         }
     });
 }
+
+
