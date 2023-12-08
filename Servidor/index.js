@@ -37,20 +37,11 @@ const headers = {
 };
 
 
-//todo tentar aplicar isto https://www.knowledgehut.com/blog/web-development/node-http-server
-
-
-
-
 /* Servidor */
 const Server = http.createServer(function (request, response) {
     const parsedURL = url.parse(request.url, true);
     const pathname = parsedURL.pathname;
     const query = JSON.stringify(parsedURL.query);
-
-    // response.writeHead(200, { 'Content-Type': 'text/plain' });
-    // response.write("URL = " + JSON.stringify(parsedURL.query) + "\n");
-    // response.write("Path = " + pathname + "\n");
 
     // Configuração do CORS para permitir qualquer origem
     response.setHeader('Access-Control-Allow-Origin', '*');
@@ -63,12 +54,7 @@ const Server = http.createServer(function (request, response) {
         response.end();
         return;
     }
-
-    //todo fazer função que carrega objetos que contêm os dados
-    //todo de utilizadores e ranking 
-
     console.log("=======Inicio Pedido=======");
-
     console.log("--------------------");
     console.log("Estado dos objeto no inicio pedido");
     console.log(UserDataObject);
@@ -81,11 +67,11 @@ const Server = http.createServer(function (request, response) {
     switch (pathname) {
         case '/register':
             console.log("Entrei no /register");
-            register(request, response);
+            register(request, response);    //✅
             break;
         case '/ranking':
             console.log("Entrei no /ranking");
-            ranking(request, response);
+            ranking(request, response);     // TODO confirmar resposta que envia
             break;
         case '/join':
             console.log("Entrei no /join");
@@ -107,9 +93,6 @@ const Server = http.createServer(function (request, response) {
             break;
 
     }
-
-    // response.end("fim");
-
 });
 
 //Pomos o Servidor Http à escuta mas antes disso , fazemos uma função 
@@ -124,12 +107,14 @@ Server.listen(PORT, () => {
     GetRankData();
 });
 
+/* Inicio da inicialização dos objetos que vão guardar dados de utilizadores e rank  */
 
 //Objecto que guarda , em memória , os dados em user.txt
 var UserDataObject = {};
 
 //carrega dados de utilizadores (quando inicia servidor) 
 function GetUserData() {
+    //Verificamos se ficheiro existe
     if (fs.existsSync("user.txt")) {
         console.log("Ficheiro user.txt já existe");
         //carrega dados do ficheiro ...
@@ -164,9 +149,10 @@ function GetUserData() {
 //Objecto que guarda , em memória , os dados em rankData.txt
 var RankDataObject = {};
 function GetRankData() {
+    //Verificamos se ficheiro existe
     if (fs.existsSync("rankData.txt")) {
         console.log("Ficheiro rankData.txt já existe");
-        //carrega dados do ficheiro ...
+        //carregar dados do ficheiro
         fs.readFile('rankData.txt', 'utf8', (err, data) => {
             if (err) {
                 console.error("Erro ao ler dados do arquivo:", err);
@@ -185,7 +171,7 @@ function GetRankData() {
     }
     else {
         console.log("Ficheiro  rankData.txt não existe");
-        //criar ficheiro ...
+        //criar ficheiro 
         fs.writeFile('rankData.txt', '', function (err) {
             if (err) throw err;
             console.log("Criado ficheiro rankData.txt");
@@ -196,7 +182,7 @@ function GetRankData() {
 
 
 
-
+/* Inicio do /register */
 
 //Função que trata dos pedidos em /register 
 function register(request, response) {
@@ -262,15 +248,15 @@ function register(request, response) {
 }
 
 
-//Função que trata dos pedidos em /ranking
-/* 
-TODO Adicionar o seguinte no método abaixo
-1) verificar se o ficheiro existe se não cria (logo no inicio)
-2) resolver aquele problema de esperar até receber objeto vindo do 
-módulo rank.js
-*/
 
-//Verifica se um grupo existe no objeto rankData.txt
+/* Inicio do /ranking */
+
+
+//SaveRank permite utilizar o modulo rank.js
+const SaveRank = new rank.Score();
+
+
+//Verifica se um grupo existe no objeto rankData.txt ✅
 function GroupExists(group) {
     console.log("--------------------");
     console.log("Dentro de GroupExists");
@@ -294,8 +280,8 @@ function GroupExists(group) {
             }
         };
 
-        //guarda objeto 
-        SaveRank.saveToFile(RankDataObject);
+    //Guarda os dados , no objeto com os ranks , no ficheiro de texto 
+    SaveRank.saveToFile(RankDataObject);
         
     }
     console.log(RankDataObject);
@@ -303,9 +289,86 @@ function GroupExists(group) {
 
 }
 
-//SaveRank permite utilizar o modulo rank.js
-const SaveRank = new rank.Score();
+//Verifica se utilizador já tem rank (se não tem cria) ✅
+function CheckUserRankGroup (nick,row,column,group) {
+    
+    let size = row + "_por_" + column;
 
+    //Array de rankings
+    let RankingArray =RankDataObject["group_"+group][size]["ranking"]; 
+
+    //objeto do rank de utilizador (caso exista)
+    var UserRank = RankingArray.find(user => user.nick === nick);
+
+    //Se não existir uma entrada no ranking associada a um utilizador
+    //cria 
+    if (UserRank == undefined){
+        AddUserToRankGroup(nick,row,column,group);
+        return;
+    }
+}
+
+//Incrementa os dados de rank associados a um utilizador (supondo que já 
+// temos o objeto de utilizador na lista "ranking") ✅
+function UpdateRankInformation(nick,row,column,group,iswinner){
+    console.log("--------------------");
+    console.log("Dentro de UpdateRankInformation para : " + nick);
+
+    let size = row + "_por_" + column;
+    //Array de rankings
+    let RankingArray = RankDataObject["group_" + group][size]["ranking"]; 
+
+
+    //objeto do rank de utilizador (caso exista)
+    var UserRank = RankingArray.find(user => user.nick === nick);
+
+    UserRank.games += 1;
+
+    //Se for vencedor aumenta número de vitorias
+    if (iswinner === true){
+        UserRank.victories += 1;
+    }
+
+    // console.log(RankDataObject);
+
+
+    SaveRank.saveToFile(RankDataObject);
+    console.log("--------------------");
+
+
+
+}
+
+//Adiciona utilizador  a um certo rank ✅
+function AddUserToRankGroup(nick,row,column,group){
+    console.log("--------------------");
+    console.log("Dentro de AddUserToRankGroup");
+
+    let size = row + "_por_" +column;
+    
+    //Array de rankings
+    let RankingArray =RankDataObject["group_"+group][size]["ranking"]; 
+    // console.log(RankingArray);
+
+    let UserInfo = {
+        "nick":nick,
+        "victories":0,
+        "games":0
+    };
+
+    RankDataObject["group_"+group][size]["ranking"].push(UserInfo);
+
+    console.log(RankDataObject);
+    
+    //Guarda os dados , no objeto com os ranks , no ficheiro de texto 
+    SaveRank.saveToFile(RankDataObject);
+
+    console.log("--------------------");
+}    
+
+
+
+//Função que trata dos pedidos em /ranking
 function ranking(request, response) {
     //obter dados do pedido (quando bloco de dados estiver disponivel)
     let requestData = '';
@@ -367,13 +430,15 @@ function ranking(request, response) {
                 return;
             }
 
-            //Verifica se grupo existe no objeto
+            //Verifica se grupo existe no objeto (senão cria)
             GroupExists(group);
 
             // Se todos os dados são válidos, pode retornar a resposta do ranking (por enquanto, uma resposta padrão sem dados)
             response.writeHead(200, headers.plain);
 
-            response.end('{ "ranking": [] }');
+            //todo confimar se envio o objeto como o servidor de tw envia 
+            //todo para evitar mudar código
+            response.end(JSON.stringify(RankDataObject["group_"+group][rows + "_por_"+columns]));
             console.log("=======Fim Pedido=======");
 
         } catch (error) {
