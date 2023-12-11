@@ -468,9 +468,8 @@ function ranking(request, response) {
 //e tempo (arranjar forma de este tempo gerar nova hash
 //a cada 15 min)
 function GenerateGameHash(group, rows, columns) {
-    console.log("--------------------");
-
-    console.log("Entrei no GenerateGameHash");
+    // console.log("--------------------");
+    // console.log("Entrei no GenerateGameHash");
     let date = new Date();
 
     //Geramos uma nova hash apartir da string value
@@ -480,8 +479,8 @@ function GenerateGameHash(group, rows, columns) {
         .update(value)
         .digest('hex');
 
-    console.log(GameHash);
-    console.log("--------------------");
+    // console.log(GameHash);
+    // console.log("--------------------");
     return GameHash;
 
 }
@@ -491,31 +490,39 @@ var NotParedGamesObject = {};
 
 //Função que cria de raiz 
 function Initialize(group) {
-
+    //Creator indica quem foi o nick que inicio a procura por jogo
     NotParedGamesObject["group_" + group] =
     {
         "6_por_6": {
-            Pending: []
+            Pending: [],
+            Creator: ""
         },
         "6_por_5": {
-            Pending: []
+            Pending: [],
+            Creator: ""
         },
         "5_por_6": {
-            Pending: []
+            Pending: [],
+            Creator: ""
         },
         "5_por_5": {
-            Pending: []
+            Pending: [],
+            Creator: ""
         }
     };
 }
 
 //Função que adiciona ao objeto NotParedGamesObject uma nova sessão de jogo 
-function AddNewGameSession(rows, columns, group, hash) {
-    //Primeira vez que fazemos o join para este grupo
-    // if (NotParedGamesObject["group_" + group] == undefined) {
-    //     Initialize(group);
-    // }
+function AddNewGameSession(nick,rows, columns, group, hash) {
+    console.log("--------------------");
+    console.log("Dentro de AddNewGameSession")
     NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"].push(hash);
+    NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Creator"] = nick;
+
+    console.log(NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"]);
+    console.log(NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Creator"]);
+
+    console.log("--------------------");
 }
 
 
@@ -568,34 +575,29 @@ function join(request, response) {
 
             //Cria Hash caso não existe um jogo pendente 
 
+            let respObj = {}
+
             if (NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"].length == 0) {
                 let Hash = GenerateGameHash(group, rows, columns);
-                AddNewGameSession(rows, columns, group, Hash);
+                AddNewGameSession(nick,rows, columns, group, Hash);
                 
-                let respObj = {
-                    game :NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"][0]
-                }
-                
-                response.writeHead(200, headers.plain);
-                response.end(JSON.stringify(respObj));
+                respObj["game"] =NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"][0];
             }
-            //Remove a Hash do Objeto NotParedGamesObject (porque já houve emparelhamento)
-            else{
-                //todo devemos ter adicionar algo que faça com que o utilizador 
-                //todo que fez o primeiro join e gerou a hash não posso fazer join 
-                //todo outra vez 
-                let respObj = {
-                    game : NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"][0]
-                }
+            //Remove a Hash do Objeto NotParedGamesObject ,caso o nick
+            //do pedido seja diferente daquele que crio a sessão(porque já houve emparelhamento)
+            else if (NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Creator"] !== nick){
+                respObj["game"] = NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"][0];
 
-                response.writeHead(200, headers.plain);
-                response.end(JSON.stringify(respObj));
-
-
-                console.log("EMPARELHAMENTO");
+                console.log("EMPARELHAMENTO DE JOGADORES");
                 NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"] = [];
-                console.log(NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"]);
+                NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Creator"] = "";
+
             }
+            else {
+                respObj["game"] = NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"][0];
+            }
+            response.writeHead(200, headers.plain);
+            response.end(JSON.stringify(respObj));
             console.log("=======Fim Pedido=======");
 
         } catch (error) {
