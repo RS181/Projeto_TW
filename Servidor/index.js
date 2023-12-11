@@ -25,7 +25,7 @@ const rank = require('./rank.js');
 /*  Cabeçalhos  */
 const headers = {
     plain: {
-        'Content-Type': 'application/javascript',
+        'Content-Type': 'application/json',
         'Cache-Control': 'no-cache',
         'Access-Control-Allow-Origin': '*'
     },
@@ -76,6 +76,8 @@ const Server = http.createServer(function (request, response) {
             break;
         case '/join':
             console.log("Entrei no /join");
+            // manter estrutura de dados lista de jogos pendentes
+            join(request, response);
             break;
         case '/leave':
             console.log("Entrei no /leave");
@@ -205,10 +207,10 @@ function register(request, response) {
 
             //Encriptação da palavra passe
             const HashedPassword = crypto
-            .createHash('md5')
-            .update(requestDataObj.password)
-            .digest('hex');
-           
+                .createHash('md5')
+                .update(requestDataObj.password)
+                .digest('hex');
+
 
 
             // Verificar se o utilizador já está registrado
@@ -288,10 +290,9 @@ function GroupExists(group) {
                 "ranking": []
             }
         };
+        //Guarda os dados , no objeto com os ranks , no ficheiro de texto 
+        SaveRank.saveToFile(RankDataObject);
 
-    //Guarda os dados , no objeto com os ranks , no ficheiro de texto 
-    SaveRank.saveToFile(RankDataObject);
-        
     }
     console.log(RankDataObject);
     console.log("--------------------");
@@ -299,33 +300,33 @@ function GroupExists(group) {
 }
 
 //Verifica se utilizador já tem rank (se não tem cria) ✅
-function CheckUserRankGroup (nick,row,column,group) {
-    
+function CheckUserRankGroup(nick, row, column, group) {
+
     let size = row + "_por_" + column;
 
     //Array de rankings
-    let RankingArray =RankDataObject["group_"+group][size]["ranking"]; 
+    let RankingArray = RankDataObject["group_" + group][size]["ranking"];
 
     //objeto do rank de utilizador (caso exista)
     var UserRank = RankingArray.find(user => user.nick === nick);
 
     //Se não existir uma entrada no ranking associada a um utilizador
     //cria 
-    if (UserRank == undefined){
-        AddUserToRankGroup(nick,row,column,group);
+    if (UserRank == undefined) {
+        AddUserToRankGroup(nick, row, column, group);
         return;
     }
 }
 
 //Incrementa os dados de rank associados a um utilizador (supondo que já 
 // temos o objeto de utilizador na lista "ranking") ✅
-function UpdateRankInformation(nick,row,column,group,iswinner){
+function UpdateRankInformation(nick, row, column, group, iswinner) {
     console.log("--------------------");
     console.log("Dentro de UpdateRankInformation para : " + nick);
 
     let size = row + "_por_" + column;
     //Array de rankings
-    let RankingArray = RankDataObject["group_" + group][size]["ranking"]; 
+    let RankingArray = RankDataObject["group_" + group][size]["ranking"];
 
 
     //objeto do rank de utilizador (caso exista)
@@ -334,7 +335,7 @@ function UpdateRankInformation(nick,row,column,group,iswinner){
     UserRank.games += 1;
 
     //Se for vencedor aumenta número de vitorias
-    if (iswinner === true){
+    if (iswinner === true) {
         UserRank.victories += 1;
     }
 
@@ -349,31 +350,31 @@ function UpdateRankInformation(nick,row,column,group,iswinner){
 }
 
 //Adiciona utilizador  a um certo rank ✅
-function AddUserToRankGroup(nick,row,column,group){
+function AddUserToRankGroup(nick, row, column, group) {
     console.log("--------------------");
     console.log("Dentro de AddUserToRankGroup");
 
-    let size = row + "_por_" +column;
-    
+    let size = row + "_por_" + column;
+
     //Array de rankings
-    let RankingArray =RankDataObject["group_"+group][size]["ranking"]; 
+    let RankingArray = RankDataObject["group_" + group][size]["ranking"];
     // console.log(RankingArray);
 
     let UserInfo = {
-        "nick":nick,
-        "victories":0,
-        "games":0
+        "nick": nick,
+        "victories": 0,
+        "games": 0
     };
 
-    RankDataObject["group_"+group][size]["ranking"].push(UserInfo);
+    RankDataObject["group_" + group][size]["ranking"].push(UserInfo);
 
     console.log(RankDataObject);
-    
+
     //Guarda os dados , no objeto com os ranks , no ficheiro de texto 
     SaveRank.saveToFile(RankDataObject);
 
     console.log("--------------------");
-}    
+}
 
 
 
@@ -447,7 +448,7 @@ function ranking(request, response) {
 
             //todo confimar se envio o objeto como o servidor de tw envia 
             //todo para evitar mudar código
-            response.end(JSON.stringify(RankDataObject["group_"+group][rows + "_por_"+columns]));
+            response.end(JSON.stringify(RankDataObject["group_" + group][rows + "_por_" + columns]));
             console.log("=======Fim Pedido=======");
 
         } catch (error) {
@@ -463,4 +464,146 @@ function ranking(request, response) {
 /* Inicio do /join */
 
 
+// dados para criar hash -> group,rows,collumns 
+//e tempo (arranjar forma de este tempo gerar nova hash
+//a cada 15 min)
+function GenerateGameHash(group, rows, columns) {
+    console.log("--------------------");
 
+    console.log("Entrei no GenerateGameHash");
+    let date = new Date();
+
+    //Geramos uma nova hash apartir da string value
+    let value = "" + group + rows + columns + date.getTime();
+    const GameHash = crypto
+        .createHash('md5')
+        .update(value)
+        .digest('hex');
+
+    console.log(GameHash);
+    console.log("--------------------");
+    return GameHash;
+
+}
+
+//Objeto que guarda jogos por emparelhar 
+var NotParedGamesObject = {};
+
+//Função que cria de raiz 
+function Initialize(group) {
+
+    NotParedGamesObject["group_" + group] =
+    {
+        "6_por_6": {
+            Pending: []
+        },
+        "6_por_5": {
+            Pending: []
+        },
+        "5_por_6": {
+            Pending: []
+        },
+        "5_por_5": {
+            Pending: []
+        }
+    };
+}
+
+//Função que adiciona ao objeto NotParedGamesObject uma nova sessão de jogo 
+function AddNewGameSession(rows, columns, group, hash) {
+    //Primeira vez que fazemos o join para este grupo
+    // if (NotParedGamesObject["group_" + group] == undefined) {
+    //     Initialize(group);
+    // }
+    NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"].push(hash);
+}
+
+
+//Função que trata dos pedidos em /join
+function join(request, response) {
+    //obter dados do pedido (quando bloco de dados estiver disponivel)
+    let requestData = '';
+    request.on('data', chunk => {
+        requestData += chunk.toString();
+        console.log("--------------------");
+        console.log("Request Data = " + requestData);
+        console.log("--------------------");
+    });
+
+    //Quando a leitura terminar  
+    request.on('end', () => {
+        try {
+            // Serialização dos dados no pedido
+            const requestDataObj = JSON.parse(requestData);
+            const group = requestDataObj.group;
+            const nick = requestDataObj.nick;
+            const password = requestDataObj.password;
+            const size = requestDataObj.size;
+            const rows = requestDataObj.size.rows;
+            const columns = requestDataObj.size.columns;
+
+            //Verificação se o pedido está no formato correto 
+
+            if (group === undefined || size === undefined || rows === undefined
+                || columns === undefined || nick === undefined || password === undefined) {
+                response.writeHead(400, headers.plain);
+                response.end('{"error": "Missing paramters in request"}');
+                console.log("=======Fim Pedido=======");
+                return;
+            }
+
+            if (typeof rows !== 'number' || typeof columns !== 'number' || typeof group !== 'number'
+                || !Number.isInteger(rows) || !Number.isInteger(columns) || !Number.isInteger(group)) {
+                response.writeHead(400, headers.plain);
+                response.end('{"error": "The paramters group, rows and columns must be an Integer"}');
+                console.log("=======Fim Pedido=======");
+                return;
+            }
+
+
+            //Inicializa o objeto NotParedGamesObject caso necessário
+            if (NotParedGamesObject["group_" + group] == undefined) {
+                Initialize(group);
+            }
+
+            //Cria Hash caso não existe um jogo pendente 
+
+            if (NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"].length == 0) {
+                let Hash = GenerateGameHash(group, rows, columns);
+                AddNewGameSession(rows, columns, group, Hash);
+                
+                let respObj = {
+                    game :NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"][0]
+                }
+                
+                response.writeHead(200, headers.plain);
+                response.end(JSON.stringify(respObj));
+            }
+            //Remove a Hash do Objeto NotParedGamesObject (porque já houve emparelhamento)
+            else{
+                //todo devemos ter adicionar algo que faça com que o utilizador 
+                //todo que fez o primeiro join e gerou a hash não posso fazer join 
+                //todo outra vez 
+                let respObj = {
+                    game : NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"][0]
+                }
+
+                response.writeHead(200, headers.plain);
+                response.end(JSON.stringify(respObj));
+
+
+                console.log("EMPARELHAMENTO");
+                NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"] = [];
+                console.log(NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"]);
+            }
+            console.log("=======Fim Pedido=======");
+
+        } catch (error) {
+            //Erro ao analisar os dados do pedido
+            response.writeHead(400, headers.plain);
+            response.end('{"error": "Invalid request data"}');
+        }
+
+    })
+
+}
