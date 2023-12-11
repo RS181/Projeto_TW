@@ -61,6 +61,8 @@ const Server = http.createServer(function (request, response) {
     console.log(UserDataObject);
     console.log();
     console.log(RankDataObject);
+    console.log();
+    console.log(NotParedGamesObject);
     console.log("--------------------");
 
 
@@ -81,6 +83,7 @@ const Server = http.createServer(function (request, response) {
             break;
         case '/leave':
             console.log("Entrei no /leave");
+            leave(request, response);
             break;
         case '/notify':
             console.log("Entrei no /notify");
@@ -210,8 +213,6 @@ function register(request, response) {
                 .createHash('md5')
                 .update(requestDataObj.password)
                 .digest('hex');
-
-
 
             // Verificar se o utilizador já está registrado
             if (UserDataObject[requestDataObj.nick]) {
@@ -344,9 +345,6 @@ function UpdateRankInformation(nick, row, column, group, iswinner) {
 
     SaveRank.saveToFile(RankDataObject);
     console.log("--------------------");
-
-
-
 }
 
 //Adiciona utilizador  a um certo rank ✅
@@ -513,7 +511,7 @@ function Initialize(group) {
 }
 
 //Função que adiciona ao objeto NotParedGamesObject uma nova sessão de jogo 
-function AddNewGameSession(nick,rows, columns, group, hash) {
+function AddNewGameSession(nick, rows, columns, group, hash) {
     console.log("--------------------");
     console.log("Dentro de AddNewGameSession")
     NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"].push(hash);
@@ -579,18 +577,21 @@ function join(request, response) {
 
             if (NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"].length == 0) {
                 let Hash = GenerateGameHash(group, rows, columns);
-                AddNewGameSession(nick,rows, columns, group, Hash);
-                
-                respObj["game"] =NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"][0];
+                AddNewGameSession(nick, rows, columns, group, Hash);
+
+                respObj["game"] = NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"][0];
             }
             //Remove a Hash do Objeto NotParedGamesObject ,caso o nick
             //do pedido seja diferente daquele que crio a sessão(porque já houve emparelhamento)
-            else if (NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Creator"] !== nick){
+            else if (NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Creator"] !== nick) {
                 respObj["game"] = NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"][0];
 
                 console.log("EMPARELHAMENTO DE JOGADORES");
                 NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"] = [];
                 NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Creator"] = "";
+
+                //todo criar objeto com tabuleiro inicial  e respetivos jogadores
+                //todo que estão nesse jogo
 
             }
             else {
@@ -600,6 +601,99 @@ function join(request, response) {
             response.end(JSON.stringify(respObj));
             console.log("=======Fim Pedido=======");
 
+        } catch (error) {
+            //Erro ao analisar os dados do pedido
+            response.writeHead(400, headers.plain);
+            response.end('{"error": "Invalid request data"}');
+        }
+
+    })
+
+}
+
+
+/* Inicio leave */
+
+//Função que verifica se  existe algum jogo com certo game definido no objeto 
+//NotParedGamesObject
+function CheckGameHashExist(GameHash) {
+    // console.log("--------------------");
+    // console.log("Dentro de CheckGameHashExist");
+
+    //Ciclo exterior percorremos grupos
+    for (let group in NotParedGamesObject) {
+        let sizes = NotParedGamesObject[group];
+        //Ciclo interior percorremos diferentes tamanhos de jogo
+        for (let game in sizes) {
+            let session = NotParedGamesObject[group][game];
+            if (session["Pending"] == GameHash) {
+                return { group: group, size: game};
+            }
+            // console.log(session);
+        }
+    }
+    // console.log("--------------------");
+    return {};
+}
+
+//Função que trata dos pedidos em /leave
+function leave(request, response) {
+    //obter dados do pedido (quando bloco de dados estiver disponivel)
+    let requestData = '';
+    request.on('data', chunk => {
+        requestData += chunk.toString();
+        console.log("--------------------");
+        console.log("Request Data = " + requestData);
+        console.log("--------------------");
+    });
+
+    //Quando a leitura terminar  
+    request.on('end', () => {
+        try {
+            // Serialização dos dados no pedido
+            const requestDataObj = JSON.parse(requestData);
+            const nick = requestDataObj.nick;
+            const password = requestDataObj.password;
+            const game = requestDataObj.game;
+
+            //Verificação se o pedido está no formato correto
+            if (nick === undefined || password === undefined || game === undefined) {
+                response.writeHead(400, headers.plain);
+                response.end('{"error": "Missing paramters in request"}');
+                console.log("=======Fim Pedido=======");
+                return;
+            }
+            if (typeof (nick) !== typeof ("") || typeof (password) !== typeof ("") || typeof (game) !== typeof ("")) {
+                response.writeHead(400, headers.plain);
+                response.end('{"error": "Invalid request data"}');
+                console.log("=======Fim Pedido=======");
+                return;
+            }
+
+            // 1º caso ) Abandonar antes de emparelhamento
+
+            //contem objeto {} ou {game:group,size:game} (grupo e hash associada ao jogo)
+            let AuxObject = CheckGameHashExist(game);
+            console.log(AuxObject);
+            if (AuxObject != {}){
+                console.log("Encontramos match no leave");
+                let group = AuxObject["group"]; //grupo
+                let size = AuxObject["size"];   //rows_por_cols
+
+                console.log(NotParedGamesObject[group][size]);
+
+                NotParedGamesObject[group][size]["Pending"] = [];
+                NotParedGamesObject[group][size]["Creator"] = "";
+
+                console.log(NotParedGamesObject[group][size]);
+
+            }
+
+            // todo fazer restantes casos 
+
+            response.writeHead(200, headers.plain);
+            response.end("{}");
+            console.log("=======Fim Pedido=======");
         } catch (error) {
             //Erro ao analisar os dados do pedido
             response.writeHead(400, headers.plain);
