@@ -6,6 +6,7 @@ module.exports.Board = class {
     columns;
     p1;
     p2;
+    Hash;
     //Dados do objeto de resposta do update
     board;
     phase;
@@ -14,48 +15,50 @@ module.exports.Board = class {
     players = {};
 
     //Inicializa os objeto de players
-    InitPlayers(player1,player2){
+    InitPlayers(player1, player2) {
         // this.players = {player1:player1,player2:player2};
         this.players[player1] = "black";
-        this.players[player2] = "white"; 
-          
+        this.players[player2] = "white";
+
     }
 
     //Inicializa um novo tabuleiro 
-    InitBoard(rows,columns){
+    InitBoard(rows, columns) {
         // console.log("--------------------")
         // console.log("DENTRO DO MÓDULO BoardGame");
         this.rows = rows;
         this.columns = columns;
-        
+
         //Criamos o Objecto que corresponde ao tabuleiro inical
 
         let b = Array(rows).fill("empty").map(() => Array(columns).fill("empty"));
-        
+
         this.board = b;
         // console.log("--------------------")
     }
 
     //Inicialização do objeto que representa o jogo 
-    Init(rows,collumns,player1,player2){
-        this.InitBoard(rows,collumns);
-        this.InitPlayers(player1,player2);
-
+    Init(rows, collumns, player1, player2, Hash) {
+        this.InitBoard(rows, collumns);
+        this.InitPlayers(player1, player2);
         this.phase = "drop";
         this.step = "from";
         this.turn = player1;
+        this.Hash = Hash;
+
     }
 
     //retorna o objecto de resposta (do update)
-    ResponseObjectUpdate(){
-        let res = 
-            {
-                "board" : this.board,
-                "phase" : this.phase,
-                "step" : this.step,
-                "turn" : this.turn,
-                "players" : this.players
-            };
+    ResponseObjectUpdate() {
+        let res =
+        {
+            "board": this.board,
+            "phase": this.phase,
+            "step": this.step,
+            "turn": this.turn,
+            "players": this.players,
+            "Hash": this.Hash
+        };
 
         return res;
     }
