@@ -12,7 +12,7 @@ const url = require('url');
 const fs = require('fs');
 const crypto = require('crypto');
 const rank = require('./rank.js');
-
+const board = require('./BoardGame.js');
 //todo importar os modulos para restantes funções
 
 //Entrega do trabalho dia 15 !!
@@ -63,7 +63,13 @@ const Server = http.createServer(function (request, response) {
     console.log(RankDataObject);
     console.log();
     console.log(NotParedGamesObject);
+
+    console.log("%%%%%%%%%%%%%%%%%%%%%%");
+    console.log("Jogos a decorrer");
+    console.log(OnGoingGameSessions);   
+    console.log("%%%%%%%%%%%%%%%%%%%%%%");
     console.log("--------------------");
+
 
 
     //Dividimos o que fazer com cada pedido consoante o /
@@ -302,15 +308,13 @@ function GroupExists(group) {
 
 //Verifica se utilizador já tem rank (se não tem cria) ✅
 function CheckUserRankGroup(nick, row, column, group) {
-
     let size = row + "_por_" + column;
-
     //Array de rankings
     let RankingArray = RankDataObject["group_" + group][size]["ranking"];
-
+    
     //objeto do rank de utilizador (caso exista)
     var UserRank = RankingArray.find(user => user.nick === nick);
-
+    
     //Se não existir uma entrada no ranking associada a um utilizador
     //cria 
     if (UserRank == undefined) {
@@ -349,14 +353,10 @@ function UpdateRankInformation(nick, row, column, group, iswinner) {
 
 //Adiciona utilizador  a um certo rank ✅
 function AddUserToRankGroup(nick, row, column, group) {
-    console.log("--------------------");
-    console.log("Dentro de AddUserToRankGroup");
+    // console.log("--------------------");
+    // console.log("Dentro de AddUserToRankGroup");
 
     let size = row + "_por_" + column;
-
-    //Array de rankings
-    let RankingArray = RankDataObject["group_" + group][size]["ranking"];
-    // console.log(RankingArray);
 
     let UserInfo = {
         "nick": nick,
@@ -371,7 +371,7 @@ function AddUserToRankGroup(nick, row, column, group) {
     //Guarda os dados , no objeto com os ranks , no ficheiro de texto 
     SaveRank.saveToFile(RankDataObject);
 
-    console.log("--------------------");
+    // console.log("--------------------");
 }
 
 
@@ -444,8 +444,6 @@ function ranking(request, response) {
             // Se todos os dados são válidos, pode retornar a resposta do ranking (por enquanto, uma resposta padrão sem dados)
             response.writeHead(200, headers.plain);
 
-            //todo confimar se envio o objeto como o servidor de tw envia 
-            //todo para evitar mudar código
             response.end(JSON.stringify(RankDataObject["group_" + group][rows + "_por_" + columns]));
             console.log("=======Fim Pedido=======");
 
@@ -509,6 +507,11 @@ function Initialize(group) {
         }
     };
 }
+
+
+//Contêm lista de objetos que representam jogos
+var OnGoingGameSessions =[];
+
 
 //Função que adiciona ao objeto NotParedGamesObject uma nova sessão de jogo 
 function AddNewGameSession(nick, rows, columns, group, hash) {
@@ -586,17 +589,35 @@ function join(request, response) {
             else if (NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Creator"] !== nick) {
                 respObj["game"] = NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"][0];
 
+                let player1 = NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Creator"];
+                let player2 = nick;
+
                 console.log("EMPARELHAMENTO DE JOGADORES");
                 NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"] = [];
                 NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Creator"] = "";
 
-                //todo criar objeto com tabuleiro inicial  e respetivos jogadores
-                //todo que estão nesse jogo
+                //Verificações se players tem rank, senão cria objeto de rank inicial para cada  
+                GroupExists(group);
+                CheckUserRankGroup(player1,rows,columns,group);
+                CheckUserRankGroup(player2,rows,columns,group);
+
+                let Board = new board.Board();
+
+                Board.Init(rows,columns,player1,player2);
+
+                let Game ={}
+                Game["group_"+group] =  Board.ResponseObjectUpdate();
+
+                //adicionar ao arrya de sessões de jogo 
+                OnGoingGameSessions.push(Game);
+                // console.log(Board.ResponseObjectUpdate());  
+                
 
             }
             else {
                 respObj["game"] = NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"][0];
             }
+            
             response.writeHead(200, headers.plain);
             response.end(JSON.stringify(respObj));
             console.log("=======Fim Pedido=======");
@@ -680,13 +701,12 @@ function leave(request, response) {
                 let group = AuxObject["group"]; //grupo
                 let size = AuxObject["size"];   //rows_por_cols
 
-                console.log(NotParedGamesObject[group][size]);
+                // console.log(NotParedGamesObject[group][size]);
 
                 NotParedGamesObject[group][size]["Pending"] = [];
                 NotParedGamesObject[group][size]["Creator"] = "";
 
-                console.log(NotParedGamesObject[group][size]);
-
+                // console.log(NotParedGamesObject[group][size]);
             }
 
             // todo fazer restantes casos 
