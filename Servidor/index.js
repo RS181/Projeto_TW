@@ -18,10 +18,6 @@ const board = require('./BoardGame.js');
 //Entrega do trabalho dia 15 !!
 //Teste dia 18 
 
-//todo professor sugeriu no inicio , carregar objetos 
-//todo no inicio que tem utilizadores e ranking
-
-
 /*  Cabeçalhos  */
 const headers = {
     plain: {
@@ -66,7 +62,7 @@ const Server = http.createServer(function (request, response) {
 
     console.log("%%%%%%%%%%%%%%%%%%%%%%");
     console.log("Jogos a decorrer");
-    console.log(OnGoingGameSessions);   
+    console.log(OnGoingGameSessions);
     console.log("%%%%%%%%%%%%%%%%%%%%%%");
     console.log("--------------------");
 
@@ -311,10 +307,10 @@ function CheckUserRankGroup(nick, row, column, group) {
     let size = row + "_por_" + column;
     //Array de rankings
     let RankingArray = RankDataObject["group_" + group][size]["ranking"];
-    
+
     //objeto do rank de utilizador (caso exista)
     var UserRank = RankingArray.find(user => user.nick === nick);
-    
+
     //Se não existir uma entrada no ranking associada a um utilizador
     //cria 
     if (UserRank == undefined) {
@@ -510,7 +506,7 @@ function Initialize(group) {
 
 
 //Contêm lista de objetos que representam jogos
-var OnGoingGameSessions =[];
+var OnGoingGameSessions = [];
 
 
 //Função que adiciona ao objeto NotParedGamesObject uma nova sessão de jogo 
@@ -598,26 +594,27 @@ function join(request, response) {
 
                 //Verificações se players tem rank, senão cria objeto de rank inicial para cada  
                 GroupExists(group);
-                CheckUserRankGroup(player1,rows,columns,group);
-                CheckUserRankGroup(player2,rows,columns,group);
+                CheckUserRankGroup(player1, rows, columns, group);
+                CheckUserRankGroup(player2, rows, columns, group);
 
+                //Inicializamos objeto que representa o jogo
                 let Board = new board.Board();
+                Board.Init(rows, columns, player1, player2, respObj["game"]);
 
-                Board.Init(rows,columns,player1,player2);
+                let Game = {}
 
-                let Game ={}
-                Game["group_"+group] =  Board.ResponseObjectUpdate();
+                Game["group_" + group] = Board.ResponseObjectUpdate();
 
-                //adicionar ao arrya de sessões de jogo 
+                //adicionamos ao array de sessões de jogo 
                 OnGoingGameSessions.push(Game);
                 // console.log(Board.ResponseObjectUpdate());  
-                
 
             }
             else {
+                //mesmo utilizador que fez o join inicial 
                 respObj["game"] = NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"][0];
             }
-            
+
             response.writeHead(200, headers.plain);
             response.end(JSON.stringify(respObj));
             console.log("=======Fim Pedido=======");
@@ -648,13 +645,13 @@ function CheckGameHashExist(GameHash) {
         for (let game in sizes) {
             let session = NotParedGamesObject[group][game];
             if (session["Pending"] == GameHash) {
-                return { group: group, size: game};
+                return { group: group, size: game };
             }
             // console.log(session);
         }
     }
     // console.log("--------------------");
-    return {};
+    return false;
 }
 
 //Função que trata dos pedidos em /leave
@@ -695,8 +692,8 @@ function leave(request, response) {
 
             //contem objeto {} ou {game:group,size:game} (grupo e hash associada ao jogo)
             let AuxObject = CheckGameHashExist(game);
-            console.log(AuxObject);
-            if (AuxObject != {}){
+            // console.log(AuxObject);
+            if (AuxObject != false) {
                 console.log("Encontramos match no leave");
                 let group = AuxObject["group"]; //grupo
                 let size = AuxObject["size"];   //rows_por_cols
@@ -705,11 +702,28 @@ function leave(request, response) {
 
                 NotParedGamesObject[group][size]["Pending"] = [];
                 NotParedGamesObject[group][size]["Creator"] = "";
-
                 // console.log(NotParedGamesObject[group][size]);
             }
+            // 2º caso ) Abandonar  durante jogo 
+            else {
+                //apagar o objeto de jogo em que este elemento pertence
 
-            // todo fazer restantes casos 
+                let i = 0;
+                //Percorremos todas as sessões de jogos a correr no momento
+                for (let session of OnGoingGameSessions){
+                    let group = Object.keys(session);
+                    //Se houver match das Hashes fazemos,removemos esse joga das sessões
+                    if (session[group[0]]["Hash"] == game){
+                        // console.log("Encontramos match no indice " + i);
+                        //todo atualizar rank de ambos oponentes
+                        OnGoingGameSessions.splice(i,1);
+                        break;
+                    }
+                    i++;
+                }
+            }
+            //todo ainda falta o caso de fazer leave automatico 
+
 
             response.writeHead(200, headers.plain);
             response.end("{}");
