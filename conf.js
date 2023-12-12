@@ -1472,7 +1472,7 @@ async function give_up() {
 //O que é carregado no inicio
 window.onload = function () {
     console.log("Carregou a Dom");
-    
+
     displayRadioValue();
 
     StoreComputerResults();
@@ -1639,7 +1639,7 @@ function leave() {
 var resposta_update; //todo no fim do jogo colocar a undefined!!!!!!
 function ProcessUpdate(json) {
     // console.log("TESTE");
-    if ( 'winner' in json) {
+    if ('winner' in json) {
         resposta_update = undefined;    //para garantir que e criado novo tabuleiro
     }
     else {
@@ -1648,29 +1648,30 @@ function ProcessUpdate(json) {
 
         // console.log("Processei resposta do update");
         if (resposta_update.phase == "drop")
-            DisplayMessage("(" + resposta_update.phase + ") vez de: " + resposta_update.turn + " {"+cor+"}");
+            DisplayMessage("(" + resposta_update.phase + ") vez de: " + resposta_update.turn + " {" + cor + "}");
         else if (resposta_update.phase == "move")
-            DisplayMessage("(" + resposta_update.phase + ") step: [" + resposta_update.step + "] vez de: " + resposta_update.turn + " {"+cor+"}");
+            DisplayMessage("(" + resposta_update.phase + ") step: [" + resposta_update.step + "] vez de: " + resposta_update.turn + " {" + cor + "}");
         else if ('winner' in resposta_update)
             DisplayMessage("Vencedor  (" + winner + ")");
         else
             DisplayMessage("NÃO TENHO MENSAGEM DEFINIDA");
     }
-    
+
 
 }
 
 //Remove o tabuleiro e mensagens
-function erase_board(){
+function erase_board() {
     resposta_update = undefined; //!Pomos aqui para poder começar outro jogo (confirmar)
 
-    //Alterações do UI quando jogador atual desiste 
+    //Alterações do UI quando jogador atual desiste  
     let x = document.querySelector('#tabuleiro');
     let mensagem = document.getElementById("mensagens_ui");
     removeAllChildNodes(x);
     x.className = '';
     mensagem.style.visibility = 'hidden';
     mensagem.parentElement.style.visibility = 'hidden';
+
 }
 
 //Cria o tabuleiro
@@ -1714,7 +1715,7 @@ function remove_peca_jogador(id_celula) {
 }
 
 
-function update_nr_pecas_removidas(nr_brancas_removidas,nr_pretas_removidas){
+function update_nr_pecas_removidas(nr_brancas_removidas, nr_pretas_removidas) {
     let pretas = document.querySelector(".peca_p");
     let brancas = document.querySelector(".peca_b");
     pretas.innerHTML = nr_brancas_removidas;
@@ -1753,7 +1754,7 @@ function update_tabuleiro(board) {
             }
         }
     }
-    update_nr_pecas_removidas(12-brancas,12-pretas);
+    update_nr_pecas_removidas(12 - brancas, 12 - pretas);
     // console.log("---------------");
 
 }
@@ -1767,7 +1768,7 @@ function select_piece(celula_id) {
 }
 
 //faz reset ao contador de peças (div de peça com texto dentro)
-function reset_piece_counter(){
+function reset_piece_counter() {
     let pretas = document.querySelector(".peca_p");
     let brancas = document.querySelector(".peca_b");
     pretas.innerHTML = 0;
@@ -1796,11 +1797,15 @@ function update() {
             //caso haja vencedor 
             if ('winner' in data) {
                 //atualiza score (jogador atual)
-                //todo testar este ranking 
                 ranking();
 
+                //Mostra quem ganhou 
+                DisplayMessage("WINNER : " + data["winner"] + "!!!!!" )
+
                 //limpa o tabuleiro 
-                erase_board();
+                setTimeout(() => {
+                    erase_board();
+                }, 3000);
 
                 //reset contador das peças
                 reset_piece_counter()
@@ -1916,13 +1921,13 @@ function notify(row, col) {
 /* Inicio de ranking */
 
 //Atualiza o score (consoante o nr linhas e colunas de um jogador)
-function update_score_table(json){
+function update_score_table(json) {
     // console.log(json.ranking);
     console.log("ATUALIZAR SCOREBOARD");
     let id = 1;
 
-    if ('ranking' in json){
-        for (let info of json.ranking){
+    if ('ranking' in json) {
+        for (let info of json.ranking) {
             let player_name = document.getElementById("score_player_" + id);
             let player_victories = document.getElementById("vitorias_jogador_" + id);
             let player_defeats = document.getElementById("derrotas_jogador_" + id);
@@ -1937,18 +1942,18 @@ function update_score_table(json){
 
 
 //vai buscar o ranking
-function ranking(){
+function ranking() {
     // nosso grupo é o 7
     let group = 7;
-    
+
     let selector_linhas = document.querySelector('#input_linhas_tabuleiro');
     let selector_colunas = document.querySelector('#input_colunas_tabuleiro');
 
     let obj = {
         group: group,
         size: {
-            rows : parseInt(selector_linhas.value),
-            columns : parseInt(selector_colunas.value)
+            rows: parseInt(selector_linhas.value),
+            columns: parseInt(selector_colunas.value)
         }
     }
 
@@ -1957,14 +1962,14 @@ function ranking(){
 
     fetch(url + "ranking", {
         method: 'POST',
-        headers : {
+        headers: {
             'Content-type': 'application/json'
         },
         body: body
     })
-      .then(responce => responce.json())
-      .then(json => update_score_table(json))
-      .catch(console.log)   
+        .then(responce => responce.json())
+        .then(json => update_score_table(json))
+        .catch(console.log)
 
 }
 
@@ -1973,32 +1978,32 @@ function ranking(){
 /* Parte de WebStorage */
 
 //Antes de fazer refresh guarda  os dados de vs computador em localstorage
-window.onbeforeunload = function(){
-    if (typeof(Storage) === 'undefined') {
-        console.log("WebStorage não suportado");   
-        return; 
+window.onbeforeunload = function () {
+    if (typeof (Storage) === 'undefined') {
+        console.log("WebStorage não suportado");
+        return;
     }
-    for( let i = 1 ; i <= 5 ; i++){
+    for (let i = 1; i <= 5; i++) {
         let v = document.getElementById("numero_vitorias_" + i);
         let d = document.getElementById("numero_derrotas_" + i);
-        localStorage.setItem("numero_vitorias_" + i,v.innerHTML);
-        localStorage.setItem("numero_derrotas_" + i ,d.innerHTML);
+        localStorage.setItem("numero_vitorias_" + i, v.innerHTML);
+        localStorage.setItem("numero_derrotas_" + i, d.innerHTML);
     }
 }
 
 //função executado após o refresh (coloca os valores em localStorage)
-function StoreComputerResults(){
+function StoreComputerResults() {
     // console.log("Web Storage part")
-    if (typeof(Storage) === 'undefined') {
-        console.log("WebStorage não suportado");    
+    if (typeof (Storage) === 'undefined') {
+        console.log("WebStorage não suportado");
         return;
     }
 
-    for( let i = 1 ; i <= 5 ; i++){
+    for (let i = 1; i <= 5; i++) {
         let v = document.getElementById("numero_vitorias_" + i);
         let d = document.getElementById("numero_derrotas_" + i);
         v.innerHTML = localStorage.getItem("numero_vitorias_" + i);
-        d.innerHTML = localStorage.getItem("numero_derrotas_" + i);  
+        d.innerHTML = localStorage.getItem("numero_derrotas_" + i);
     }
 }
 
