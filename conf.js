@@ -1509,7 +1509,6 @@ function SaveCredantials(json, nick, password) {
         cur_user = undefined;
         pass = undefined;
     }
-    
 }
 
 //regista utilizador (também serve como login)
@@ -1645,11 +1644,13 @@ function ProcessUpdate(json) {
     }
     else {
         resposta_update = json;
+        let cor = resposta_update["players"][resposta_update.turn];
+
         // console.log("Processei resposta do update");
         if (resposta_update.phase == "drop")
-            DisplayMessage("(" + resposta_update.phase + ") vez de: " + resposta_update.turn);
+            DisplayMessage("(" + resposta_update.phase + ") vez de: " + resposta_update.turn + " {"+cor+"}");
         else if (resposta_update.phase == "move")
-            DisplayMessage("(" + resposta_update.phase + ") step: [" + resposta_update.step + "] vez de: " + resposta_update.turn);
+            DisplayMessage("(" + resposta_update.phase + ") step: [" + resposta_update.step + "] vez de: " + resposta_update.turn + " {"+cor+"}");
         else if ('winner' in resposta_update)
             DisplayMessage("Vencedor  (" + winner + ")");
         else
@@ -1990,6 +1991,7 @@ function StoreComputerResults(){
     // console.log("Web Storage part")
     if (typeof(Storage) === 'undefined') {
         console.log("WebStorage não suportado");    
+        return;
     }
 
     for( let i = 1 ; i <= 5 ; i++){
