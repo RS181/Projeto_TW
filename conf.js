@@ -1232,6 +1232,7 @@ function get_nr_linhas_colunas() {
             //Começamos a procura por adversário
             join();
 
+
             break;
         default:
             console.log("ERRO: na função get_nr_linhas_colunas");
@@ -1469,6 +1470,12 @@ async function give_up() {
     // get_nr_linhas_colunas();
 }
 
+//Animação de carregar
+var canvas = null;
+var context = null;
+var rotateAngle = null;
+var animateTheLoader = true; // falso para ser estático
+
 //O que é carregado no inicio
 window.onload = function () {
     console.log("Carregou a Dom");
@@ -1476,6 +1483,20 @@ window.onload = function () {
     displayRadioValue();
 
     StoreComputerResults();
+
+
+    //Animação de carregar
+    canvas = document.getElementById('myCanvas');
+    context = canvas.getContext("2d");
+    rotateAngle = 0;
+    canvas.style.visibility = "hidden";
+    if (animateTheLoader) {
+        loadingAnimation();
+    }
+    else {
+        loadingDrawing();
+    }
+
 }
 
 
@@ -1558,6 +1579,9 @@ function join() {
     }
     //caso utilizador registado seja invalido
     else {
+        //Iniciamos animação
+        StartAnimation()
+
         //todo: atualizar as rows e cols com aquelas presentes no tabuleiro
         let selector_linhas = document.querySelector('#input_linhas_tabuleiro');
         let selector_colunas = document.querySelector('#input_colunas_tabuleiro');
@@ -1787,6 +1811,7 @@ function update() {
         const eventSource = new EventSource(url + "update?nick=" + cur_user + "&game=" + game_session);
         // console.log(eventSource);
 
+
         //só entra aqui quando temos a conexão com outro jogador
         eventSource.onmessage = function (event) {
             const data = JSON.parse(event.data);    //data <=> tabuleiro + informações extras
@@ -1794,13 +1819,16 @@ function update() {
             console.log("Recebi atualização por parte do servidor")
             console.log(data);
 
+            //Paramos animação de procura de jogo
+            StopAnimation();
+
             //caso haja vencedor 
             if ('winner' in data) {
                 //atualiza score (jogador atual)
                 ranking();
 
                 //Mostra quem ganhou 
-                DisplayMessage("WINNER : " + data["winner"] + "!!!!!" )
+                DisplayMessage("WINNER : " + data["winner"] + "!!!!!")
 
                 //limpa o tabuleiro 
                 setTimeout(() => {
@@ -1856,7 +1884,6 @@ function update() {
     eventSource.onerror = function (error) {
         console.error("Erro no EventSource:", error);
         //! Fechamos o eventSource em caso de erro 
-        //todo confirmar se não causa erro
         eventSource.close();
     }
 }
@@ -2008,3 +2035,64 @@ function StoreComputerResults() {
 }
 
 
+/* Parte da animação com canvas */
+
+function StartAnimation(){
+    canvas.style.visibility = "visible" ;
+
+}
+function StopAnimation(){
+    canvas.style.visibility= "hidden";
+}
+
+function loadingDrawing() {
+    context.save();
+
+    // Centraliza a animação no meio do canvas
+    var centerX = canvas.width / 2;
+    var centerY = canvas.height / 2;
+    context.translate(centerX, centerY);
+
+    context.rotate(rotateAngle * Math.PI / 180);
+
+    // Comprimento para todos os traços
+    var lineLength = 20;
+
+    // Array de cores
+    var colors = ["black", "#202020", "#606060", "#808080", "#A0A0A0", "#E0E0E0"];
+
+    // Desenha cada traço com uma cor diferente
+    for (var i = 0; i < 360; i += 60) {
+        context.beginPath();
+        context.strokeStyle = colors[i / 60];
+        context.lineWidth = 5; // Ajuste a largura da linha
+        context.lineCap = "round";
+
+        // Move para o ponto inicial
+        context.moveTo(0, 0);
+
+        // Desenha a linha
+        context.lineTo(0, -lineLength);
+        context.stroke();
+
+        // Retorna à posição inicial antes de desenhar o próximo traço
+        context.rotate(60 * Math.PI / 180);
+    }
+
+    context.restore();
+}
+
+
+function loadingAnimation() {
+    canvas.width = canvas.width; // redraw canvas for animation effect
+
+    loadingDrawing();
+
+    rotateAngle += 5;
+
+    if (rotateAngle > 360) {
+        rotateAngle = 5;
+    }
+
+    setTimeout(loadingAnimation, 30);
+}
