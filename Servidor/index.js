@@ -239,7 +239,7 @@ function register(request, response) {
                 console.log("--------------------");
 
                 // Escrever os dados atualizados no arquivo
-                fs.writeFile('user.txt', JSON.stringify(UserDataObject), 'utf8', (writeErr) => {
+                fs.writeFile('user.txt', JSON.stringify(UserDataObject,null,2), 'utf8', (writeErr) => {
                     if (writeErr) {
                         console.error("Erro ao escrever dados no arquivo:", writeErr);
                         response.writeHead(500, headers.plain);
