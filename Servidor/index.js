@@ -326,12 +326,17 @@ function UpdateRankInformation(nick, row, column, group, iswinner) {
     console.log("Dentro de UpdateRankInformation para : " + nick);
 
     let size = row + "_por_" + column;
+    console.log("TESTE 0");
+    console.log(group);
     //Array de rankings
     let RankingArray = RankDataObject["group_" + group][size]["ranking"];
 
+    console.log("TESTE 1");
 
     //objeto do rank de utilizador (caso exista)
     var UserRank = RankingArray.find(user => user.nick === nick);
+    console.log("TESTE 2");
+
 
     UserRank.games += 1;
 
@@ -715,7 +720,26 @@ function leave(request, response) {
                     //Se houver match das Hashes fazemos,removemos esse joga das sessões
                     if (session[group[0]]["Hash"] == game){
                         // console.log("Encontramos match no indice " + i);
-                        //todo atualizar rank de ambos oponentes
+                        // console.log(session[group[0]]);
+
+                        //Atualizamos score
+                        let rows = session[group[0]]["board"].length;
+                        let columns = session[group[0]]["board"][0].length;
+                        let players = session[group[0]]["players"];
+                        let nr_group = group[0].replace('group_','');
+                        let loser = nick;
+                        let nicks = Object.keys(players);  
+                        let winner; 
+                        if (loser == nicks[0])
+                            winner = nicks[1];
+                        else
+                            winner = nicks[0];
+                        
+
+                        UpdateRankInformation(winner,rows,columns,nr_group,true);
+                        UpdateRankInformation(loser,rows,columns,nr_group,false);
+
+                        //Removemos a sessão do jogo
                         OnGoingGameSessions.splice(i,1);
                         break;
                     }
