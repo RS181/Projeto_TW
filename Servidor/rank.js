@@ -1,5 +1,4 @@
 // Trata de guardar scores 
-const { error } = require('console');
 const fs = require('fs');
 
 module.exports.Score = class {
@@ -9,7 +8,7 @@ module.exports.Score = class {
     //Passar o objeto e ele guarda o objeto stringificado no ficheiro de texto
     saveToFile(object) {
         // Escrever os dados atualizados no arquivo
-        fs.writeFile('rankData.txt', JSON.stringify(object), 'utf8', (writeErr) => {
+        fs.writeFile('rankData.txt', JSON.stringify(object,null,2), 'utf8', (writeErr) => {
             if (writeErr) {
                 // console.error("Erro ao escrever dados no arquivo:", writeErr);
                 console.log("(FALHA) a guardar dados em rankData.txt");
