@@ -89,6 +89,7 @@ const Server = http.createServer(function (request, response) {
             break;
         case '/notify':
             console.log("Entrei no /notify");
+            notify(request, response);
             break;
         case '/update':
             console.log("Entrei no /update");
@@ -239,7 +240,7 @@ function register(request, response) {
                 console.log("--------------------");
 
                 // Escrever os dados atualizados no arquivo
-                fs.writeFile('user.txt', JSON.stringify(UserDataObject,null,2), 'utf8', (writeErr) => {
+                fs.writeFile('user.txt', JSON.stringify(UserDataObject, null, 2), 'utf8', (writeErr) => {
                     if (writeErr) {
                         console.error("Erro ao escrever dados no arquivo:", writeErr);
                         response.writeHead(500, headers.plain);
@@ -569,6 +570,13 @@ function join(request, response) {
                 return;
             }
 
+            if (typeof nick !== typeof "" || typeof password !== typeof ""){
+                response.writeHead(400, headers.plain);
+                response.end('{"error": "Invalid request data"}');
+                console.log("=======Fim Pedido=======");
+                return;
+            }
+
 
             //Inicializa o objeto NotParedGamesObject caso necessário
             if (NotParedGamesObject["group_" + group] == undefined) {
@@ -715,10 +723,10 @@ function leave(request, response) {
 
                 let i = 0;
                 //Percorremos todas as sessões de jogos a correr no momento
-                for (let session of OnGoingGameSessions){
+                for (let session of OnGoingGameSessions) {
                     let group = Object.keys(session);
                     //Se houver match das Hashes fazemos,removemos esse joga das sessões
-                    if (session[group[0]]["Hash"] == game){
+                    if (session[group[0]]["Hash"] == game) {
                         // console.log("Encontramos match no indice " + i);
                         // console.log(session[group[0]]);
 
@@ -726,27 +734,234 @@ function leave(request, response) {
                         let rows = session[group[0]]["board"].length;
                         let columns = session[group[0]]["board"][0].length;
                         let players = session[group[0]]["players"];
-                        let nr_group = group[0].replace('group_','');
+                        let nr_group = group[0].replace('group_', '');
                         let loser = nick;
-                        let nicks = Object.keys(players);  
-                        let winner; 
+                        let nicks = Object.keys(players);
+                        let winner;
                         if (loser == nicks[0])
                             winner = nicks[1];
                         else
                             winner = nicks[0];
-                        
 
-                        UpdateRankInformation(winner,rows,columns,nr_group,true);
-                        UpdateRankInformation(loser,rows,columns,nr_group,false);
+                        UpdateRankInformation(winner, rows, columns, nr_group, true);
+                        UpdateRankInformation(loser, rows, columns, nr_group, false);
 
                         //Removemos a sessão do jogo
-                        OnGoingGameSessions.splice(i,1);
+                        OnGoingGameSessions.splice(i, 1);
                         break;
                     }
                     i++;
                 }
             }
             //todo ainda falta o caso de fazer leave automatico 
+
+
+            response.writeHead(200, headers.plain);
+            response.end("{}");
+            console.log("=======Fim Pedido=======");
+        } catch (error) {
+            //Erro ao analisar os dados do pedido
+            response.writeHead(400, headers.plain);
+            response.end('{"error": "Invalid request data"}');
+        }
+
+    })
+
+}
+
+/* Inicio notify */
+
+function CheckIfNegative(row,column){
+    if (row < 0 )
+        return [true,"row"];
+    if (column < 0)
+        return [true,"column"]
+    return [false]
+}
+
+//Retorna caso exista o objecto que representa o jogo deste jogador
+function SearchOnGoingSessions(nick,password,game){
+    // console.log("--------------------");
+    // console.log("Dentro de SearchOnGoingSessions")
+    const HashedPassword = crypto
+        .createHash('md5')
+        .update(password)
+        .digest('hex');
+
+    //Verifica se o par nick password dá match
+    if (UserDataObject[nick] != HashedPassword){
+        // console.log("--------------------");
+        return null;
+    }
+
+    //Retorna o indice (caso haja match) na lista de jogos que estão a decorrer
+    let i = 0;
+    for (let session of OnGoingGameSessions){
+        let group = Object.keys(session);
+        //Se houver match da hash retornamos essa sessão
+        if (session[group[0]]["Hash"] == game){
+            // console.log("--------------------");
+            return i;
+        }
+        i++;
+      
+    }
+    // console.log("--------------------");
+    return null;
+}
+
+//Função que verifica se a jogada é valida (não quebra regras do jogo)
+// 1) mais 3 peças contíguas da mesma cor 
+// 2) moveu para mesmo sitio de onde veio após ronda anterior 
+function CheckIfPlayIsValid(board,row,column,color){
+    console.log("--------------------");
+    console.log("Dentro de CheckIfPlayIsValid");
+    let count = 0;
+    board[row][column] = color;
+    console.log(board);
+
+    //Verificação out of bounds 
+    if (row >= board.length || column >= board[0].length)
+        return false;
+
+    //Verificação de linha
+    for (let i = 0; i < board[row].length; i++) {
+        if (board[row][i] == color) {
+            count++;
+            if (count > 3) {
+                board[row][column] = 'empty';
+                return false; // Mais de 3 peças contíguas encontradas na linha
+            }
+        } else {
+            count = 0; // Reiniciar a contagem se a cor não coincidir
+        }
+    }
+
+    count = 0;
+    //Verificação de coluna
+    for (let i = 0; i < board.length; i++) {
+        if (board[i][column] == color) {
+            count++;
+            if (count > 3) {
+                board[row][column] = 'empty';
+                return false; // Mais de 3 peças contíguas encontradas na coluna
+            }
+        } else {
+            count = 0; // Reiniciar a contagem se a cor não coincidir
+        }
+    }
+
+    console.log("--------------------");
+
+    return true;
+}
+
+//Função que trata dos pedidos em /notify
+function notify(request, response) {
+    //obter dados do pedido (quando bloco de dados estiver disponivel)
+    let requestData = '';
+    request.on('data', chunk => {
+        requestData += chunk.toString();
+        console.log("--------------------");
+        console.log("Request Data = " + requestData);
+        console.log("--------------------");
+    });
+
+    //Quando a leitura terminar  
+    request.on('end', () => {
+        try {
+            // Serialização dos dados no pedido
+            const requestDataObj = JSON.parse(requestData);
+            const nick = requestDataObj.nick;
+            const password = requestDataObj.password;
+            const game = requestDataObj.game;
+            const move = requestDataObj.move;
+            const row = move["row"];
+            const column = move["column"];
+
+            //Verficação se o pedido está no formato correto
+
+            if (nick === undefined || password === undefined || game === undefined ||
+                move === undefined || row === undefined || column === undefined) {
+                response.writeHead(400, headers.plain);
+                response.end('{"error": "Missing paramters in request"}');
+                console.log("=======Fim Pedido=======");
+                return;
+            }
+
+            if (typeof row !== 'number' || typeof column !== 'number'){
+                response.writeHead(400, headers.plain);
+                response.end('{"error": "The paramters row and column must be an Integer"}');
+                console.log("=======Fim Pedido=======");
+                return;                
+            }
+
+            if (typeof nick !== typeof "" || typeof password !== typeof "" || typeof game !== typeof ""){
+                response.writeHead(400, headers.plain);
+                response.end('{"error": "Invalid request data"}');
+                console.log("=======Fim Pedido=======");
+                return;
+            }
+
+            let aux = CheckIfNegative(row,column);
+            if (aux[0] == true){
+                response.writeHead(400, headers.plain);
+                response.end('{"error": "' + aux[1] + ' is negative"}');
+                console.log("=======Fim Pedido=======");
+                return;
+            }
+            
+ 
+
+            //todo fazer resto das verificações
+            let GameIndice = SearchOnGoingSessions(nick,password,game); 
+            if (GameIndice != null){
+                let group = Object.keys( OnGoingGameSessions[GameIndice]);
+                let Game = OnGoingGameSessions[GameIndice][group[0]];
+                let color =Game["players"][nick];
+                //Verificação do turn 
+                if (nick != Game["turn"]){
+                    response.writeHead(400, headers.plain);
+                    response.end('{"error": "Not your turn to play"}');
+                    console.log("=======Fim Pedido=======");
+                    return;
+                }
+                
+                //Verificação de Out of Bounds
+                if (row >= Game["board"].length || column >= Game["board"][0].length ){
+                    response.writeHead(400, headers.plain);
+                    response.end('{"error": "Invalid postion : Out of Bounds"}');
+                    console.log("=======Fim Pedido=======");
+                    return;
+                }
+
+
+                //Verificação se a celula é vazia 
+                if (Game["board"][row][column] != "empty"){
+                    response.writeHead(400, headers.plain);
+                    response.end('{"error": "non empty cell"}');
+                    console.log("=======Fim Pedido=======");
+                    return;
+                }
+
+                
+
+                //todo tem que ter verficações diferentes para fase move
+
+                //Verficação se movimento é valido (mais de 3 em linha da mesma cor)
+                if ( CheckIfPlayIsValid(Game["board"],row,column,color) == false){
+                    response.writeHead(400, headers.plain);
+                    response.end('{"error": "Invalid position : can only have 3 contiguous pieces of same color"}');
+                    console.log("=======Fim Pedido=======");
+                    return;
+                }
+            }
+            else {
+                response.writeHead(400, headers.plain);
+                response.end('{"error": "Game Not Found"}');
+                console.log("=======Fim Pedido=======");
+                return;
+            }
 
 
             response.writeHead(200, headers.plain);
