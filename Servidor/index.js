@@ -63,6 +63,11 @@ const Server = http.createServer(function (request, response) {
     console.log("%%%%%%%%%%%%%%%%%%%%%%");
     console.log("Jogos a decorrer");
     console.log(OnGoingGameSessions);
+    if (OnGoingGameSessions.length > 0) {
+        console.log(OnGoingGameSessions[0]["group_99"]["players"]);
+        // console.log();
+        // console.log(OnGoingGameSessions[0]["responses"]);        
+    }
     console.log("%%%%%%%%%%%%%%%%%%%%%%");
     console.log("--------------------");
 
@@ -862,6 +867,22 @@ function CheckIfPlayIsValid(board, row, column, color) {
     return true;
 }
 
+//Função auxiliar que muda turno do jogador 
+function ChangeTurn(Game) {
+    console.log("--------------------");
+    console.log("Dentro de ChangeTurn");
+    let turn = Game["turn"];
+    let p = Game["players"];
+    let nicks = Object.keys(p)
+    if (turn == nicks[0]) {
+        Game["turn"] = nicks[1];
+    }
+    else {
+        Game["turn"] = nicks[0];
+    }
+    console.log("--------------------");
+}
+
 //Função que trata dos pedidos em /notify
 function notify(request, response) {
     //obter dados do pedido (quando bloco de dados estiver disponivel)
@@ -976,6 +997,10 @@ function notify(request, response) {
                 return;
             }
 
+            //todo modificar objeto de jogo
+            let group = Object.keys(OnGoingGameSessions[GameIndice]);
+            let Game = OnGoingGameSessions[GameIndice][group[0]];
+            ChangeTurn(Game);
 
             response.writeHead(200, headers.plain);
             response.end("{}");
@@ -1005,18 +1030,20 @@ function update(request, response) {
     for (let session of OnGoingGameSessions) {
         let group = Object.keys(session);
         if (session[group[0]]["Hash"] == game) {
+            console.log("Match");
             session[group[0]]["responses"][nick] = response;
-            console.log( session[group[0]]["responses"]);
             console.log("--------------------");
             return;
         }
     }
-    //caso não encontre
+    console.log("--------------------");
+    // response.write('data: ola \n\n');
+
+    //caso não encontre jogo
     response.end('{ "error": "Invalid game reference"}');
 
-    //todo guardar este objeto no OnGoingGameSessions
-    //1)Verificar se game existe no objeto OnGoingGameSessions (se não retorna erro)
-    //2)Se o 1) valido devemos guardar o objeto de responce no ongoingamesessions (ver join para isso)
+    //todo usar o responce no ongoing para mandar o jogo modificado 
+    //todo no notify 
 
     //! Usar o objeto responce ,guardado no OnGoingGameSessions, para fazer dispersão 
     //! do tabuleiro com response.write (e só fazmos responce.end no fim)
