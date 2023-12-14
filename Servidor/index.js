@@ -492,23 +492,19 @@ function Initialize(group) {
     {
         "6_por_6": {
             Pending: [],
-            Creator: "",
-            response: ""
+            Creator: ""
         },
         "6_por_5": {
             Pending: [],
-            Creator: "",
-            response: ""
+            Creator: ""
         },
         "5_por_6": {
             Pending: [],
-            Creator: "",
-            response: ""
+            Creator: ""
         },
         "5_por_5": {
             Pending: [],
-            Creator: "",
-            response: ""
+            Creator: ""
         }
     };
 }
@@ -524,13 +520,7 @@ function AddNewGameSession(nick, rows, columns, group, hash) {
     // console.log("Dentro de AddNewGameSession")
     NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"].push(hash);
     NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Creator"] = nick;
-    //todo adicionar o responce (para mais tarde adicionar no join)
-    // NotParedGamesObject["group_" + group][rows + "_por_" + columns]["response"] = response;
 
-    // console.log(NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"]);
-    // console.log(NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Creator"]);
-    // console.log(NotParedGamesObject["group_" + group][rows + "_por_" + columns]["responce"]);
-    // console.log(NotParedGamesObject);
     // console.log("--------------------");
 }
 
@@ -628,9 +618,9 @@ function join(request, response) {
                 CheckUserRankGroup(player2, rows, columns, group);
 
                 //Adicionamos player2
-                for (let session of OnGoingGameSessions){
+                for (let session of OnGoingGameSessions) {
                     let group = Object.keys(session);
-                    if (session[group[0]]["Hash"] == respObj["game"]){
+                    if (session[group[0]]["Hash"] == respObj["game"]) {
                         session[group[0]]["players"][nick] = "white";
                         console.log(session[group[0]]);
                         console.log(session[group[0]]["players"]);
@@ -1005,11 +995,24 @@ function notify(request, response) {
 
 //Função que trata do update
 function update(request, response) {
-    // console.log("--------------------");
-    // console.log("Dentro de Update");
+    console.log("--------------------");
+    console.log("Dentro de Update");
     const preq = url.parse(request.url, true);
     const nick = preq.query.nick;
     const game = preq.query.game;
+
+    response.writeHead(200, headers.sse);
+    for (let session of OnGoingGameSessions) {
+        let group = Object.keys(session);
+        if (session[group[0]]["Hash"] == game) {
+            session[group[0]]["responses"][nick] = response;
+            console.log( session[group[0]]["responses"]);
+            console.log("--------------------");
+            return;
+        }
+    }
+    //caso não encontre
+    response.end('{ "error": "Invalid game reference"}');
 
     //todo guardar este objeto no OnGoingGameSessions
     //1)Verificar se game existe no objeto OnGoingGameSessions (se não retorna erro)
@@ -1019,10 +1022,5 @@ function update(request, response) {
     //! do tabuleiro com response.write (e só fazmos responce.end no fim)
 
     // console.log("--------------------");
-
-    //todo confirmar se é necessario fazer responce end aqui
-    response.writeHead(200, headers.sse);
-    response.write('data: {}' + '\n\n');
-
 
 }
