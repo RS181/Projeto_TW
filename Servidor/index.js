@@ -13,7 +13,7 @@ const fs = require('fs');
 const crypto = require('crypto');
 const rank = require('./rank.js');
 const board = require('./BoardGame.js');
-//todo importar os modulos para restantes funções
+//todo se tiver tempo separar cada pedido em diferente módulos
 
 //Entrega do trabalho dia 15 !!
 //Teste dia 18 
@@ -66,9 +66,8 @@ const Server = http.createServer(function (request, response) {
     console.log("%%%%%%%%%%%%%%%%%%%%%%");
     console.log("--------------------");
 
-
-
     //Dividimos o que fazer com cada pedido consoante o /
+    //todo adicionar metodo
     switch (pathname) {
         case '/register':
             console.log("Entrei no /register");
@@ -93,6 +92,7 @@ const Server = http.createServer(function (request, response) {
             break;
         case '/update':
             console.log("Entrei no /update");
+            update(request, response);
             break;
         default:
             console.log("Pedido desconhecido");
@@ -100,7 +100,6 @@ const Server = http.createServer(function (request, response) {
             response.end();
             console.log("=======Fim Pedido=======");
             break;
-
     }
 });
 
@@ -493,19 +492,23 @@ function Initialize(group) {
     {
         "6_por_6": {
             Pending: [],
-            Creator: ""
+            Creator: "",
+            response: ""
         },
         "6_por_5": {
             Pending: [],
-            Creator: ""
+            Creator: "",
+            response: ""
         },
         "5_por_6": {
             Pending: [],
-            Creator: ""
+            Creator: "",
+            response: ""
         },
         "5_por_5": {
             Pending: [],
-            Creator: ""
+            Creator: "",
+            response: ""
         }
     };
 }
@@ -517,15 +520,18 @@ var OnGoingGameSessions = [];
 
 //Função que adiciona ao objeto NotParedGamesObject uma nova sessão de jogo 
 function AddNewGameSession(nick, rows, columns, group, hash) {
-    console.log("--------------------");
-    console.log("Dentro de AddNewGameSession")
+    // console.log("--------------------");
+    // console.log("Dentro de AddNewGameSession")
     NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"].push(hash);
     NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Creator"] = nick;
+    //todo adicionar o responce (para mais tarde adicionar no join)
+    // NotParedGamesObject["group_" + group][rows + "_por_" + columns]["response"] = response;
 
-    console.log(NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"]);
-    console.log(NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Creator"]);
-
-    console.log("--------------------");
+    // console.log(NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"]);
+    // console.log(NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Creator"]);
+    // console.log(NotParedGamesObject["group_" + group][rows + "_por_" + columns]["responce"]);
+    // console.log(NotParedGamesObject);
+    // console.log("--------------------");
 }
 
 
@@ -570,7 +576,7 @@ function join(request, response) {
                 return;
             }
 
-            if (typeof nick !== typeof "" || typeof password !== typeof ""){
+            if (typeof nick !== typeof "" || typeof password !== typeof "") {
                 response.writeHead(400, headers.plain);
                 response.end('{"error": "Invalid request data"}');
                 console.log("=======Fim Pedido=======");
@@ -585,18 +591,19 @@ function join(request, response) {
 
             //Cria Hash caso não existe um jogo pendente 
 
+
             let respObj = {}
 
             if (NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"].length == 0) {
                 let Hash = GenerateGameHash(group, rows, columns);
                 AddNewGameSession(nick, rows, columns, group, Hash);
-
                 respObj["game"] = NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"][0];
             }
             //Remove a Hash do Objeto NotParedGamesObject ,caso o nick
             //do pedido seja diferente daquele que crio a sessão(porque já houve emparelhamento)
             else if (NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Creator"] !== nick) {
                 respObj["game"] = NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"][0];
+                let responsep1 = NotParedGamesObject["group_" + group][rows + "_por_" + columns]["response"];
 
                 let player1 = NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Creator"];
                 let player2 = nick;
@@ -604,6 +611,8 @@ function join(request, response) {
                 console.log("EMPARELHAMENTO DE JOGADORES");
                 NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"] = [];
                 NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Creator"] = "";
+                // NotParedGamesObject["group_" + group][rows + "_por_" + columns]["response"] = "";
+
 
                 //Verificações se players tem rank, senão cria objeto de rank inicial para cada  
                 GroupExists(group);
@@ -612,15 +621,20 @@ function join(request, response) {
 
                 //Inicializamos objeto que representa o jogo
                 let Board = new board.Board();
-                Board.Init(rows, columns, player1, player2, respObj["game"]);
+                Board.Init(rows, columns, player1, player2, respObj["game"], responsep1, response);
 
                 let Game = {}
 
                 Game["group_" + group] = Board.ResponseObjectUpdate();
 
+                //Arrays de responces
+                // console.log(Game["group_" + group]["responses"]);
+
                 //adicionamos ao array de sessões de jogo 
                 OnGoingGameSessions.push(Game);
                 // console.log(Board.ResponseObjectUpdate());  
+
+
 
             }
             else {
@@ -630,6 +644,7 @@ function join(request, response) {
 
             response.writeHead(200, headers.plain);
             response.end(JSON.stringify(respObj));
+
             console.log("=======Fim Pedido=======");
 
         } catch (error) {
@@ -771,16 +786,16 @@ function leave(request, response) {
 
 /* Inicio notify */
 
-function CheckIfNegative(row,column){
-    if (row < 0 )
-        return [true,"row"];
+function CheckIfNegative(row, column) {
+    if (row < 0)
+        return [true, "row"];
     if (column < 0)
-        return [true,"column"]
+        return [true, "column"]
     return [false]
 }
 
 //Retorna caso exista o objecto que representa o jogo deste jogador
-function SearchOnGoingSessions(nick,password,game){
+function SearchOnGoingSessions(nick, password, game) {
     // console.log("--------------------");
     // console.log("Dentro de SearchOnGoingSessions")
     const HashedPassword = crypto
@@ -789,22 +804,22 @@ function SearchOnGoingSessions(nick,password,game){
         .digest('hex');
 
     //Verifica se o par nick password dá match
-    if (UserDataObject[nick] != HashedPassword){
+    if (UserDataObject[nick] != HashedPassword) {
         // console.log("--------------------");
         return null;
     }
 
     //Retorna o indice (caso haja match) na lista de jogos que estão a decorrer
     let i = 0;
-    for (let session of OnGoingGameSessions){
+    for (let session of OnGoingGameSessions) {
         let group = Object.keys(session);
         //Se houver match da hash retornamos essa sessão
-        if (session[group[0]]["Hash"] == game){
+        if (session[group[0]]["Hash"] == game) {
             // console.log("--------------------");
             return i;
         }
         i++;
-      
+
     }
     // console.log("--------------------");
     return null;
@@ -813,7 +828,7 @@ function SearchOnGoingSessions(nick,password,game){
 //Função que verifica se a jogada é valida (não quebra regras do jogo)
 // 1) mais 3 peças contíguas da mesma cor 
 // 2) moveu para mesmo sitio de onde veio após ronda anterior 
-function CheckIfPlayIsValid(board,row,column,color){
+function CheckIfPlayIsValid(board, row, column, color) {
     console.log("--------------------");
     console.log("Dentro de CheckIfPlayIsValid");
     let count = 0;
@@ -889,46 +904,47 @@ function notify(request, response) {
                 return;
             }
 
-            if (typeof row !== 'number' || typeof column !== 'number'){
+            if (typeof row !== 'number' || typeof column !== 'number') {
                 response.writeHead(400, headers.plain);
                 response.end('{"error": "The paramters row and column must be an Integer"}');
                 console.log("=======Fim Pedido=======");
-                return;                
+                return;
             }
 
-            if (typeof nick !== typeof "" || typeof password !== typeof "" || typeof game !== typeof ""){
+            if (typeof nick !== typeof "" || typeof password !== typeof "" || typeof game !== typeof "") {
                 response.writeHead(400, headers.plain);
                 response.end('{"error": "Invalid request data"}');
                 console.log("=======Fim Pedido=======");
                 return;
             }
 
-            let aux = CheckIfNegative(row,column);
-            if (aux[0] == true){
+            let aux = CheckIfNegative(row, column);
+            if (aux[0] == true) {
                 response.writeHead(400, headers.plain);
                 response.end('{"error": "' + aux[1] + ' is negative"}');
                 console.log("=======Fim Pedido=======");
                 return;
             }
-            
- 
+
+
 
             //todo fazer resto das verificações
-            let GameIndice = SearchOnGoingSessions(nick,password,game); 
-            if (GameIndice != null){
-                let group = Object.keys( OnGoingGameSessions[GameIndice]);
+            let GameIndice = SearchOnGoingSessions(nick, password, game);
+            if (GameIndice != null) {
+                let group = Object.keys(OnGoingGameSessions[GameIndice]);
                 let Game = OnGoingGameSessions[GameIndice][group[0]];
-                let color =Game["players"][nick];
+                let color = Game["players"][nick];
+                let phase = Game["phase"];
                 //Verificação do turn 
-                if (nick != Game["turn"]){
+                if (nick != Game["turn"]) {
                     response.writeHead(400, headers.plain);
                     response.end('{"error": "Not your turn to play"}');
                     console.log("=======Fim Pedido=======");
                     return;
                 }
-                
+
                 //Verificação de Out of Bounds
-                if (row >= Game["board"].length || column >= Game["board"][0].length ){
+                if (row >= Game["board"].length || column >= Game["board"][0].length) {
                     response.writeHead(400, headers.plain);
                     response.end('{"error": "Invalid postion : Out of Bounds"}');
                     console.log("=======Fim Pedido=======");
@@ -937,23 +953,29 @@ function notify(request, response) {
 
 
                 //Verificação se a celula é vazia 
-                if (Game["board"][row][column] != "empty"){
+                if (Game["board"][row][column] != "empty") {
                     response.writeHead(400, headers.plain);
                     response.end('{"error": "non empty cell"}');
                     console.log("=======Fim Pedido=======");
                     return;
                 }
 
-                
+
 
                 //todo tem que ter verficações diferentes para fase move
 
+                //TODO chamamos o update quando notify é valido
                 //Verficação se movimento é valido (mais de 3 em linha da mesma cor)
-                if ( CheckIfPlayIsValid(Game["board"],row,column,color) == false){
-                    response.writeHead(400, headers.plain);
-                    response.end('{"error": "Invalid position : can only have 3 contiguous pieces of same color"}');
-                    console.log("=======Fim Pedido=======");
-                    return;
+                if (phase === 'drop') {
+                    if (CheckIfPlayIsValid(Game["board"], row, column, color) == false) {
+                        response.writeHead(400, headers.plain);
+                        response.end('{"error": "Invalid position : can only have 3 contiguous pieces of same color"}');
+                        console.log("=======Fim Pedido=======");
+                        return;
+                    }
+                }
+                else if (phase === 'move') {
+                    //todo 
                 }
             }
             else {
@@ -974,5 +996,32 @@ function notify(request, response) {
         }
 
     })
+
+}
+
+/* Inicio de Update (pedir ajuda a professor) */
+
+
+//Função que trata do update
+function update(request,response) {
+    // console.log("--------------------");
+    // console.log("Dentro de Update");
+    const preq = url.parse(request.url,true);
+    const nick = preq.query.nick;
+    const game = preq.query.game;
+
+    //todo guardar este objeto no OnGoingGameSessions
+    //1)Verificar se game existe no objeto OnGoingGameSessions (se não retorna erro)
+    //2)Se o 1) valido devemos guardar o objeto de responce no ongoingamesessions (ver join para isso)
+
+    //! Usar o objeto responce ,guardado no OnGoingGameSessions, para fazer dispersão 
+    //! do tabuleiro com response.write (e só fazmos responce.end no fim)
+
+    // console.log("--------------------");
+
+    //todo confirmar se é necessario fazer responce end aqui
+    response.writeHead(200, headers.sse);
+    response.write('data: {}' + '\n\n');
+
 
 }
