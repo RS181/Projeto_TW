@@ -13,14 +13,19 @@ module.exports.Board = class {
     step;
     turn;
     players = {};
+    responses = {};
 
     //Inicializa os objeto de players
-    InitPlayers(player1, player2) {
-        // this.players = {player1:player1,player2:player2};
-        this.players[player1] = "black";
-        this.players[player2] = "white";
+    // InitPlayers(player1, player2) {
+    //     // this.players = {player1:player1,player2:player2};
+    //     this.players[player1] = "black";
+    //     this.players[player2] = "white";
 
+    // }
+    InitPlayer1(player1){
+        this.players[player1] = "black";        
     }
+
 
     //Inicializa um novo tabuleiro 
     InitBoard(rows, columns) {
@@ -38,14 +43,13 @@ module.exports.Board = class {
     }
 
     //Inicialização do objeto que representa o jogo 
-    Init(rows, collumns, player1, player2, Hash) {
+    Init(rows, collumns, player1, Hash) {
         this.InitBoard(rows, collumns);
-        this.InitPlayers(player1, player2);
+        this.InitPlayer1(player1);
         this.phase = "drop";
         this.step = "from";
         this.turn = player1;
         this.Hash = Hash;
-
     }
 
     //retorna o objecto de resposta (do update)
@@ -57,12 +61,13 @@ module.exports.Board = class {
             "step": this.step,
             "turn": this.turn,
             "players": this.players,
-            "Hash": this.Hash
+            "Hash": this.Hash,
+            "responses" : {}
         };
 
         return res;
     }
 
-    //todo método que permite alterar um board recebido e 
+    //todo métodos que permite, alterar um board recebido e 
     //todo e coloca esses dados nas variávies da classe
 }

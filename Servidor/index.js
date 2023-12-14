@@ -598,12 +598,20 @@ function join(request, response) {
                 let Hash = GenerateGameHash(group, rows, columns);
                 AddNewGameSession(nick, rows, columns, group, Hash);
                 respObj["game"] = NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"][0];
+
+
+                let Board = new board.Board();
+                //Inicializamos objeto que representa o jogo
+
+                Board.Init(rows, columns, nick, respObj["game"]);
+                let Game = {};
+                Game["group_" + group] = Board.ResponseObjectUpdate();
+                OnGoingGameSessions.push(Game);
             }
             //Remove a Hash do Objeto NotParedGamesObject ,caso o nick
             //do pedido seja diferente daquele que crio a sessão(porque já houve emparelhamento)
             else if (NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Creator"] !== nick) {
                 respObj["game"] = NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Pending"][0];
-                let responsep1 = NotParedGamesObject["group_" + group][rows + "_por_" + columns]["response"];
 
                 let player1 = NotParedGamesObject["group_" + group][rows + "_por_" + columns]["Creator"];
                 let player2 = nick;
@@ -619,22 +627,15 @@ function join(request, response) {
                 CheckUserRankGroup(player1, rows, columns, group);
                 CheckUserRankGroup(player2, rows, columns, group);
 
-                //Inicializamos objeto que representa o jogo
-                let Board = new board.Board();
-                Board.Init(rows, columns, player1, player2, respObj["game"], responsep1, response);
-
-                let Game = {}
-
-                Game["group_" + group] = Board.ResponseObjectUpdate();
-
-                //Arrays de responces
-                // console.log(Game["group_" + group]["responses"]);
-
-                //adicionamos ao array de sessões de jogo 
-                OnGoingGameSessions.push(Game);
-                // console.log(Board.ResponseObjectUpdate());  
-
-
+                //Adicionamos player2
+                for (let session of OnGoingGameSessions){
+                    let group = Object.keys(session);
+                    if (session[group[0]]["Hash"] == respObj["game"]){
+                        session[group[0]]["players"][nick] = "white";
+                        console.log(session[group[0]]);
+                        console.log(session[group[0]]["players"]);
+                    }
+                }
 
             }
             else {
@@ -1003,10 +1004,10 @@ function notify(request, response) {
 
 
 //Função que trata do update
-function update(request,response) {
+function update(request, response) {
     // console.log("--------------------");
     // console.log("Dentro de Update");
-    const preq = url.parse(request.url,true);
+    const preq = url.parse(request.url, true);
     const nick = preq.query.nick;
     const game = preq.query.game;
 
