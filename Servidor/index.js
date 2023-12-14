@@ -869,8 +869,8 @@ function CheckIfPlayIsValid(board, row, column, color) {
 
 //Função auxiliar que muda turno do jogador 
 function ChangeTurn(Game) {
-    console.log("--------------------");
-    console.log("Dentro de ChangeTurn");
+    // console.log("--------------------");
+    // console.log("Dentro de ChangeTurn");
     let turn = Game["turn"];
     let p = Game["players"];
     let nicks = Object.keys(p)
@@ -880,7 +880,33 @@ function ChangeTurn(Game) {
     else {
         Game["turn"] = nicks[0];
     }
+    // console.log("--------------------");
+}
+
+//Função auxiliar que difunde para jogadores no jogo o tabuleiro
+function UpdatePlayers(Game) {
     console.log("--------------------");
+    console.log("Dentro de UpdatePlayers");
+    console.log(Game);
+    let nicks = Object.keys(Game["responses"]);
+    console.log(nicks);
+    let responce1 = Game["responses"][nicks[0]];
+    console.log("Teste0");
+    let responce2 = Game["responses"][nicks[1]];
+    console.log("Teste1");
+    // let ans = JSON.stringify(Game);
+    let ans = "Teste"
+    console.log("Teste2");
+
+    //Solução mais simples criar novo objeto e enviar esse objeto
+
+    //todo RESOLVER PROBLEMA DE JSON.stringify(Game) DA ERRO
+    responce1.write('data: ' + ans + '\n\n ');
+    console.log("Teste3");
+    responce2.write('data: ' + ans + '\n\n ');
+    console.log("--------------------");
+
+
 }
 
 //Função que trata dos pedidos em /notify
@@ -1000,7 +1026,9 @@ function notify(request, response) {
             //todo modificar objeto de jogo
             let group = Object.keys(OnGoingGameSessions[GameIndice]);
             let Game = OnGoingGameSessions[GameIndice][group[0]];
+
             ChangeTurn(Game);
+            UpdatePlayers(Game);
 
             response.writeHead(200, headers.plain);
             response.end("{}");
