@@ -883,27 +883,35 @@ function ChangeTurn(Game) {
     // console.log("--------------------");
 }
 
+//devolve o objeto de resposta do update
+function ObjectOfUpdate(Game){
+    let obj = {
+        board :  Game["board"],
+        phase :  Game["phase"],
+        step  :  Game["step"],
+        turn  :  Game["turn"],
+        players: Game["players"]
+    }
+    return obj;
+}
+
 //Função auxiliar que difunde para jogadores no jogo o tabuleiro
 function UpdatePlayers(Game) {
     console.log("--------------------");
     console.log("Dentro de UpdatePlayers");
-    console.log(Game);
+    // console.log(Game);
     let nicks = Object.keys(Game["responses"]);
-    console.log(nicks);
+    // console.log(nicks);
     let responce1 = Game["responses"][nicks[0]];
-    console.log("Teste0");
     let responce2 = Game["responses"][nicks[1]];
-    console.log("Teste1");
     // let ans = JSON.stringify(Game);
-    let ans = "Teste"
-    console.log("Teste2");
+    let ans = JSON.stringify(ObjectOfUpdate(Game));
+    console.log(ans);
 
-    //Solução mais simples criar novo objeto e enviar esse objeto
-
-    //todo RESOLVER PROBLEMA DE JSON.stringify(Game) DA ERRO
-    responce1.write('data: ' + ans + '\n\n ');
-    console.log("Teste3");
-    responce2.write('data: ' + ans + '\n\n ');
+    //todo resolver problema de só estar a difundir
+    //todo primeira mensagem no update
+    responce1.write('data: ' + ans + '\n\n');
+    responce2.write('data: ' + ans + '\n\n');
     console.log("--------------------");
 
 
