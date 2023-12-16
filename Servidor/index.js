@@ -63,11 +63,11 @@ const Server = http.createServer(function (request, response) {
     console.log("%%%%%%%%%%%%%%%%%%%%%%");
     console.log("Jogos a decorrer");
     console.log(OnGoingGameSessions);
-    if (OnGoingGameSessions.length > 0) {
-        console.log(OnGoingGameSessions[0]["group_99"]["players"]);
-        // console.log();
-        // console.log(OnGoingGameSessions[0]["responses"]);        
-    }
+    // if (OnGoingGameSessions.length > 0) {
+    //     console.log(OnGoingGameSessions[0]["group_99"]["players"]);
+    //     // console.log();
+    //     // console.log(OnGoingGameSessions[0]["responses"]);        
+    // }
     console.log("%%%%%%%%%%%%%%%%%%%%%%");
     console.log("--------------------");
 
@@ -627,8 +627,9 @@ function join(request, response) {
                     let group = Object.keys(session);
                     if (session[group[0]]["Hash"] == respObj["game"]) {
                         session[group[0]]["players"][nick] = "white";
-                        console.log(session[group[0]]);
-                        console.log(session[group[0]]["players"]);
+                        // console.log(session[group[0]]);
+                        // console.log(session[group[0]]["players"]);
+                        //Envia o tabuleiro inicial para ambos jogadores
                     }
                 }
 
@@ -899,21 +900,43 @@ function ObjectOfUpdate(Game){
 function UpdatePlayers(Game) {
     console.log("--------------------");
     console.log("Dentro de UpdatePlayers");
-    // console.log(Game);
+    console.log(Game);
     let nicks = Object.keys(Game["responses"]);
     // console.log(nicks);
     let responce1 = Game["responses"][nicks[0]];
     let responce2 = Game["responses"][nicks[1]];
     // let ans = JSON.stringify(Game);
     let ans = JSON.stringify(ObjectOfUpdate(Game));
-    console.log(ans);
+    // console.log(ans);
 
-    //todo resolver problema de só estar a difundir
-    //todo primeira mensagem no update
     responce1.write('data: ' + ans + '\n\n');
     responce2.write('data: ' + ans + '\n\n');
     console.log("--------------------");
 
+
+}
+
+//Verifica se estamos em condições de mudar phase 
+//se sim modifica objeto 
+function ChangePhase(Game){
+    //todo confirmar 
+    console.log("--------------------");
+    console.log("Dentro de ChangePhase");
+    let board = Game["board"];
+    let n = 0;
+    for (let i = 0 ; i < board.length ;i++){
+        for (let j = 0 ; j < board[0].length ; j++){
+            if (board[i][j] != 'empty'){
+                n++;
+            }
+        }
+    }
+    console.log(n);
+    //Já colocamos todas as peças 
+    if (n == 24){
+        Game["phase"] = "move";
+    }
+    console.log("--------------------");
 
 }
 
@@ -1021,7 +1044,14 @@ function notify(request, response) {
                     }
                 }
                 else if (phase === 'move') {
-                    //todo 
+                    /* 
+                        todo A FAZER 
+                        1) fazer verifcações relacionada ao move
+                        2) fazer as alterações necessarias ao estado do objeto 
+                        2.1) mudar step conforme situação
+                        2.2) ter atenção a situações de vitória
+                        2.3) Atualizar ranking em caso de vitoria de um jogador
+                    */
                 }
             }
             else {
@@ -1035,8 +1065,14 @@ function notify(request, response) {
             let group = Object.keys(OnGoingGameSessions[GameIndice]);
             let Game = OnGoingGameSessions[GameIndice][group[0]];
 
+            //todo começar a testar o servidor com o index.html 
+            //todo do nosso projeto
+
             ChangeTurn(Game);
             UpdatePlayers(Game);
+
+            //testar (verifica se já e altura de mudar fase do jogo )
+            ChangePhase(Game);
 
             response.writeHead(200, headers.plain);
             response.end("{}");
@@ -1068,22 +1104,16 @@ function update(request, response) {
         if (session[group[0]]["Hash"] == game) {
             console.log("Match");
             session[group[0]]["responses"][nick] = response;
+            //Quando temos a response de update para os dois jogadores
+            if (Object.keys(session[group[0]]["responses"]).length == 2){
+                UpdatePlayers(session[group[0]]);
+            }
             console.log("--------------------");
             return;
         }
     }
     console.log("--------------------");
-    // response.write('data: ola \n\n');
-
     //caso não encontre jogo
     response.end('{ "error": "Invalid game reference"}');
-
-    //todo usar o responce no ongoing para mandar o jogo modificado 
-    //todo no notify 
-
-    //! Usar o objeto responce ,guardado no OnGoingGameSessions, para fazer dispersão 
-    //! do tabuleiro com response.write (e só fazmos responce.end no fim)
-
-    // console.log("--------------------");
 
 }
