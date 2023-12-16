@@ -885,12 +885,12 @@ function ChangeTurn(Game) {
 }
 
 //devolve o objeto de resposta do update
-function ObjectOfUpdate(Game){
+function ObjectOfUpdate(Game) {
     let obj = {
-        board :  Game["board"],
-        phase :  Game["phase"],
-        step  :  Game["step"],
-        turn  :  Game["turn"],
+        board: Game["board"],
+        phase: Game["phase"],
+        step: Game["step"],
+        turn: Game["turn"],
         players: Game["players"]
     }
     return obj;
@@ -900,7 +900,7 @@ function ObjectOfUpdate(Game){
 function UpdatePlayers(Game) {
     console.log("--------------------");
     console.log("Dentro de UpdatePlayers");
-    console.log(Game);
+    console.log(Game["board"]);
     let nicks = Object.keys(Game["responses"]);
     // console.log(nicks);
     let responce1 = Game["responses"][nicks[0]];
@@ -918,26 +918,63 @@ function UpdatePlayers(Game) {
 
 //Verifica se estamos em condições de mudar phase 
 //se sim modifica objeto 
-function ChangePhase(Game){
+function ChangePhase(Game) {
     //todo confirmar 
     console.log("--------------------");
     console.log("Dentro de ChangePhase");
     let board = Game["board"];
     let n = 0;
-    for (let i = 0 ; i < board.length ;i++){
-        for (let j = 0 ; j < board[0].length ; j++){
-            if (board[i][j] != 'empty'){
+    for (let i = 0; i < board.length; i++) {
+        for (let j = 0; j < board[0].length; j++) {
+            if (board[i][j] != 'empty') {
                 n++;
             }
         }
     }
     console.log(n);
     //Já colocamos todas as peças 
-    if (n == 24){
+    if (n == 24) {
         Game["phase"] = "move";
     }
     console.log("--------------------");
 
+}
+
+//Verifica se a peça escoldida pertence ao jogador que vai jogar
+function CheckPlayerPiece(Game, row, col) {
+    // console.log("--------------------");
+    // console.log("Dentro de CheckPlayerPiece");
+    let turn = Game["turn"];
+    let pcolor = Game["players"][turn];
+    let pselected = Game["board"][row][col];
+
+    if (pcolor == pselected) {
+        // console.log("--------------------");
+        return true;
+    }
+    else {
+        // console.log("--------------------");
+        return false;
+    }
+
+}
+
+//Verifica se o movimento feito é valido
+function CheckMoveIsValid(Game, dest_row, dest_col) {
+    let or_row = Game["selected"]["row"];
+    let or_col = Game["selected"]["col"];
+
+    //Diferença absoluta entre as coordenadas
+    let rowDiff = Math.abs(dest_row - or_row);
+    let colDiff = Math.abs(dest_col - or_col);
+
+    // Verifica se a diferença é igual a 1 em ambas as direções (linha e coluna)
+    if ((rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1)) {
+        return true;
+    } else {
+        console.log("Movimento inválido!");
+        return false;
+    }
 }
 
 //Função que trata dos pedidos em /notify
@@ -1020,30 +1057,74 @@ function notify(request, response) {
                     return;
                 }
 
-
-                //Verificação se a celula é vazia 
-                if (Game["board"][row][column] != "empty") {
-                    response.writeHead(400, headers.plain);
-                    response.end('{"error": "non empty cell"}');
-                    console.log("=======Fim Pedido=======");
-                    return;
-                }
-
-
-
-                //todo tem que ter verficações diferentes para fase move
-
-                //TODO chamamos o update quando notify é valido
-                //Verficação se movimento é valido (mais de 3 em linha da mesma cor)
+                //Verficação se movimento é valido 
                 if (phase === 'drop') {
-                    if (CheckIfPlayIsValid(Game["board"], row, column, color) == false) {
+                    //Verificação se a celula é vazia 
+                    if (Game["board"][row][column] != "empty") {
+                        response.writeHead(400, headers.plain);
+                        response.end('{"error": "non empty cell"}');
+                        console.log("=======Fim Pedido=======");
+                        return;
+                    }
+                    //Não tem mais de 3 peças em linha da mesma cor
+                    if (!CheckIfPlayIsValid(Game["board"], row, column, color)) {
                         response.writeHead(400, headers.plain);
                         response.end('{"error": "Invalid position : can only have 3 contiguous pieces of same color"}');
                         console.log("=======Fim Pedido=======");
                         return;
                     }
+                    ChangeTurn(Game);
+
                 }
                 else if (phase === 'move') {
+                    if (Game["step"] == 'from') {
+                        //verifica se a peça esolchida pertence ao jogador que vai jogar
+                        if (!CheckPlayerPiece(Game, row, column)) {
+                            response.writeHead(400, headers.plain);
+                            response.end('{"error": "Invalid move: not your piece"}');
+                            console.log('{"error": "Invalid move: not your piece"}');
+                            console.log("=======Fim Pedido=======");
+                            return;
+                        }
+                        Game["step"] = 'to';
+                        //Adicionar algo ao objeto de jogo a indicar peça ecolhida
+                        Game["selected"] = { row: row, col: column };
+                    }
+                    else if (Game["step"] == 'to') {
+                        //Verificação se a celula é vazia 
+                        if (Game["board"][row][column] != "empty") {
+                            response.writeHead(400, headers.plain);
+                            response.end('{"error": "non empty cell"}');
+                            console.log('{"error": "non empty cell"}');
+                            console.log("=======Fim Pedido=======");
+                            return;
+                        }
+                        //Verifica se movimento é de uma só casa na vert. e hor.
+                        if (!CheckMoveIsValid(Game,row,column)){
+                            response.writeHead(400, headers.plain);
+                            response.end('{ "error": "Invalid move: can only move to neigbouring cells, vertical or horizontally" }');
+                            console.log('{ "error": "Invalid move: can only move to neigbouring cells, vertical or horizontally" }');
+                            console.log("=======Fim Pedido=======");
+                            return;
+                        }
+                        //Verifica se movimento não quebra regra das 3 pecas contiguas
+                        let source = Game["selected"];
+                        Game["board"][source["row"]][source["col"]] = 'empty';
+                        if(!CheckIfPlayIsValid(Game["board"],row,column,color)){
+                            response.writeHead(400, headers.plain);
+                            response.end('{"error": "Invalid position : can only have 3 contiguous pieces of same color"}');
+                            console.log('{"error": "Invalid position : can only have 3 contiguous pieces of same color"}');
+                            Game["board"][source["row"]][source["col"]] = color;
+                            console.log("=======Fim Pedido=======");
+                            return;
+                        }
+
+                        //No fim muda turno e coloca step a from
+                        Game["step"] = 'from';
+                        ChangeTurn(Game);
+                    }
+                    console.log("Movimento válido!");
+                    //todo ChangeTurn(Game); no momento certo
                     /* 
                         todo A FAZER 
                         1) fazer verifcações relacionada ao move
@@ -1061,18 +1142,13 @@ function notify(request, response) {
                 return;
             }
 
-            //todo modificar objeto de jogo
             let group = Object.keys(OnGoingGameSessions[GameIndice]);
             let Game = OnGoingGameSessions[GameIndice][group[0]];
 
-            //todo começar a testar o servidor com o index.html 
-            //todo do nosso projeto
-
-            ChangeTurn(Game);
+            //Só fazemos isto em baixo se o pedido notify é valido 
+            ChangePhase(Game);
             UpdatePlayers(Game);
 
-            //testar (verifica se já e altura de mudar fase do jogo )
-            ChangePhase(Game);
 
             response.writeHead(200, headers.plain);
             response.end("{}");
@@ -1105,7 +1181,7 @@ function update(request, response) {
             console.log("Match");
             session[group[0]]["responses"][nick] = response;
             //Quando temos a response de update para os dois jogadores
-            if (Object.keys(session[group[0]]["responses"]).length == 2){
+            if (Object.keys(session[group[0]]["responses"]).length == 2) {
                 UpdatePlayers(session[group[0]]);
             }
             console.log("--------------------");
