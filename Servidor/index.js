@@ -942,41 +942,55 @@ function ChangePhase(Game) {
 function CheckAuxArrays(Game, color) {
     let count = 0;
     let board = Game["board"];
-    console.log("--------------------");
-    console.log("Dentro de CheckAuxArrays")
     //Verificação na linha
     for (let i = 0; i < board.length; i++) {
+        let cond = false;
         count = 0;
         for (let j = 0; j < board[0].length; j++) {
             if (board[i][j] == color) {
                 count++;
                 if (count === 3) {
+                    //pronto para remover
+                    if (Game[color + "row"][i] == false && Game["step"] == 'to')
+                        return true;
                     Game[color + "row"][i] = true;
                     count = 0;
+                    cond = true;
                 }
             }
             else
                 count = 0;
+        }
+        //Houve um movimento que quebrou linha de 3 peças contiguas
+        if (Game[color + "row"][i] == true && cond == false) {
+            Game[color + "row"][i] = false;
         }
     }
 
     //Verificação de coluna
     for (let j = 0; j < board[0].length; j++) {
         count = 0;
+        let cond = false;
         for (let i = 0; i < board.length; i++) {
             if (board[i][j] == color) {
                 count++;
                 if (count === 3) {
+                    //pronto para remover
+                    if (Game[color + "col"][j] == false && Game["step"] == 'to')
+                        return true;
                     Game[color + "col"][j] = true;
                     count = 0;
+                    cond = true;
                 }
             }
             else
                 count = 0;
         }
+        //Houve um movimento que quebrou coluna de 3 peças contiguas
+        if (Game[color + "col"][j] == true && cond == false) {
+            Game[color + "row"][j] = false;
+        }
     }
-    console.log("--------------------");
-
 
 }
 
@@ -1183,26 +1197,50 @@ function notify(request, response) {
                             console.log("=======Fim Pedido=======");
                             return;
                         }
+                        let AbleToRemove = CheckAuxArrays(Game, color);
 
-                        //todo fazer aquilo do take caso haja condições
-                        //ideia ter um lista para linha e coluna que indica 
-                        //se essa linha e coluan tem ou não condições
-                        //para remover 
-                        //Inicializa quando passamos de drop para move
-                        //No fim muda turno e coloca step a from
+                        //Existe condições para remover
+                        if (AbleToRemove === true) {
+                            Game["step"] = 'take';
+                        }
+                        else {
+                            Game["step"] = 'from';
+                            ChangeTurn(Game);
+                        }
+                    }
+                    else if (Game["step"] == 'take') {
+                        console.log("TODO");
+                        //verifica se estamos a remover peça do oponente
+                        if (Game["board"][row][column] == color) {
+                            response.writeHead(400, headers.plain);
+                            response.end('{"Invalid move": "select a piece of diferent color"}');
+                            console.log('{"Invalid move": "select a piece of diferent color"}');
+                            console.log("=======Fim Pedido=======");
+                            return;
+                        }
+                        if (Game["board"][row][column] == 'empty') {
+                            response.writeHead(400, headers.plain);
+                            response.end('{"Invalid move": "selected empty cell "}');
+                            console.log('{"Invalid move": "selected empty cell "}');
+                            console.log("=======Fim Pedido=======");
+                            return;
+                        }
+                        
+                        //Já fizemos as verificações e estamos prontos para remover
+                        Game["board"][row][column] = 'empty';
+
+                        //fazer o CheckAuxArrays para cor removida
+                        if (color == 'black')
+                            CheckAuxArrays(Game, 'white');
+                        else if (color == 'white')
+                            CheckAuxArrays(Game,'black'); 
+                            
+
+                        //mudamos o turno 
                         Game["step"] = 'from';
                         ChangeTurn(Game);
                     }
                     console.log("Movimento válido!");
-                    //todo ChangeTurn(Game); no momento certo
-                    /* 
-                        todo A FAZER 
-                        1) fazer verifcações relacionada ao move
-                        2) fazer as alterações necessarias ao estado do objeto 
-                        2.1) mudar step conforme situação
-                        2.2) ter atenção a situações de vitória
-                        2.3) Atualizar ranking em caso de vitoria de um jogador
-                    */
                 }
             }
             else {
