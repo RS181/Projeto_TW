@@ -52,22 +52,17 @@ const Server = http.createServer(function (request, response) {
         return;
     }
     console.log("=======Inicio Pedido=======");
-    console.log("--------------------");
-    console.log("Estado dos objeto no inicio pedido");
-    console.log(UserDataObject);
-    console.log();
-    console.log(RankDataObject);
-    console.log();
-    console.log(NotParedGamesObject);
+    // console.log("--------------------");
+    // console.log("Estado dos objeto no inicio pedido");
+    // console.log(UserDataObject);
+    // console.log();
+    // console.log(RankDataObject);
+    // console.log();
+    // console.log(NotParedGamesObject);
 
     console.log("%%%%%%%%%%%%%%%%%%%%%%");
     console.log("Jogos a decorrer");
     console.log(OnGoingGameSessions);
-    // if (OnGoingGameSessions.length > 0) {
-    //     console.log(OnGoingGameSessions[0]["group_99"]["players"]);
-    //     // console.log();
-    //     // console.log(OnGoingGameSessions[0]["responses"]);        
-    // }
     console.log("%%%%%%%%%%%%%%%%%%%%%%");
     console.log("--------------------");
 
@@ -327,20 +322,17 @@ function CheckUserRankGroup(nick, row, column, group) {
 //Incrementa os dados de rank associados a um utilizador (supondo que já 
 // temos o objeto de utilizador na lista "ranking") ✅
 function UpdateRankInformation(nick, row, column, group, iswinner) {
-    console.log("--------------------");
-    console.log("Dentro de UpdateRankInformation para : " + nick);
+    // console.log("--------------------");
+    // console.log("Dentro de UpdateRankInformation para : " + nick);
 
     let size = row + "_por_" + column;
-    console.log("TESTE 0");
     console.log(group);
     //Array de rankings
     let RankingArray = RankDataObject["group_" + group][size]["ranking"];
 
-    console.log("TESTE 1");
 
     //objeto do rank de utilizador (caso exista)
     var UserRank = RankingArray.find(user => user.nick === nick);
-    console.log("TESTE 2");
 
 
     UserRank.games += 1;
@@ -354,7 +346,7 @@ function UpdateRankInformation(nick, row, column, group, iswinner) {
 
 
     SaveRank.saveToFile(RankDataObject);
-    console.log("--------------------");
+    // console.log("--------------------");
 }
 
 //Adiciona utilizador  a um certo rank ✅
@@ -713,26 +705,36 @@ function leave(request, response) {
                 return;
             }
 
-            // 1º caso ) Abandonar antes de emparelhamento
 
+            let RespUpdate = null;
+            let finalwinner = null;
+            // 1º caso ) Abandonar antes de emparelhamento
             //contem objeto {} ou {game:group,size:game} (grupo e hash associada ao jogo)
             let AuxObject = CheckGameHashExist(game);
-            // console.log(AuxObject);
             if (AuxObject != false) {
                 console.log("Encontramos match no leave");
                 let group = AuxObject["group"]; //grupo
                 let size = AuxObject["size"];   //rows_por_cols
 
-                // console.log(NotParedGamesObject[group][size]);
-
                 NotParedGamesObject[group][size]["Pending"] = [];
                 NotParedGamesObject[group][size]["Creator"] = "";
-                // console.log(NotParedGamesObject[group][size]);
+
+                //Elimina objeto de OnGoingGameSessions
+                let i = 0;
+                for (let session of OnGoingGameSessions) {
+                    let group = Object.keys(session);
+                    if (session[group[0]]["Hash"] == game) {
+                        RespUpdate = Object.assign({},session[group[0]]);
+                        // EndGameUpdate(null, session[group[0]]);
+                        OnGoingGameSessions.splice(i, 1);
+                        break;
+                    }
+                    i++;
+                }
             }
             // 2º caso ) Abandonar  durante jogo 
             else {
                 //apagar o objeto de jogo em que este elemento pertence
-
                 let i = 0;
                 //Percorremos todas as sessões de jogos a correr no momento
                 for (let session of OnGoingGameSessions) {
@@ -755,9 +757,13 @@ function leave(request, response) {
                         else
                             winner = nicks[0];
 
+
                         UpdateRankInformation(winner, rows, columns, nr_group, true);
                         UpdateRankInformation(loser, rows, columns, nr_group, false);
 
+                        // EndGameUpdate(winner, session[group[0]]);
+                        RespUpdate = Object.assign({},session[group[0]]);
+                        finalwinner = winner;
                         //Removemos a sessão do jogo
                         OnGoingGameSessions.splice(i, 1);
                         break;
@@ -765,11 +771,13 @@ function leave(request, response) {
                     i++;
                 }
             }
-            //todo ainda falta o caso de fazer leave automatico 
 
+            //Não fiz leave automático
 
             response.writeHead(200, headers.plain);
             response.end("{}");
+            if (RespUpdate != null)
+                EndGameUpdate(finalwinner,RespUpdate);
             console.log("=======Fim Pedido=======");
         } catch (error) {
             //Erro ao analisar os dados do pedido
@@ -868,7 +876,7 @@ function CheckIfPlayIsValid(board, row, column, color) {
     return true;
 }
 
-//Função auxiliar que muda turno do jogador 
+//Função auxiliar que muda turno do jogwador 
 function ChangeTurn(Game) {
     // console.log("--------------------");
     // console.log("Dentro de ChangeTurn");
@@ -898,9 +906,9 @@ function ObjectOfUpdate(Game) {
 
 //Função auxiliar que difunde para jogadores no jogo o tabuleiro
 function UpdatePlayers(Game) {
-    console.log("--------------------");
-    console.log("Dentro de UpdatePlayers");
-    console.log(Game["board"]);
+    // console.log("--------------------");
+    // console.log("Dentro de UpdatePlayers");
+    // console.log(Game["board"]);
     let nicks = Object.keys(Game["responses"]);
     // console.log(nicks);
     let responce1 = Game["responses"][nicks[0]];
@@ -911,9 +919,21 @@ function UpdatePlayers(Game) {
 
     responce1.write('data: ' + ans + '\n\n');
     responce2.write('data: ' + ans + '\n\n');
-    console.log("--------------------");
+    // console.log("--------------------");
 
 
+}
+
+//Função auxiliar que envia o objeto {"winner" : (...)} para 
+//todas as responses do update presentes no objeto que representa o jogo
+function EndGameUpdate(winner, Game) {
+    let res = Object.keys(Game["responses"]);
+    // console.log(res);
+    for (let user of res) {
+        let obj = { winner: winner };
+        //fechamos o response do update 
+        Game["responses"][user].write('data: ' + JSON.stringify(obj) + '\n\n');
+    }
 }
 
 //Verifica se estamos em condições de mudar phase 
@@ -1225,7 +1245,7 @@ function notify(request, response) {
                             console.log("=======Fim Pedido=======");
                             return;
                         }
-                        
+
                         //Já fizemos as verificações e estamos prontos para remover
                         Game["board"][row][column] = 'empty';
 
@@ -1233,10 +1253,9 @@ function notify(request, response) {
                         if (color == 'black')
                             CheckAuxArrays(Game, 'white');
                         else if (color == 'white')
-                            CheckAuxArrays(Game,'black'); 
-                            
+                            CheckAuxArrays(Game, 'black');
 
-                        //mudamos o turno 
+
                         Game["step"] = 'from';
                         ChangeTurn(Game);
                     }
