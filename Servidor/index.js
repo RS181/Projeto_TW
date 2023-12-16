@@ -919,7 +919,6 @@ function UpdatePlayers(Game) {
 //Verifica se estamos em condições de mudar phase 
 //se sim modifica objeto 
 function ChangePhase(Game) {
-    //todo confirmar 
     console.log("--------------------");
     console.log("Dentro de ChangePhase");
     let board = Game["board"];
@@ -937,6 +936,69 @@ function ChangePhase(Game) {
         Game["phase"] = "move";
     }
     console.log("--------------------");
+}
+
+//Verfica se linha ou coluna tem 3 peças contíguas (atualiza objeto do jogo)
+function CheckAuxArrays(Game, color) {
+    let count = 0;
+    let board = Game["board"];
+    console.log("--------------------");
+    console.log("Dentro de CheckAuxArrays")
+    //Verificação na linha
+    for (let i = 0; i < board.length; i++) {
+        count = 0;
+        for (let j = 0; j < board[0].length; j++) {
+            if (board[i][j] == color) {
+                count++;
+                if (count === 3) {
+                    Game[color + "row"][i] = true;
+                    count = 0;
+                }
+            }
+            else
+                count = 0;
+        }
+    }
+
+    //Verificação de coluna
+    for (let j = 0; j < board[0].length; j++) {
+        count = 0;
+        for (let i = 0; i < board.length; i++) {
+            if (board[i][j] == color) {
+                count++;
+                if (count === 3) {
+                    Game[color + "col"][j] = true;
+                    count = 0;
+                }
+            }
+            else
+                count = 0;
+        }
+    }
+    console.log("--------------------");
+
+
+}
+
+//Inicializa array no objeto do jogo , para auxiliar 
+//o parte de take na fase move
+function InitializeAuxArrays(Game) {
+    // console.log("--------------------");
+    // console.log("Dentro de IntializeAuxArrays")
+    if (Game["blackrow"] == undefined) {
+        let board = Game["board"];
+        console.log(board);
+        let rows = board.length;
+        let cols = board[0].length;
+        Game["blackrow"] = Array(rows).fill(false);
+        Game["blackcol"] = Array(cols).fill(false);
+        Game["whiterow"] = Array(rows).fill(false);
+        Game["whitecol"] = Array(cols).fill(false);
+
+        CheckAuxArrays(Game, "black");
+        CheckAuxArrays(Game, "white");
+    }
+    // console.log("--------------------");
 
 }
 
@@ -1077,6 +1139,9 @@ function notify(request, response) {
 
                 }
                 else if (phase === 'move') {
+                    //função só altera informação no objeto do jogo na transição de drop para move
+                    InitializeAuxArrays(Game);
+
                     if (Game["step"] == 'from') {
                         //verifica se a peça esolchida pertence ao jogador que vai jogar
                         if (!CheckPlayerPiece(Game, row, column)) {
@@ -1100,7 +1165,7 @@ function notify(request, response) {
                             return;
                         }
                         //Verifica se movimento é de uma só casa na vert. e hor.
-                        if (!CheckMoveIsValid(Game,row,column)){
+                        if (!CheckMoveIsValid(Game, row, column)) {
                             response.writeHead(400, headers.plain);
                             response.end('{ "error": "Invalid move: can only move to neigbouring cells, vertical or horizontally" }');
                             console.log('{ "error": "Invalid move: can only move to neigbouring cells, vertical or horizontally" }');
@@ -1110,7 +1175,7 @@ function notify(request, response) {
                         //Verifica se movimento não quebra regra das 3 pecas contiguas
                         let source = Game["selected"];
                         Game["board"][source["row"]][source["col"]] = 'empty';
-                        if(!CheckIfPlayIsValid(Game["board"],row,column,color)){
+                        if (!CheckIfPlayIsValid(Game["board"], row, column, color)) {
                             response.writeHead(400, headers.plain);
                             response.end('{"error": "Invalid position : can only have 3 contiguous pieces of same color"}');
                             console.log('{"error": "Invalid position : can only have 3 contiguous pieces of same color"}');
@@ -1119,6 +1184,11 @@ function notify(request, response) {
                             return;
                         }
 
+                        //todo fazer aquilo do take caso haja condições
+                        //ideia ter um lista para linha e coluna que indica 
+                        //se essa linha e coluan tem ou não condições
+                        //para remover 
+                        //Inicializa quando passamos de drop para move
                         //No fim muda turno e coloca step a from
                         Game["step"] = 'from';
                         ChangeTurn(Game);
@@ -1146,9 +1216,10 @@ function notify(request, response) {
             let Game = OnGoingGameSessions[GameIndice][group[0]];
 
             //Só fazemos isto em baixo se o pedido notify é valido 
-            ChangePhase(Game);
-            UpdatePlayers(Game);
 
+            ChangePhase(Game);
+            //todo adicionar verificação de fim de jogo
+            UpdatePlayers(Game);
 
             response.writeHead(200, headers.plain);
             response.end("{}");
