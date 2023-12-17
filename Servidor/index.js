@@ -13,10 +13,7 @@ const fs = require('fs');
 const crypto = require('crypto');
 const rank = require('./rank.js');
 const board = require('./BoardGame.js');
-//todo se tiver tempo separar cada pedido em diferente módulos
-
-//Entrega do trabalho dia 15 !!
-//Teste dia 18 
+//todo quando tiver tempo separar cada pedido em diferente módulos
 
 /*  Cabeçalhos  */
 const headers = {
@@ -24,6 +21,7 @@ const headers = {
         'Content-Type': 'application/json',
         'Cache-Control': 'no-cache',
         'Access-Control-Allow-Origin': '*'
+
     },
     sse: {
         'Content-Type': 'text/event-stream',
@@ -38,8 +36,8 @@ const headers = {
 const Server = http.createServer(function (request, response) {
     const parsedURL = url.parse(request.url, true);
     const pathname = parsedURL.pathname;
+    const method = request.method;
     const query = JSON.stringify(parsedURL.query);
-
     // Configuração do CORS para permitir qualquer origem
     response.setHeader('Access-Control-Allow-Origin', '*');
     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -51,7 +49,9 @@ const Server = http.createServer(function (request, response) {
         response.end();
         return;
     }
+    console.log('\n');
     console.log("=======Inicio Pedido=======");
+    console.log(method);
     // console.log("--------------------");
     // console.log("Estado dos objeto no inicio pedido");
     // console.log(UserDataObject);
@@ -66,36 +66,54 @@ const Server = http.createServer(function (request, response) {
     console.log("%%%%%%%%%%%%%%%%%%%%%%");
     console.log("--------------------");
 
-    //Dividimos o que fazer com cada pedido consoante o /
-    //todo adicionar metodo
-    switch (pathname) {
-        case '/register':
-            console.log("Entrei no /register");
-            register(request, response);    //✅
+    switch (method) {
+        case 'POST':
+            switch (pathname) {
+                case '/register':
+                    console.log("Entrei no /register");
+                    register(request, response);    //✅
+                    break;
+                case '/ranking':
+                    console.log("Entrei no /ranking");
+                    ranking(request, response);     // TODO confirmar resposta que envia
+                    break;
+                case '/join':
+                    console.log("Entrei no /join");
+                    // manter estrutura de dados lista de jogos pendentes
+                    join(request, response);
+                    break;
+                case '/leave':
+                    console.log("Entrei no /leave");
+                    leave(request, response);
+                    break;
+                case '/notify':
+                    console.log("Entrei no /notify");
+                    notify(request, response);
+                    break;
+                default:
+                    console.log("Pedido desconhecido 1");
+                    response.writeHead(404, headers.plain);
+                    response.end();
+                    console.log("=======Fim Pedido=======");
+                    break;
+            }
             break;
-        case '/ranking':
-            console.log("Entrei no /ranking");
-            ranking(request, response);     // TODO confirmar resposta que envia
-            break;
-        case '/join':
-            console.log("Entrei no /join");
-            // manter estrutura de dados lista de jogos pendentes
-            join(request, response);
-            break;
-        case '/leave':
-            console.log("Entrei no /leave");
-            leave(request, response);
-            break;
-        case '/notify':
-            console.log("Entrei no /notify");
-            notify(request, response);
-            break;
-        case '/update':
-            console.log("Entrei no /update");
-            update(request, response);
+        case 'GET':
+            switch (pathname) {
+                case '/update':
+                    console.log("Entrei no /update");
+                    update(request, response);
+                    break;
+                default:
+                    console.log("Pedido desconhecido 2");
+                    response.writeHead(404, headers.plain);
+                    response.end();
+                    console.log("=======Fim Pedido=======");
+                    break;
+            }
             break;
         default:
-            console.log("Pedido desconhecido");
+            console.log("Pedido desconhecido 3");
             response.writeHead(404, headers.plain);
             response.end();
             console.log("=======Fim Pedido=======");
@@ -326,7 +344,7 @@ function UpdateRankInformation(nick, row, column, group, iswinner) {
     // console.log("Dentro de UpdateRankInformation para : " + nick);
 
     let size = row + "_por_" + column;
-    console.log(group);
+    // console.log(group);
     //Array de rankings
     let RankingArray = RankDataObject["group_" + group][size]["ranking"];
 
@@ -457,10 +475,6 @@ function ranking(request, response) {
 
 /* Inicio do /join */
 
-
-// dados para criar hash -> group,rows,collumns 
-//e tempo (arranjar forma de este tempo gerar nova hash
-//a cada 15 min)
 function GenerateGameHash(group, rows, columns) {
     // console.log("--------------------");
     // console.log("Entrei no GenerateGameHash");
@@ -724,7 +738,7 @@ function leave(request, response) {
                 for (let session of OnGoingGameSessions) {
                     let group = Object.keys(session);
                     if (session[group[0]]["Hash"] == game) {
-                        RespUpdate = Object.assign({},session[group[0]]);
+                        RespUpdate = Object.assign({}, session[group[0]]);
                         // EndGameUpdate(null, session[group[0]]);
                         OnGoingGameSessions.splice(i, 1);
                         break;
@@ -762,7 +776,7 @@ function leave(request, response) {
                         UpdateRankInformation(loser, rows, columns, nr_group, false);
 
                         // EndGameUpdate(winner, session[group[0]]);
-                        RespUpdate = Object.assign({},session[group[0]]);
+                        RespUpdate = Object.assign({}, session[group[0]]);
                         finalwinner = winner;
                         //Removemos a sessão do jogo
                         OnGoingGameSessions.splice(i, 1);
@@ -773,16 +787,18 @@ function leave(request, response) {
             }
 
             //Não fiz leave automático
-
             response.writeHead(200, headers.plain);
             response.end("{}");
+
             if (RespUpdate != null)
-                EndGameUpdate(finalwinner,RespUpdate);
+                EndGameUpdate(finalwinner, RespUpdate);
+
             console.log("=======Fim Pedido=======");
         } catch (error) {
             //Erro ao analisar os dados do pedido
             response.writeHead(400, headers.plain);
             response.end('{"error": "Invalid request data"}');
+
         }
 
     })
@@ -929,6 +945,7 @@ function UpdatePlayers(Game) {
 function EndGameUpdate(winner, Game) {
     let res = Object.keys(Game["responses"]);
     // console.log(res);
+    //todo atualizar rank
     for (let user of res) {
         let obj = { winner: winner };
         //fechamos o response do update 
@@ -1073,6 +1090,40 @@ function CheckMoveIsValid(Game, dest_row, dest_col) {
     }
 }
 
+//Verifica se estamos em condições de fim de jogo
+function CheckIfGameIsOver(Game) {
+    let board = Game["board"];
+    let rows = board.length;
+    let cols = board[0].length;
+    let pretas = 0;
+    let brancas = 0;
+
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+            if (board[i][j] == 'black')
+                pretas++;
+            else if (board[i][j] == 'white')
+                brancas++;
+        }
+    }
+
+    //condição de fim de jogo
+    if (pretas < 3 || brancas < 3) {
+        console.log("FIM DO JOGO ATINGIDO");
+        let nicks = Object.keys(Game["players"]);
+        let p1 = nicks[0];  //p1 associado sempre a peça preta
+        let p2 = nicks[1];  //p2 associado sempre a peça branca
+
+        if (pretas > brancas) {
+            EndGameUpdate(p1, Game);
+        }
+        else if (brancas > pretas) {
+            EndGameUpdate(p2, Game);
+        }
+    }
+}
+
+
 //Função que trata dos pedidos em /notify
 function notify(request, response) {
     //obter dados do pedido (quando bloco de dados estiver disponivel)
@@ -1129,8 +1180,8 @@ function notify(request, response) {
             }
 
 
+            //todo falta verificar se jogador não vai mover-se para ultimo posicionamento
 
-            //todo fazer resto das verificações
             let GameIndice = SearchOnGoingSessions(nick, password, game);
             if (GameIndice != null) {
                 let group = Object.keys(OnGoingGameSessions[GameIndice]);
@@ -1190,6 +1241,20 @@ function notify(request, response) {
                         Game["selected"] = { row: row, col: column };
                     }
                     else if (Game["step"] == 'to') {
+                        let source = Game["selected"];
+
+                        //des-selecionar (escolheu a mesma peça)
+                        if (source["row"] == row && source["col"] == column) {
+                            Game["step"] = 'from';
+                            response.writeHead(200, headers.plain);
+                            response.end("{}");
+                            console.log("DES-SELECIONAR");
+                            UpdatePlayers(Game);
+                            console.log("=======Fim Pedido=======");
+                            return;
+                        }
+
+
                         //Verificação se a celula é vazia 
                         if (Game["board"][row][column] != "empty") {
                             response.writeHead(400, headers.plain);
@@ -1206,8 +1271,8 @@ function notify(request, response) {
                             console.log("=======Fim Pedido=======");
                             return;
                         }
+
                         //Verifica se movimento não quebra regra das 3 pecas contiguas
-                        let source = Game["selected"];
                         Game["board"][source["row"]][source["col"]] = 'empty';
                         if (!CheckIfPlayIsValid(Game["board"], row, column, color)) {
                             response.writeHead(400, headers.plain);
@@ -1259,6 +1324,8 @@ function notify(request, response) {
                         Game["step"] = 'from';
                         ChangeTurn(Game);
                     }
+                    //Verifica se é fim de jogo
+                    CheckIfGameIsOver(Game);
                     console.log("Movimento válido!");
                 }
             }
@@ -1272,10 +1339,9 @@ function notify(request, response) {
             let group = Object.keys(OnGoingGameSessions[GameIndice]);
             let Game = OnGoingGameSessions[GameIndice][group[0]];
 
-            //Só fazemos isto em baixo se o pedido notify é valido 
+            //Só fazemos isto em baixo se o pedido notify for valido 
 
             ChangePhase(Game);
-            //todo adicionar verificação de fim de jogo
             UpdatePlayers(Game);
 
             response.writeHead(200, headers.plain);
@@ -1313,6 +1379,7 @@ function update(request, response) {
                 UpdatePlayers(session[group[0]]);
             }
             console.log("--------------------");
+            console.log("=======Fim Pedido=======");
             return;
         }
     }
