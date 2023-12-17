@@ -722,7 +722,6 @@ function leave(request, response) {
 
 
             // let RespUpdate = null;
-            // let finalwinner = null;
             // 1º caso ) Abandonar antes de emparelhamento
             //contem objeto {} ou {game:group,size:game} (grupo e hash associada ao jogo)
             let AuxObject = CheckGameHashExist(game);
@@ -739,8 +738,7 @@ function leave(request, response) {
                 for (let session of OnGoingGameSessions) {
                     let group = Object.keys(session);
                     if (session[group[0]]["Hash"] == game) {
-                        RespUpdate = Object.assign({}, session[group[0]]);
-                        // EndGameUpdate(null, session[group[0]]);
+                        EndGameUpdate(null, session[group[0]]);
                         OnGoingGameSessions.splice(i, 1);
                         break;
                     }
@@ -924,8 +922,7 @@ function UpdatePlayers(Game) {
 //todas as responses do update presentes no objeto que representa o jogo
 function EndGameUpdate(winner, Game) {
     let res = Object.keys(Game["responses"]);
-    // console.log(res);
-    //todo atualizar rank
+    // console.log(res)
     for (let user of res) {
         let obj = { winner: winner };
         //fechamos o response do update 
