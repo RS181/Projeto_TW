@@ -13,6 +13,7 @@ const fs = require('fs');
 const crypto = require('crypto');
 const rank = require('./rank.js');
 const board = require('./BoardGame.js');
+const { group } = require('console');
 //todo quando tiver tempo separar cada pedido em diferente módulos
 
 /*  Cabeçalhos  */
@@ -720,8 +721,8 @@ function leave(request, response) {
             }
 
 
-            let RespUpdate = null;
-            let finalwinner = null;
+            // let RespUpdate = null;
+            // let finalwinner = null;
             // 1º caso ) Abandonar antes de emparelhamento
             //contem objeto {} ou {game:group,size:game} (grupo e hash associada ao jogo)
             let AuxObject = CheckGameHashExist(game);
@@ -748,21 +749,12 @@ function leave(request, response) {
             }
             // 2º caso ) Abandonar  durante jogo 
             else {
-                //apagar o objeto de jogo em que este elemento pertence
-                let i = 0;
                 //Percorremos todas as sessões de jogos a correr no momento
                 for (let session of OnGoingGameSessions) {
                     let group = Object.keys(session);
                     //Se houver match das Hashes fazemos,removemos esse joga das sessões
                     if (session[group[0]]["Hash"] == game) {
-                        // console.log("Encontramos match no indice " + i);
-                        // console.log(session[group[0]]);
-
-                        //Atualizamos score
-                        let rows = session[group[0]]["board"].length;
-                        let columns = session[group[0]]["board"][0].length;
                         let players = session[group[0]]["players"];
-                        let nr_group = group[0].replace('group_', '');
                         let loser = nick;
                         let nicks = Object.keys(players);
                         let winner;
@@ -771,28 +763,16 @@ function leave(request, response) {
                         else
                             winner = nicks[0];
 
-
-                        UpdateRankInformation(winner, rows, columns, nr_group, true);
-                        UpdateRankInformation(loser, rows, columns, nr_group, false);
-
-                        // EndGameUpdate(winner, session[group[0]]);
-                        RespUpdate = Object.assign({}, session[group[0]]);
-                        finalwinner = winner;
-                        //Removemos a sessão do jogo
-                        OnGoingGameSessions.splice(i, 1);
+                        EndGameUpdate(winner,session[group[0]]);
                         break;
                     }
-                    i++;
                 }
             }
 
             //Não fiz leave automático
+            
             response.writeHead(200, headers.plain);
             response.end("{}");
-
-            if (RespUpdate != null)
-                EndGameUpdate(finalwinner, RespUpdate);
-
             console.log("=======Fim Pedido=======");
         } catch (error) {
             //Erro ao analisar os dados do pedido
@@ -950,6 +930,37 @@ function EndGameUpdate(winner, Game) {
         let obj = { winner: winner };
         //fechamos o response do update 
         Game["responses"][user].write('data: ' + JSON.stringify(obj) + '\n\n');
+    }
+
+    //Atualizar rank e apagar objeto do jogo
+    if (winner != null) {
+        //apagar o objeto de jogo em que este elemento pertence
+        let i = 0;
+        //Percorremos todas as sessões de jogos a correr no momento
+        for (let session of OnGoingGameSessions) {
+            let group = Object.keys(session);
+            //Se houver match das Hashes fazemos,removemos esse joga das sessões
+            if (session[group[0]]["Hash"] == Game["Hash"]) {
+                let rows = session[group[0]]["board"].length;
+                let columns = session[group[0]]["board"][0].length;
+                let players = session[group[0]]["players"];
+                let nr_group = group[0].replace('group_', '');
+                let nicks = Object.keys(players);
+                let loser = "";
+                if (winner == nicks[0])
+                    loser = nicks[1];
+                else
+                    loser = nicks[0];
+
+                UpdateRankInformation(winner, rows, columns, nr_group, true);
+                UpdateRankInformation(loser, rows, columns, nr_group, false);
+
+                //Removemos a sessão do jogo
+                OnGoingGameSessions.splice(i, 1);
+                break;
+            }
+            i++;
+        }
     }
 }
 
@@ -1121,6 +1132,9 @@ function CheckIfGameIsOver(Game) {
             EndGameUpdate(p2, Game);
         }
     }
+
+    //todo falta verificar se o jogador que vai jogar tem 
+    //todo movimentos válidos 
 }
 
 
