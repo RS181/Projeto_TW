@@ -13,7 +13,6 @@ const fs = require('fs');
 const crypto = require('crypto');
 const rank = require('./rank.js');
 const board = require('./BoardGame.js');
-const { group } = require('console');
 //todo quando tiver tempo separar cada pedido em diferente módulos
 
 /*  Cabeçalhos  */
@@ -301,7 +300,6 @@ function GroupExists(group) {
         SaveRank.saveToFile(RankDataObject);
     }
 }
-
 //Verifica se utilizador já tem rank (se não tem cria) ✅
 function CheckUserRankGroup(nick, row, column, group) {
     let size = row + "_por_" + column;

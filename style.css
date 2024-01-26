@@ -333,3 +333,8 @@ p.destacar {
     border-color: #3A403A;
 }
 
+
+.myCanvas {
+    display: block;
+    margin:auto;
+}

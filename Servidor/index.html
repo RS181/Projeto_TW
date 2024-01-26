@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Teste de servidor node.js</title>
+    <script src="conf.js"></script>
+</head>
+
+<body>
+    <h1>Teste servidor node.js</h1>
+    <!--Tamanho do tabuleiro-->
+    Nr Linhas
+    <select id="input_linhas_tabuleiro">
+        <option value="6"> 6</option>
+        <option value="5"> 5 </option>
+        <!--Adicionar mais tamanhos,caso seja precisso-->
+    </select>
+    <br>
+
+    Nr Colunas
+    <select id="input_colunas_tabuleiro">
+        <option>6</option>
+        <option>5</option>
+
+    </select>
+    <br><br>
+    <br>
+    <form action="registar" method=post class="form_l">
+        Username <input id="username" style="margin-bottom: 10px;" value="rui"><br>
+        Password <input type="password" id="password" style="margin-bottom: 10px;" value="secret"> <br>
+        <input type=reset>
+        <input type=button value=Registar onclick="register()">
+        <br>
+        <!-- <input type="button" value="Join session"  onclick="join()"> -->
+        <!-- <input type="button" value="Update" onclick="update()"> -->
+        <!-- <input type="button" value="notify" onclick="notify()"> -->
+        <input type="button" value="ranking" onclick="ranking()">
+    </form>
+
+</body>
+
+</html>

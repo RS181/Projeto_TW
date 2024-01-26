@@ -1440,6 +1440,8 @@ async function give_up() {
     let dif = get_dificulty();
     //desistir contra jogador    
     if (dif == 0) {
+        //teste 
+        
         leave();
         if (instancia_tabuleiro == undefined) {
             console.log("Jogador saio antes do emparelhamento");
@@ -1448,7 +1450,6 @@ async function give_up() {
         resposta_update = undefined; //!Pomos aqui para poder começar outro jogo (confirmar)
 
         //Alterações do UI quando jogador atual desiste 
-        //todo -> falta atualizar o adversario que jogador atual desistiu
         let x = document.querySelector('#tabuleiro');
         let mensagem = document.getElementById("mensagens_ui");
         removeAllChildNodes(x);
@@ -1466,8 +1467,6 @@ async function give_up() {
         erase_board();
     }
 
-    //Cria um novo tabuleiro 
-    // get_nr_linhas_colunas();
 }
 
 //Animação de carregar
@@ -1504,8 +1503,8 @@ window.onload = function () {
 ! Funções relacionadas com comunicação abaixo
 */
 
-const url = "http://twserver.alunos.dcc.fc.up.pt:8008/";
-
+// const url = "http://twserver.alunos.dcc.fc.up.pt:8008/";
+const url = "http://localhost:8008/";
 /* Inicio /register */
 
 function getUsername() {
@@ -1618,8 +1617,8 @@ function join() {
 
 /*
 Primeiro caso: Se for invocada durante o emparelhamento, enquanto espera por outros jogador, então não tem consequências
-todo Segundo caso: Se o jogo já tiver em curso, a saída com este método concede a vitória ao adversário.
-todo Terceiro caso:  Se uma jogada não for realizada no tempo devido(2min) então é executado um leave automático, nas condições descritas no parágrafo anterior
+Segundo caso: Se o jogo já tiver em curso, a saída com este método concede a vitória ao adversário.
+Terceiro caso:  Se uma jogada não for realizada no tempo devido(2min) então é executado um leave automático, nas condições descritas no parágrafo anterior
 */
 function leave() {
     if (game_session == undefined) {

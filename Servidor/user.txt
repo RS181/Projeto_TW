@@ -1,1 +1,4 @@
-{"rui":"secret","rui2":"secret"}
+{
+  "rui": "5ebe2294ecd0e0f08eab7690d2a6ee69",
+  "rui2": "5ebe2294ecd0e0f08eab7690d2a6ee69"
+}

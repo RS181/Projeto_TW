@@ -1,1 +1,0 @@
-{"rui2":"teste","rui":"teste"}

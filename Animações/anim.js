@@ -38,7 +38,7 @@ function loadingDrawing() {
 
     context.rotate(rotateAngle * Math.PI / 180);
 
-    // Comprimento uniforme para todos os traços
+    // Comprimento para todos os traços
     var lineLength = 20;
 
     // Array de cores
@@ -58,7 +58,7 @@ function loadingDrawing() {
         context.lineTo(0, -lineLength);
         context.stroke();
 
-        // Retorna à posição inicial antes de rotacionar para o próximo traço
+        // Retorna à posição inicial antes de desenhar o próximo traço
         context.rotate(60 * Math.PI / 180);
     }
 
